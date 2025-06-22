@@ -22,8 +22,8 @@ public class SecurityConfig {
     //private final AdminUserDetailsService adminUserDetailsService;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -59,7 +59,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(2)
+    @Order(2) // 태호오빠 엽의필요
     public SecurityFilterChain allFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")
