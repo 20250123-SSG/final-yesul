@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 @Controller
-public class LoginController {
+public class AdminLoginController {
 
     @GetMapping("/login")
     public void loginPage(){}
+
 
 }
