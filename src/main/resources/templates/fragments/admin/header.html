@@ -1,0 +1,190 @@
+<!-- header.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Header Fragment</title>
+</head>
+<body>
+<!-- Header Fragment 정의 -->
+<div th:fragment="adminHeader">
+    <header class="gi-header">
+        <div class="container-fluid">
+            <div class="gi-header-items">
+                <div class="left-header">
+                    <a href="javascript:void(0)" class="gi-toggle-sidebar">
+                        <span class="outer-ring">
+                            <span class="inner-ring"></span>
+                        </span>
+                    </a>
+                    <div class="header-search-box">
+                        <!-- 검색창 지움 -->
+                    </div>
+                </div>
+                <div class="right-header">
+                    <div class="gi-right-tool gi-flag-drop language">
+                        <div class="gi-hover-drop">
+                            <div class="gi-hover-tool">
+                                <!-- 언어지원 삭제 -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gi-right-tool apps">
+                        <div class="gi-hover-drop">
+                            <!-- app 지원 삭제 -->
+                        </div>
+                    </div>
+                    <div class="gi-right-tool display-screen">
+                        <a class="gi-screen full" href="javascript:void(0)">
+                            <i class="ri-fullscreen-line"></i>
+                        </a>
+                        <a class="gi-screen reset" href="javascript:void(0)">
+                            <i class="ri-fullscreen-exit-line"></i>
+                        </a>
+                    </div>
+                    <div class="gi-right-tool">
+                        <a class="gi-notify" href="javascript:void(0)">
+                            <i class="ri-notification-2-line"></i>
+                            <span class="label"></span>
+                        </a>
+                    </div>
+                    <div class="gi-right-tool display-dark">
+                        <a class="gi-mode dark" href="javascript:void(0)">
+                            <i class="ri-moon-clear-line"></i>
+                        </a>
+                        <a class="gi-mode light" href="javascript:void(0)">
+                            <i class="ri-sun-line"></i>
+                        </a>
+                    </div>
+                    <div class="gi-right-tool gi-user-drop">
+                        <div class="gi-hover-drop">
+                            <div class="gi-hover-tool">
+                                <img class="user" th:src="@{/asserts/img/user/1.png}" alt="user">
+                            </div>
+                            <div class="gi-hover-drop-panel right">
+                                <div class="details">
+                                    <h6 th:text="${adminName}">YeSul</h6>
+                                    <p th:text="${adminEmail}">admin1@yesul.com</p>
+                                </div>
+                                <ul class="border-top">
+                                    <li>
+                                        <a th:href="@{/admin/logout}">
+                                            <i class="ri-logout-circle-r-line"></i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- right-header -->
+            </div> <!-- gi-header-items -->
+        </div> <!-- container-fluid -->
+    </header>
+
+    <!-- Notify sidebar -->
+    <div class="gi-notify-bar-overlay"></div>
+    <div class="gi-notify-bar-overlay"></div>
+    <div class="gi-notify-bar" th:fragment="notifyBarFragment">
+        <div class="gi-bar-title">
+            <h6>Notifications<span class="label" th:text="${alerts.size()}">0</span></h6>
+            <a href="javascript:void(0)" class="close-notify"><i class="ri-close-line"></i></a>
+        </div>
+        <div class="gi-bar-content">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="alert-tab" data-bs-toggle="tab" data-bs-target="#alert"
+                            type="button" role="tab" aria-controls="alert" aria-selected="true">Alert</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="messages-tab" data-bs-toggle="tab" data-bs-target="#messages"
+                            type="button" role="tab" aria-controls="messages" aria-selected="false">Messages</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="log-tab" data-bs-toggle="tab" data-bs-target="#log"
+                            type="button" role="tab" aria-controls="log" aria-selected="false">Log</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="myTabContent">
+                <!-- Alerts -->
+                <div class="tab-pane fade show active" id="alert" role="tabpanel" aria-labelledby="alert-tab">
+                    <div class="gi-alert-list">
+                        <ul>
+                            <li th:each="alert : ${alerts}">
+                                <div class="icon" th:classappend="' gi-' + ${alert.type}">
+                                    <i th:class="${alert.icon}"></i>
+                                </div>
+                                <div class="detail">
+                                    <div class="title" th:text="${alert.title}">Sample Title</div>
+                                    <p class="time" th:text="${alert.time}">Just now</p>
+                                    <p class="message" th:text="${alert.message}">Sample message content.</p>
+                                </div>
+                            </li>
+                            <li class="check"><a class="gi-primary-btn" href="chatapp.html">View all</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                    <div class="gi-message-list">
+                        <ul>
+                            <li th:each="msg : ${messages}">
+                                <a href="chatapp.html" class="reply">Reply</a>
+                                <div class="user">
+                                    <img th:src="@{/asserts/img/user/{img}(img=${msg.userImage})}" alt="user">
+                                    <span class="label" th:classappend=" ' ' + ${msg.status}"></span>
+                                </div>
+                                <div class="detail">
+                                    <a href="chatapp.html" class="name" th:text="${msg.sender}">Sender Name</a>
+                                    <p class="time" th:text="${msg.time}">Time Info</p>
+                                    <p class="message" th:text="${msg.content}">Message content</p>
+                                    <span class="download-files" th:if="${msg.files != null}">
+                                    <span class="download" th:each="file : ${msg.files}">
+                                        <span th:if="${file.image}">
+                                            <img th:src="@{/asserts/img/other/{fileName}(fileName=${file.name})}" alt="file">
+                                        </span>
+                                        <span th:unless="${file.image}">
+                                            <span class="file"><i th:class="${file.icon}"></i></span>
+                                        </span>
+                                        <a href="javascript:void(0)"><i class="ri-download-2-line"></i></a>
+                                    </span>
+                                </span>
+                                </div>
+                            </li>
+                            <li class="check"><a class="gi-primary-btn" href="chatapp.html">View all</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Logs -->
+                <div class="tab-pane fade" id="log" role="tabpanel" aria-labelledby="log-tab">
+                    <div class="gi-activity-list activity-list">
+                        <ul>
+                            <li th:each="log : ${logs}">
+                            <span class="date-time" th:classappend="${log.warn} ? ' warn' : ''" th:text="${log.date}">
+                                8 Thu
+                                <span class="time" th:text="${log.time}">Time</span>
+                            </span>
+                                <p class="title" th:text="${log.title}">Log Title</p>
+                                <p class="detail" th:text="${log.detail}">Log Detail</p>
+                                <span class="download-files" th:if="${log.files != null}">
+                                <span class="download" th:each="file : ${log.files}">
+                                    <span th:if="${file.image}">
+                                        <img th:src="@{/asserts/img/other/{fileName}(fileName=${file.name})}" alt="image">
+                                    </span>
+                                    <span th:unless="${file.image}">
+                                        <span class="file"><i th:class="${file.icon}"></i></span>
+                                    </span>
+                                    <a href="javascript:void(0)"><i class="ri-download-2-line"></i></a>
+                                </span>
+                            </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
