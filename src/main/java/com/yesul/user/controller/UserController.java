@@ -49,7 +49,7 @@ public class UserController {
             if (verified) {
                 redirectAttributes.addFlashAttribute("message", "이메일 인증이 완료되었습니다! 이제 로그인해주세요.");
                 log.info("이메일 인증 성공: {}", email);
-                return "redirect:/user/login";
+                return "redirect:/login/";
             } else {
                 redirectAttributes.addFlashAttribute("error", "이메일 인증에 실패했습니다. 링크가 유효하지 않거나 만료되어 새로운 인증 메일이 발송되었습니다. 다시 이메일을 확인해주세요.");
                 log.warn("이메일 인증 실패 (토큰 문제): {}", email);

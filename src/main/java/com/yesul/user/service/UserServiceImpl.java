@@ -48,17 +48,17 @@ public class UserServiceImpl implements UserService {
 
         // 3. User 엔티티 생성 및 초기 설정
         User user = userRegisterDto.toEntity(passwordEncoder.encode(userRegisterDto.getPassword()));
-        user.setStatus('2'); // 회원가입 시 '미인증' 상태로 설정 ('2')
-        user.generateEmailCheckToken(); // 이메일 인증 토큰 생성 및 시간 기록
+        user.setStatus('2');
+        user.generateEmailCheckToken();
 
         // 4. 사용자 정보 저장
         User savedUser = userRepository.save(user);
 
         // 5. 이메일 인증 메일 발송
-        sendVerificationEmail(savedUser); // 저장된 User 객체로 이메일 발송
+        sendVerificationEmail(savedUser);
 
         log.info("새 사용자 등록 및 인증 이메일 발송 대기: {}", savedUser.getEmail());
-        return savedUser; // 저장된 User 객체 반환
+        return savedUser;
     }
 
     /**
@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
                     + "<br><br>이 링크는 <strong>15분</strong> 동안 유효합니다. 이메일 인증을 완료하시면 Yesul의 모든 서비스를 이용할 수 있습니다."
                     + "<br><br>감사합니다.<br>Yesul 드림";
             mimeMessageHelper.setText(content, true); // true는 HTML 형식으로 전송
-            javaMailSender.send(mimeMessage); // 이메일 발송
+            javaMailSender.send(mimeMessage);
             log.info("인증 이메일 발송 성공: {}", user.getEmail());
         } catch (MessagingException e) {
             log.error("인증 이메일 발송 실패: {}", user.getEmail(), e);
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
      * @return 인증 성공 시 true, 실패 시 false
      */
     @Override
-    @Transactional // DB 변경이 발생하므로 트랜잭션 처리
+    @Transactional
     public boolean verifyEmail(String email, String token) {
         // 1. 이메일로 사용자 조회
         Optional<User> optionalUser = userRepository.findByEmail(email);
@@ -135,29 +135,26 @@ public class UserServiceImpl implements UserService {
         // 2. 이미 인증된 계정인지 확인
         if (user.getStatus() == '1') {
             log.info("이메일 인증 성공 (이미 활성화된 계정): {}", email);
-            return true; // 이미 활성화된 계정이므로 성공으로 간주
+            return true;
         }
 
         // 3. 토큰 유효성 및 만료 시간 검사
-        // 토큰이 없거나, 토큰이 일치하지 않거나, 토큰 생성 시간이 null이거나, 15분 경과 여부 확인
         if (user.getEmailCheckToken() == null || !user.getEmailCheckToken().equals(token) ||
                 user.getEmailCheckTokenGeneratedAt() == null ||
                 user.getEmailCheckTokenGeneratedAt().plusMinutes(15).isBefore(LocalDateTime.now())) {
-
+            
+            // 만료 시 토큰 재발급
             log.warn("이메일 인증 실패: 유효하지 않거나 만료된 토큰입니다. 이메일: {}", email);
-            // 유효하지 않거나 만료된 토큰인 경우, 새로운 토큰을 생성하여 재발송 유도
-            user.generateEmailCheckToken(); // 새로운 토큰 생성
-            user.setStatus('2'); // 혹시라도 다른 상태라면 '미인증'('2') 상태로 유지
-            userRepository.save(user); // 변경사항 저장 (새로운 토큰)
-
-            // 만료된 경우 사용자에게 새로운 이메일을 보낼 수 있도록 재발송
+            user.generateEmailCheckToken();
+            user.setStatus('2');
+            userRepository.save(user);
             try {
                 sendVerificationEmail(user);
                 log.info("만료된 토큰으로 인한 인증 실패, 새로운 인증 이메일 재발송 완료: {}", user.getEmail());
             } catch (RuntimeException e) {
                 log.error("만료된 토큰으로 인한 재발송 이메일 발송 실패: {}", user.getEmail(), e);
             }
-            return false; // 인증 실패
+            return false;
         }
 
         user.completeSignUp();

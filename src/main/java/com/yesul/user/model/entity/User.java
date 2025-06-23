@@ -40,8 +40,8 @@ public class User extends BaseTimeEntity {
     @Column(name = "type", nullable = false) // '1': 일반, '2': 소셜
     private Character type;
 
-    @Column(nullable = false, length = 1)
-    private char status;
+    @Column(nullable = false, length = 1) // '1': 인증, '2': 미인증, '3': 탈퇴
+    private Character status;
 
     @Column(name = "profile", columnDefinition = "TEXT") // img_url
     private String profile;
