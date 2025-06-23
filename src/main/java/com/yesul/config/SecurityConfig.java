@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    //private final AdminUserDetailsService adminUserDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -31,18 +32,17 @@ public class SecurityConfig {
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/admin/**")
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-//                .userDetailsService(adminUserDetailsService)
+                .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/admin/login", "/asserts/**"
                         ).permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/admin/login")
-                        .loginProcessingUrl("/admin/login")      // form action 과 맞춰야 함
+                        .loginProcessingUrl("/admin/login")
                         .defaultSuccessUrl("/admin/dashboard", true)
                         .failureUrl("/admin/login?error")
                         .permitAll()
@@ -55,11 +55,15 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
+
+        http    .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
         return http.build();
     }
 
     @Bean
-    @Order(2) // 태호오빠 엽의필요
+    @Order(2)
     public SecurityFilterChain allFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")

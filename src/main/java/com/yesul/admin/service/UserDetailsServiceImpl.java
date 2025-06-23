@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -32,8 +33,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-        AdminDto fetchedAdmin = new AdminDto(1L, "admin1", "1234"); // = userMapper.selectUserById(userId);  // 조회된 데이터
+
+        AdminDto fetchedAdmin = AdminDto.builder()
+                .id(1L)
+                .loginId("admin1")
+                .loginPwd(passwordEncoder.encode("1234")) // 원본 비번은 1234
+                .build(); // = userMapper.selectUserById(userId);  // 조회된 데이터
 
         if(fetchedAdmin == null){
             throw new UsernameNotFoundException("아이디 또는 비밀번호가 잘못되었습니다."); // 표준예외클래스
