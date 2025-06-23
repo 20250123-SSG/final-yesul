@@ -1,28 +1,26 @@
 package com.yesul.config;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
+    // 추후 AdminUserDetailsService Security 작업 완료 후 추가
+//    private final AdminUserDetailsService adminUserDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
@@ -31,17 +29,19 @@ public class SecurityConfig {
     public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/admin/**")
-                .userDetailsService(userDetailsService)
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+//                .userDetailsService(adminUserDetailsService)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/admin/login", "/asserts/**"
+                                "/admin/login",
+                                "/admin/css/**", "/admin/js/**", "/admin/img/**"
                         ).permitAll()
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/admin/login")
-                        .loginProcessingUrl("/admin/login")
+                        .loginProcessingUrl("/admin/login")      // form action 과 맞춰야 함
                         .defaultSuccessUrl("/admin/dashboard", true)
                         .failureUrl("/admin/login?error")
                         .permitAll()
@@ -53,8 +53,6 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 );
-        http    .csrf(csrf -> csrf.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         return http.build();
     }
@@ -67,7 +65,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/user/**", "/register/**", "/error", "/user/assets/**",
+                                "/", "/user/**", "/community/**","/error",
                                 "/css/**", "/js/**", "/img/**", "/fonts/**"
                         ).permitAll()
                         .anyRequest().permitAll()
