@@ -2,7 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/admin/head :: adminHead"></head>
 <body>
-  <h2>대시보드입니다.</h2>
+<main class="wrapper sb-default ecom">
+    <!-- Loader & Header & sidebar -->
+    <div id="gi-overlay">
+        <div class="loader"></div>
+    </div>
+    <!-- 헤더는 수정 필요-->
+    <div th:replace="fragments/admin/sidebar :: adminSidebar"></div>
+    <h2>dkdkdkdk</h2>
 
+</main>
 </body>
 </html>
