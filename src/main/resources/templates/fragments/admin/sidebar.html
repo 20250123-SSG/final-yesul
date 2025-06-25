@@ -1,19 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<div th:fragment="adminSidebar" class="gi-sidebar-overlay"></div>
-<div class="gi-sidebar" data-mode="dark">
+<div th:fragment="adminSidebar" class="gi-sidebar-overlay">
+  <div class="gi-sidebar" data-mode="light">
   <div class="gi-sb-logo">
     <a th:href="@{/dashboard}" class="sb-full">
       <img th:src="@{/asserts/img/logo/full-logo.png}" alt="logo">
     </a>
   </div>
-  <div class="gi-sb-wrapper">
-    <div class="gi-sb-content">
+    <div class="gi-sb-wrapper">
+      <div class="gi-sb-content">
       <ul class="gi-sb-list">
 
         <li class="gi-sb-item">
@@ -80,8 +73,6 @@
 
       </ul>
     </div>
+    </div>
   </div>
 </div>
-
-</body>
-</html>
