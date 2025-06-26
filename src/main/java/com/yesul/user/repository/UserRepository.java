@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.yesul.user.model.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByMail(String mail);
-    Optional<User> findById(Long id);
+    Optional<User> findByEmail(String mail);
+    Optional<User> findByNjckName(String nickName);
 }
