@@ -1,10 +1,12 @@
 package com.yesul.chatroom.model.entity;
 
 import com.yesul.admin.model.entity.Admin;
-import com.yesul.common.BaseTimeEntity;
-import com.yesul.user.model.entity.User;
+import com.yesul.chatroom.model.entity.enums.MessageType;
+import com.yesul.chatroom.model.entity.enums.ReceiverType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,24 +24,31 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ChatRoom extends BaseTimeEntity {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "last_message", nullable = false)
-    private String lastMessage;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "receiver_type", nullable = false)
+    private ReceiverType receiverType;
 
+    @Column(name = "receiver_id", nullable = false)
+    private Long receiverId;
 
-    @Column(name = "unread_count", nullable = false)
-    private Integer unreadCount;
+    @Column(name = "message_context",length = 5000, nullable = false)
+    private String messageContext;
+
+    @Enumerated
+    @Column(name = "message_type", nullable = false, columnDefinition = "TEXT")
+    private MessageType messageType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "chatroom_id", nullable = false)
+    private ChatRoom chatRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
 
