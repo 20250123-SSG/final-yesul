@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean isNicknameDuplicated(String nickname) {
-        return userRepository.findByNickname(nickname).isPresent();
+        return userRepository.findByNickName(nickname).isPresent();
     }
 
     /**
