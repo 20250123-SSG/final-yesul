@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -22,9 +23,18 @@ public class UserInfoListAdminDto {
     @Column(name = "email")
     private String email;
     @Column(name = "birthday")
-    private Date birthday;
+    private String birthday;
     @Column(name = "created_at")
-    private Date createdAt;
+    private LocalDateTime createdAt;
     @Column(name = "status") // 관리자 수정가능
-    private String status;
+    private Character status;
+
+    public UserInfoListAdminDto(Long id, String email, String nickname, String birthday,Character status, LocalDateTime createdAt) {
+        this.id = id;
+        this.email = email;
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
 }
