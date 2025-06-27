@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
-@RequestMapping("users/chatroom")
+@RequestMapping("/users/chatroom")
 @RequiredArgsConstructor
 public class ChatController {
 
@@ -30,6 +30,7 @@ public class ChatController {
     @PostMapping
     public String createOrFindChatRoom(@RequestParam Long userId) {
         ChatRoomResult result = chatRoomService.findOrCreateRoom(userId);
+        log.info(result.toString());
         return "redirect:/users/chatroom/" + result.getChatRoom().getId() + "?new=" + result.isNewlyCreated();
     }
 
