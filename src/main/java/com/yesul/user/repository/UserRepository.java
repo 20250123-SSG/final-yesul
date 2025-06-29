@@ -8,5 +8,5 @@ import com.yesul.user.model.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String mail);
-    Optional<User> findByNickName(String nickName);
+    Optional<User> findByNickname(String nickName);
 }
