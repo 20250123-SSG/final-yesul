@@ -6,5 +6,28 @@
 </head>
 <body>
   <h2>회원정보관리 - 회원목록페이지입니다.</h2>
+  <table border="1">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>nickname</th>
+          <th>email</th>
+          <th>birthday</th>
+          <th>createdAt</th>
+          <th>status</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr th:each="userInfo : ${userInfoList}">
+            <td th:text="${userInfo.id}"></td>
+            <td th:text="${userInfo.nickname}"></td>
+            <td th:text="${userInfo.email}"></td>
+            <td th:text="${userInfo.birthday}"></td>
+            <td th:text="${userInfo.createdAt}"></td>
+            <td th:text="${userInfo.status}"></td>
+        </tr>
+      </tbody>
+  </table>
+
 </body>
 </html>

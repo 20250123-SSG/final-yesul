@@ -1090,10 +1090,11 @@
         }
         $(this).parents(".gi-tools-info").find('.gi-tools-item.box').removeClass("active")
         $(this).addClass("active");
-    });
 
-    // Footer Copyright
-    var date = new Date().getFullYear();
-    document.getElementById("copyright_year").innerHTML = date;
+        // Footer Copyright
+        var date = new Date().getFullYear();
+        document.getElementById("copyright_year").innerHTML = date;
+
+    });
 
 })(jQuery);
