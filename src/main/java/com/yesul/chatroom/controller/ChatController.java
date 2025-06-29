@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
-@RequestMapping("users/chatroom")
+@RequestMapping("/users/chatroom")
 @RequiredArgsConstructor
 public class ChatController {
 
