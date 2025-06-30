@@ -93,10 +93,12 @@ public class SecurityConfig {
                                 "/user/regist-process",
                                 "/", "/main", "/user/assets/**", "/community/**", "/error",
                                 "/assets/**",
+                                "/images/**",
                                 "/login",
                                 "/logout",
                                 "/login/oauth2/**",
-                                "/oauth2/**"
+                                "/oauth2/**",
+                                "/post-images/upload"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
