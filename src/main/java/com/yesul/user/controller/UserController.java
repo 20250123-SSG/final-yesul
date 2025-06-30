@@ -1,16 +1,21 @@
 package com.yesul.user.controller;
 
-import com.yesul.exception.handler.EntityNotFoundException;
+import java.util.Optional;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.yesul.user.model.dto.UserRegisterDto;
 import com.yesul.user.service.UserService;
+import com.yesul.exception.handler.EntityNotFoundException;
+import com.yesul.user.model.entity.User;
+
 
 @Slf4j
 @Controller
@@ -20,6 +25,7 @@ public class UserController {
 
     private final UserService userService;
 
+    // Regist Start
     @GetMapping("/regist")
     public String registForm(Model model) {
         model.addAttribute("userRegisterDto", new UserRegisterDto());
@@ -65,4 +71,28 @@ public class UserController {
             return "redirect:/user/regist";
         }
     }
+    // Regist End
+
+    // Mypage Start
+    @GetMapping("/profile")
+    public String userProfile(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            String username = authentication.getName();
+            userService.findUserByEmail(username).ifPresent(user -> model.addAttribute("user", user));
+
+            Optional<User> userOptional = userService.findUserByEmail(username);
+
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                model.addAttribute("user", user);
+            } else {
+                System.out.println("User NOT found in DB for email: " + username);
+            }
+        }
+        return "user/user-profile";
+    }
+    // Mypage End
+
 }
