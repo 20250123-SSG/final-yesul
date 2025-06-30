@@ -1,5 +1,6 @@
 package com.yesul.admin.model.entity;
 
+import com.yesul.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,16 +13,14 @@ import java.time.LocalDateTime;
 @ToString
 @Entity(name = "board")
 @Table(name = "board")
-public class Board {
+public class Board extends BaseTimeEntity {
     @Id
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "title")
+    @Column(name = "title", length = 100)
     private String title;
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
     @Column(name = "image_url")
     private String imageUrl;
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 }

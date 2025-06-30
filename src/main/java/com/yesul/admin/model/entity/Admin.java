@@ -13,7 +13,7 @@ import lombok.ToString;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Admin extends BaseTimeEntity {
 
@@ -24,7 +24,7 @@ public class Admin extends BaseTimeEntity {
     @Column(name = "login_id", length = 20, nullable = false)
     private String loginId;
 
-    @Column(name = "login_pwd", length = 20, nullable = false)
+    @Column(name = "login_pwd", length = 60, nullable = false)
     private String loginPwd;
 
 }
