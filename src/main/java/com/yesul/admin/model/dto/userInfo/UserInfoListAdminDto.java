@@ -29,6 +29,8 @@ public class UserInfoListAdminDto {
     @Column(name = "status") // 관리자 수정가능
     private Character status;
 
+    private String displayStatus;
+
     public UserInfoListAdminDto(Long id, String email, String nickname, String birthday,Character status, LocalDateTime createdAt) {
         this.id = id;
         this.email = email;
@@ -36,5 +38,11 @@ public class UserInfoListAdminDto {
         this.birthday = birthday;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    public String getFormattedBirthday() {
+        return birthday.substring(0, 4) + "-" +
+                birthday.substring(4, 6) + "-" +
+                birthday.substring(6, 8);
     }
 }
