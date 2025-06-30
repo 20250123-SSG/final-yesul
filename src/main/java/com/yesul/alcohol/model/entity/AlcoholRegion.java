@@ -1,8 +1,12 @@
 package com.yesul.alcohol.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "alcohol_region")
 public class AlcoholRegion {
 
