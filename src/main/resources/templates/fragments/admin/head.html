@@ -1,4 +1,6 @@
-<th:block th:fragment="adminHead">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="adminHead">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,12 +10,15 @@
 
     <title>YeSul - Admin Page</title>
 
-    <!-- Favicon -->
+
+    <!-- App favicon -->
     <link rel="shortcut icon" th:href="@{/asserts/img/favicon/favicon.ico}">
 
-    <!-- CSS -->
+    <!-- Icon CSS -->
     <link th:href="@{/asserts/css/vendor/materialdesignicons.min.css}" rel="stylesheet">
     <link th:href="@{/asserts/css/vendor/remixicon.css}" rel="stylesheet">
+
+    <!-- Vendor CSS -->
     <link th:href="@{/asserts/css/vendor/datatables.bootstrap5.min.css}" rel="stylesheet">
     <link th:href="@{/asserts/css/vendor/responsive.datatables.min.css}" rel="stylesheet">
     <link th:href="@{/asserts/css/vendor/daterangepicker.css}" rel="stylesheet">
@@ -21,5 +26,9 @@
     <link th:href="@{/asserts/css/vendor/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/asserts/css/vendor/apexcharts.css}" rel="stylesheet">
     <link th:href="@{/asserts/css/vendor/jquery-jvectormap-1.2.2.css}" rel="stylesheet">
+
+    <!-- Main CSS -->
     <link id="main-css" th:href="@{/asserts/css/style.css}" rel="stylesheet">
-</th:block>
+
+</head>
+</html>

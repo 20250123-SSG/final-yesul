@@ -2,7 +2,6 @@ package com.yesul.config;
 
 import java.util.List;
 
-import com.yesul.admin.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.DisabledException;
@@ -13,8 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.*;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import lombok.RequiredArgsConstructor;
 
@@ -33,10 +30,8 @@ public class SecurityConfig {
     // Social Login용 CustomLogin
     private final CustomOAuth2UserService oAuth2MemberService;
     private final UserRepository userRepository;
-
+    
     // 일반 유저 Login 조회
-    private final UserDetailsServiceImpl userDetailsService;
-
     @Bean
     public UserDetailsService userDetailsService() {
         return username ->
