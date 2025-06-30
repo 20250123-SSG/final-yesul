@@ -27,9 +27,9 @@ public class RegionService {
     private final RegionRepository regionRepository;
 
     public Page<AlcoholDto> getAlcoholsByRegion(
-            String province, String city, Pageable pageable) {
+            String province, Pageable pageable) {
 
-        Region region = regionRepository.findByProvinceAndCity(province, city)
+        Region region = regionRepository.findByProvince(province)
                 .orElseThrow(() -> new NoSuchElementException("Region not found"));
 
         // AlcoholRegion 리스트 → AlcoholDto 리스트로 변환

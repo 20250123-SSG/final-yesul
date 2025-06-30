@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface RegionRepository extends JpaRepository<Region, Long> {
-    Optional<Region> findByProvinceAndCity(String province, String city);
+    Optional<Region> findByProvince(String province);
     List<Region> findAllByProvince(String province);
     boolean existsByProvinceAndCity(String province, String city);
 }

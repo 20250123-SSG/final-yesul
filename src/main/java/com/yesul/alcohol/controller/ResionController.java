@@ -24,13 +24,12 @@ public class ResionController {
 
     private final RegionService regionService;
 
-    // GET /regions/{province}/{city}/alcohols?page=0&size=10
-    @GetMapping("/{province}/{city}/alcohols")
+    // GET /regions/{province}/alcohols?page=0&size=10
+    @GetMapping("/{province}/alcohols")
     public Page<AlcoholDto> getAlcoholsByRegion(
             @PathVariable String province,
-            @PathVariable String city,
             Pageable pageable) {
-        return regionService.getAlcoholsByRegion(province, city, pageable);
+        return regionService.getAlcoholsByRegion(province, pageable);
     }
 
 }
