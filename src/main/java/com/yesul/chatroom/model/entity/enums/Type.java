@@ -1,5 +1,5 @@
 package com.yesul.chatroom.model.entity.enums;
 
-public enum ReceiverType {
+public enum Type {
     USER, ADMIN
 }
