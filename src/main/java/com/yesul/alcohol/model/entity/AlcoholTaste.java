@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "alcohol_taste")
 @NoArgsConstructor
 public class AlcoholTaste {
+
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
