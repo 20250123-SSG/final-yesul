@@ -28,6 +28,12 @@ public class Alcohol extends BaseTimeEntity {
     @Column(nullable = false, length = 255)
     private String brand;
 
+    @Column(nullable = false, length = 50)
+    private String province;
+
+    @Column(nullable = false, length = 50)
+    private String city;
+
     @Column(nullable = false, length = 255)
     private String type;
 
@@ -82,10 +88,4 @@ public class Alcohol extends BaseTimeEntity {
 
     @Column(length = 500)
     private String image;
-
-    @OneToMany(mappedBy = "alcohol", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlcoholTaste> alcoholTastes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "alcohol", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AlcoholRegion> alcoholRegions = new ArrayList<>();
 }
