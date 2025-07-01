@@ -46,8 +46,39 @@ public class Alcohol extends BaseTimeEntity {
     @Column(name = "taste_description", columnDefinition = "TEXT")
     private String tasteDescription;
 
+    // 단맛 정도
+    @Column(name = "sweetness_level", nullable = true)
+    private Integer sweetnessLevel;
+
+    // 산미 정도
+    @Column(name = "acidity_level", nullable = true)
+    private Integer acidityLevel;
+
+    // 바디감
+    @Column(name = "body_level", nullable = true)
+    private Integer bodyLevel;
+
+    // 향의 강도
+    @Column(name = "aroma_level", nullable = true)
+    private Integer aromaLevel;
+
+    // 탄닌감
+    @Column(name = "tannin_level", nullable = true)
+    private Integer tanninLevel;
+
+    // 끝맛 지속
+    @Column(name = "finish_level", nullable = true)
+    private Integer finishLevel;
+
+    // 탄산감
+    @Column(name = "sparkling_level", nullable = true)
+    private Integer sparklingLevel;
+
     @Column(nullable = false)
     private Integer price;
+
+    @Column(name = "pairing_foods", length = 255)
+    private String pairingFoods; // 예: "흑돼지, 전복구이, 옥돔구이"
 
     @Column(length = 500)
     private String image;
