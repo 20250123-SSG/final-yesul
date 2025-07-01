@@ -20,5 +20,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/static/assets/")
                 .setCachePeriod(3600)
                 .resourceChain(true);
+
+        registry.addResourceHandler("/admin/asserts/**")
+                .addResourceLocations("classpath:/static/asserts/")
+                .setCachePeriod(3600)
+                .resourceChain(true);
     }
 }
