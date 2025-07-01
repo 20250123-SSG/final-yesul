@@ -96,7 +96,7 @@
         const formData = new FormData();
         formData.append('displayStatus', newStatus);
 
-        fetch(`/admin/userInfo/${userId}/status`, {
+        fetch(`/admin/user/${userId}/status`, {
             method: 'POST',
             body: formData
         })
