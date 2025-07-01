@@ -28,11 +28,17 @@ public class Alcohol extends BaseTimeEntity {
     @Column(nullable = false, length = 255)
     private String brand;
 
-    @Column(length = 255)
-    private String manufacturer;
+    @Column(nullable = false, length = 255)
+    private String type;
+
+    @Column(name = "volume_ml", nullable = false)
+    private Integer volumeMl;
 
     @Column(precision = 4, scale = 2, nullable = false)
     private BigDecimal abv;
+
+    @Column(name = "ingredients", length = 1024)
+    private String ingredients;  // 예: "사과, 오크칩, 이스트"
 
     @Column(columnDefinition = "TEXT")
     private String description;
