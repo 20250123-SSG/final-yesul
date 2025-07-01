@@ -21,6 +21,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .setCachePeriod(3600)
                 .resourceChain(true);
 
+        // 로컬 이미지 업로드 폴더 매핑 (e.g. /images/** → file:upload-dir/)
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("file:upload-dir/")
+                .setCachePeriod(3600)
+                .resourceChain(true);
+
         registry.addResourceHandler("/admin/asserts/**")
                 .addResourceLocations("classpath:/static/asserts/")
                 .setCachePeriod(3600)

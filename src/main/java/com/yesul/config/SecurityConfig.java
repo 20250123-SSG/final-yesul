@@ -1,5 +1,7 @@
 package com.yesul.config;
 
+import com.yesul.user.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -10,10 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.yesul.user.service.CustomOAuth2UserService;
-//import com.yesul.user.service.CustomUserDetailsService;
 
 @Configuration
 @EnableMethodSecurity
@@ -21,16 +21,16 @@ import com.yesul.user.service.CustomOAuth2UserService;
 public class SecurityConfig {
 
     private final UserDetailsService adminUserDetailsService;
-    //private final CustomUserDetailsService customUserDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService oAuth2MemberService;
 
     // @RequiredArgsConstructor 제거, @Qualifier로 직접 명시, Ambiguty 처리
     public SecurityConfig(
             @Qualifier("userDetailsServiceImpl") UserDetailsService adminUserDetailsService,
-            //CustomUserDetailsService customUserDetailsService,
+            CustomUserDetailsService customUserDetailsService,
             CustomOAuth2UserService oAuth2MemberService) {
         this.adminUserDetailsService = adminUserDetailsService;
-       // this.customUserDetailsService = customUserDetailsService;
+        this.customUserDetailsService = customUserDetailsService;
         this.oAuth2MemberService = oAuth2MemberService;
     }
 
@@ -80,12 +80,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/main", "/user/**", "/user/assets/**", "/community/**", "/error",
+                                "/user/verify-email",
+                                "/user/regist",
+                                "/user/regist-process",
+                                "/", "/main", "/user/assets/**", "/community/**", "/error",
                                 "/assets/**",
                                 "/asserts/**",
                                 "/images/**",
                                 "/login",
-                                "/login/**",
                                 "/logout",
                                 "/login/oauth2/**",
                                 "/oauth2/**",
@@ -102,12 +104,12 @@ public class SecurityConfig {
                             exception.printStackTrace();
                             response.sendRedirect("/login?error");
                         })
-                        .defaultSuccessUrl("/main")
+                        .defaultSuccessUrl("/user/profile")
                         .permitAll()
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/main")
+                        .defaultSuccessUrl("/user/profile")
                         .failureHandler((request, response, exception) -> {
                             exception.printStackTrace();
                             response.sendRedirect("/login?error");
@@ -126,4 +128,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
 }
