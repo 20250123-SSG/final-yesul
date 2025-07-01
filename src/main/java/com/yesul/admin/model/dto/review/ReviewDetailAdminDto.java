@@ -18,5 +18,5 @@ public class ReviewDetailAdminDto {
     private String userName;
     private String content;
     private List<String> images;
-    private LocalDateTime updatedAt; // 조회용
+    private LocalDateTime updatedAt;
 }
