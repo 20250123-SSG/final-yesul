@@ -1,4 +1,4 @@
-package com.yesul.admin.model.dto.board;
+package com.yesul.admin.model.dto;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @ToString
-public class BoardAdminDto {
+public class NoticeAdminDto {
     private Long id;
     private String title;
     private String content;
