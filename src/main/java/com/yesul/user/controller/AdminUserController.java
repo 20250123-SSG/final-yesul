@@ -19,7 +19,7 @@ public class AdminUserController {
 
     private final AdminUserService adminUserService;
 
-    @GetMapping("")
+    @GetMapping
     public String userInfoPage(Model model) {
 
         List<UserListDto> userInfoList = adminUserService.getAllUsersInfo();
@@ -28,7 +28,7 @@ public class AdminUserController {
         return "admin/user/user-management";
     }
 
-    @PostMapping("{userId}/status")
+    @PatchMapping("/{userId}/status")
     @ResponseBody
     public ResponseEntity<String> updateUserStatus(
             @PathVariable Long userId,
