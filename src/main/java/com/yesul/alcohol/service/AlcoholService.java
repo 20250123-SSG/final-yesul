@@ -9,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -20,15 +22,20 @@ import java.util.Map;
 public class AlcoholService {
 
     private final AlcoholRepository alcoholRepository;
+    private final ModelMapper modelMapper;  // 생성자 주입
+
+    public Page<AlcoholDetailDto> getAlcohols(Pageable pageable) {
+        return alcoholRepository.findAll(pageable)
+                .map(alcohol -> modelMapper.map(alcohol, AlcoholDetailDto.class));
+    }
 
     public AlcoholDetailDto getAlcoholDetailById(Long id) {
         Alcohol alcohol = alcoholRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 술이 존재하지 않습니다."));
 
-        ModelMapper modelMapper = new ModelMapper();
-
         return modelMapper.map(alcohol, AlcoholDetailDto.class);
     }
+
 
     public Map<String, Object> getAlcoholsAndPaging(int page) {
         Long number = 1L;
