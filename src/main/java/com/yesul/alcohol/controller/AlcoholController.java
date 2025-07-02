@@ -1,5 +1,6 @@
 package com.yesul.alcohol.controller;
 
+import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
 import com.yesul.alcohol.service.AlcoholService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,11 @@ import java.util.Map;
 public class AlcoholController {
 
     private final AlcoholService alcoholService;
+
+    @GetMapping("/{id}")
+    public AlcoholDetailDto getAlcoholDetail(@PathVariable Long id) {
+        return alcoholService.getAlcoholDetailById(id);
+    }
 
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> list(int page){
