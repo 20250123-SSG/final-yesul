@@ -63,14 +63,12 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         MessageRequestDto message = objectMapper.readValue(payload, MessageRequestDto.class);
 
         MessageResponseDto messageResponseDto = messageService.saveMessage(message, message.getUserId());
-        log.info("메시지 저장성공");
 
         // 수신자 세션 찾아서 전달
         WebSocketSession receiverSession = sessions.get(messageResponseDto.getReceiverId());
         if (receiverSession != null && receiverSession.isOpen()) {
             receiverSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
         } else {
-            System.out.println("수신자 없음");
             log.info(" 수신자 오프라인: {}", messageResponseDto.getReceiverId());
             // TODO: Push 알림 처리
         }
