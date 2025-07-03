@@ -11,9 +11,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.yesul.utill.ImageUpload;
+import com.yesul.exception.handler.UpdateFailedException;
+import com.yesul.exception.handler.UserNotFoundException;
+import com.yesul.user.model.dto.UserUpdateDto;
 import com.yesul.exception.handler.EntityNotFoundException;
 import com.yesul.user.model.dto.UserRegisterDto;
 import com.yesul.user.model.entity.User;
@@ -27,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
+    private final ImageUpload imageUpload;
+
 
     /**
      * 일반 사용자 회원가입 처리 (이메일 인증 대기 상태로 저장 및 인증 메일 발송)
@@ -175,5 +182,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    /**
+     * 사용자 프로필을 업데이트하는 메서드
+     * @param userId 업데이트할 사용자의 ID
+     * @param userUpdateDto 업데이트할 데이터를 담은 DTO
+     */
+    @Override
+    @Transactional
+    public void updateUserProfile(Long userId, UserUpdateDto userUpdateDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
+
+        user.setName(userUpdateDto.getName());
+        user.setNickname(userUpdateDto.getNickname());
+        user.setBirthday(userUpdateDto.getBirthday());
+        user.setAddress(userUpdateDto.getAddress());
+
+        MultipartFile profileImageFile = userUpdateDto.getProfileImage();
+        if (profileImageFile != null && !profileImageFile.isEmpty()) {
+            String imageUrl = imageUpload.uploadAndGetUrl("profile", profileImageFile);
+            user.setProfile(imageUrl);
+        } else {
+            user.setProfile(userUpdateDto.getProfile());
+        }
+
+        if (userUpdateDto.getNewPassword() != null && !userUpdateDto.getNewPassword().isEmpty()) {
+            if (!userUpdateDto.getNewPassword().equals(userUpdateDto.getConfirmPassword())) {
+                throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            }
+            user.encodePassword(passwordEncoder);
+             user.setPassword(passwordEncoder.encode(userUpdateDto.getNewPassword()));
+        }
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new UpdateFailedException("사용자 프로필 업데이트에 실패했습니다.");
+        }
     }
 }

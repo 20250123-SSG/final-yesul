@@ -3,6 +3,7 @@ package com.yesul.user.service;
 import java.util.Optional;
 
 import com.yesul.user.model.dto.UserRegisterDto;
+import com.yesul.user.model.dto.UserUpdateDto;
 import com.yesul.user.model.entity.User;
 
 
@@ -49,4 +50,6 @@ public interface UserService {
      * @return User 엔티티 (Optional)
      */
     Optional<User> findUserByEmail(String email);
+
+    void updateUserProfile(Long userId, UserUpdateDto userUpdateDto);
 }

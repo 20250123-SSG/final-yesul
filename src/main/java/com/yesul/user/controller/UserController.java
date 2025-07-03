@@ -1,17 +1,23 @@
 package com.yesul.user.controller;
 
-import com.yesul.user.service.RegistrationAsyncService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.yesul.exception.handler.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
+import com.yesul.exception.handler.UserNotFoundException;
+import com.yesul.user.model.dto.UserUpdateDto;
+import com.yesul.user.service.PrincipalDetails;
+import com.yesul.user.service.RegistrationAsyncService;
 import com.yesul.user.model.dto.UserRegisterDto;
 import com.yesul.user.service.UserService;
 
@@ -25,7 +31,6 @@ public class UserController {
     private final RegistrationAsyncService asyncRegService;
 
 
-    // Regist Start
     @GetMapping("/regist")
     public String registForm(Model model) {
         model.addAttribute("userRegisterDto", new UserRegisterDto());
@@ -101,6 +106,55 @@ public class UserController {
         }
         return "user/user-profile";
     }
-    // Mypage End
+
+    @GetMapping("/profile/edit")
+    public String userProfileEdit(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+            String username = authentication.getName();
+            userService.findUserByEmail(username).ifPresent(user -> model.addAttribute("user", user));
+        }
+        return "user/user-edit";
+    }
+    @PostMapping("/profile/update")
+    public String updateUserProfile(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Validated(UserUpdateDto.ValidationGroups.Update.class) @ModelAttribute("user") UserUpdateDto userUpdateDto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (principalDetails == null) {
+            return "redirect:/user/login";
+        }
+
+        // 유효성 검사 실패 시
+        if (bindingResult.hasErrors()) {
+            log.error("유효성 검사 오류: {}", bindingResult.getAllErrors());
+            // 오류가 있으면 다시 폼 페이지로 돌아가 오류 메시지를 표시
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+            redirectAttributes.addFlashAttribute("user", userUpdateDto);
+            return "redirect:/user/profile/edit";
+        }
+
+        Long userId = principalDetails.getUser().getId();
+
+        try {
+            userService.updateUserProfile(userId, userUpdateDto);
+            redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+        } catch (UserNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/user/profile/edit";
+        } catch (IllegalArgumentException e) {
+            // 비밀번호 불일치 등 서비스 레이어에서 발생하는 유효성 오류 처리
+            bindingResult.rejectValue("newPassword", "passwordMismatch", e.getMessage());
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
+            redirectAttributes.addFlashAttribute("user", userUpdateDto);
+            return "redirect:/user/profile/edit";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+            return "redirect:/user/profile/edit";
+        }
+        return "redirect:/user/profile";
+    }
 
 }
