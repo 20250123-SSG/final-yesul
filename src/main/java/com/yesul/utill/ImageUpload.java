@@ -24,7 +24,7 @@ public class ImageUpload {
     private String bucket;
 
     public String uploadAndGetUrl(String domain, MultipartFile file) {
-        String key = String.format("%s/image/%s_%s",
+        String key = String.format("%s/image/%s",
                 domain,
                 file.getOriginalFilename());
         try {
