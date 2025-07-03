@@ -63,6 +63,7 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         MessageRequestDto message = objectMapper.readValue(payload, MessageRequestDto.class);
 
         MessageResponseDto messageResponseDto = messageService.saveMessage(message, message.getUserId());
+        log.info("메시지 저장성공");
 
         // 수신자 세션 찾아서 전달
         WebSocketSession receiverSession = sessions.get(messageResponseDto.getReceiverId());
