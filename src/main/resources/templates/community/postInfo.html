@@ -74,7 +74,7 @@
                 <a th:href="@{/community/{board}/{id}(board='info', id=${post.id})}" style="text-decoration: none; color: inherit;">
                     <div class="card h-100">
                         <img class="card-img-top"
-                             th:src="${post.thumbnail != null and !post.thumbnail.isEmpty() ? post.thumbnail : '/assets/img/default.jpg'}"
+                             th:src="${post.thumbnail != null and !post.thumbnail.isEmpty() ? post.thumbnail : '/assets/img/community/mainLogo.jpg'}"
                              alt="썸네일 이미지"
                              style="height: 200px; object-fit: cover;">
                         <div class="card-body">

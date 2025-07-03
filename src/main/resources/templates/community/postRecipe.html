@@ -40,7 +40,7 @@
                 <div class="oh-card">
                     <div class="oh-card-img-wrap" style="position:relative;">
                         <img class="oh-card-img"
-                             th:src="${post.thumbnail != null and !post.thumbnail.isEmpty() ? post.thumbnail : '/assets/img/default.jpg'}"
+                             th:src="${post.thumbnail != null and !post.thumbnail.isEmpty() ? post.thumbnail : '/assets/img/community/mainLogo.jpg'}"
                              alt="썸네일 이미지">
                         <span class="oh-like-btn"
                               th:classappend="${post.likedByMe != null and post.likedByMe} ? 'liked' : ''"
