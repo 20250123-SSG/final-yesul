@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/admin/head :: adminHead"></head>
+<body>
+<main class="wrapper sb-default ecom">
+    <!-- 헤더 / 사이드바 -->
+    <div th:replace="fragments/admin/header :: adminHeader"></div>
+    <div th:replace="fragments/admin/sidebar :: adminSidebar"></div>
+    <div class="gi-main-content">
+        <div class="container-fluid">
+            <!-- Page title & breadcrumb -->
+            <div class="gi-page-title gi-page-title-2">
+                <div class="gi-breadcrumb">
+                    <h5>Notice</h5>
+                    <ul>
+                        <li>공지사항</li>
+                        <li>목록조회</li>
+                    </ul>
+                </div>
+            </div>
+            <form th:action="@{/admin/notice/regist}" method="post"> <!--enctype="multipart/form-data"-->
+            <div class="mb-3">
+                <label for="title" class="form-label">제목</label>
+                <input type="text" name="title" th:value="${noticeDto.title}" class="form-control"  id="title" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">내용</label>
+                <textarea name="content" th:text="${noticeDto.content}" class="form-control" id="content" rows="6" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="imageUrl" class="form-label">이미지 URL (선택)</label>
+                <input type="text" name="imageUrl" th:text="${noticeDto.imageUrl}" class="form-control" id="imageUrl" />
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">등록</button>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <!-- 푸터 및 스크립트 -->
+    <div th:replace="fragments/admin/footer :: adminFooter"></div>
+    <div th:replace="fragments/admin/script :: adminScripts"></div>
+</main>
+</body>
+</html>
