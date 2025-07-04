@@ -40,13 +40,13 @@ public class User extends BaseTimeEntity {
     @Column(name = "address", length = 100)
     private String address;
 
-    @Column(name = "type", nullable = false) // '1': 일반, '2': 소셜
+    @Column(name = "type", nullable = false)
     private Character type;
 
-    @Column(name = "status", nullable = false, length = 1) // '1': 인증, '2': 미인증, '3': 탈퇴
+    @Column(name = "status", nullable = false, length = 1)
     private Character status;
 
-    @Column(name = "profile", columnDefinition = "TEXT") // img_url
+    @Column(name = "profile", columnDefinition = "TEXT")
     private String profile;
 
     @Column(name = "provider")
@@ -71,14 +71,12 @@ public class User extends BaseTimeEntity {
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
     }
 
-    // 이메일 인증 완료 처리
     public void completeSignUp() {
-        this.status = '1'; // 활성 상태로 변경
-        this.emailCheckToken = null; // 토큰 삭제
-        this.emailCheckTokenGeneratedAt = null; // 토큰 생성 시간 삭제
+        this.status = '1';
+        this.emailCheckToken = null;
+        this.emailCheckTokenGeneratedAt = null;
     }
 
-    // 사용자 활성화 상태 변경
     public void setActivatedStatus(char status) {
         this.status = status;
     }
@@ -87,18 +85,16 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    // 이메일 업데이트 메서드
     public void updateEmail(String email) {
         this.email = email;
     }
 
-    // 프로필 이미지 URL 업데이트 메서드 (필요하다면)
     public void updateProfile(String profile) {
         this.profile = profile;
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude // 양방향 연관관계에서 ToString 순환 참조 방지
+    @ToString.Exclude
     private List<Like> likes = new ArrayList<>();
 
     @Builder
