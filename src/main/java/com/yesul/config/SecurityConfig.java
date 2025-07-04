@@ -83,6 +83,7 @@ public class SecurityConfig {
                                 "/user/verify-email",
                                 "/user/regist",
                                 "/user/regist-process",
+                                "/user/user-regist-mail",
                                 "/", "/main", "/user/assets/**", "/community/**", "/error",
                                 "/assets/**",
                                 "/asserts/**",
@@ -91,7 +92,8 @@ public class SecurityConfig {
                                 "/logout",
                                 "/login/oauth2/**",
                                 "/oauth2/**",
-                                "/post-images/upload"
+                                "/post-images/upload",
+                                "/alcohols/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
