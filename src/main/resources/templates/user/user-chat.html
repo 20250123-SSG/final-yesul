@@ -1,225 +1,222 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:insert="~{fragments/admin/head :: adminHead}">
+<head>
   <meta charset="UTF-8" />
-  <title>User Chat</title>
-
-  <!-- Vendor CSS -->
-  <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
-  <link rel="stylesheet" href="/assets/css/vendor/remixicon.css">
-
+  <title>Chatroom</title>
+  <link rel="stylesheet" th:href="@{/assets/css/plugins/bootstrap.css}">
+  <link rel="stylesheet" th:href="@{/assets/css/style.css}">
   <style>
-    /* (기존 스타일 블록 전부 동일) */
-    body {
-      background: #f8f9fa;
-      font-family: Arial, sans-serif;
+    body { background: #f5f6fa; }
+    .chat-container {
+      max-width: 480px; margin: 32px auto; background: #fff;
+      border-radius: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      display: flex; flex-direction: column; min-height: 600px;
     }
-    #chat-message-list {
-      height: 500px;
-      overflow-y: auto;
-      padding: 20px;
-      background: #fff;
-      border: none;
+    .chat-header { display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px 24px; border-bottom: 1.5px solid #ececec;
+      border-top-left-radius: 18px; border-top-right-radius: 18px; background: #f9fafb;
     }
-    #messageList {
-      padding: 0;
-      margin: 0;
-      list-style: none;
+    .chat-header img { width: 44px; height: 44px; border-radius: 50%;
+      margin-right: 12px; object-fit: cover; background: #eee; }
+    .chat-header .name { font-weight: bold; font-size: 1.1rem; }
+    .chat-header .status { font-size: 0.98rem; color: #4caf50; margin-left: 8px; }
+    .chat-header .back-btn { background: none; border: none; cursor: pointer; }
+
+    .chat-history {
+      flex: 1 1 0; padding: 24px 16px 12px 16px; background: #f5f6fa;
+      overflow-y: auto; display: flex; flex-direction: column;
     }
-    .message-row {
-      display: flex;
-      margin: 8px 0;
-      max-width: 100%;
+    .chat-history ul { padding: 0; margin: 0; list-style: none; }
+    .chat-history li { display: flex; align-items: flex-end; margin-bottom: 18px; }
+    .chat-history li.my-message { flex-direction: row; }
+    .chat-profile { width: 36px; height: 36px; border-radius: 50%;
+      margin: 0 8px; object-fit: cover; background: #eee; }
+    .chat-content { max-width: 70%; display: flex; flex-direction: column; align-items: flex-start; }
+    .chat-bubble {
+      position: relative; display: inline-block; padding: 14px 18px;
+      border-radius: 16px; font-size: 15px; line-height: 1.6; word-break: break-word;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
-    .my-message { justify-content: flex-end; }
-    .other-message { justify-content: flex-start; }
-    .bubble {
-      padding: 12px 16px;
-      border-radius: 18px;
-      max-width: 60%;
-      word-wrap: break-word;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-    .my-message .bubble {
-      background: #007bff;
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-    .other-message .bubble {
-      background: #f1f0f0;
-      color: #000;
-      border-bottom-left-radius: 4px;
-    }
-    .message-input {
-      padding: 15px;
-      background: #fff;
-      border-top: 1px solid #ddd;
-    }
-    .wrap-send {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .wrap-send input[type="text"] {
-      flex: 1;
-      border: none;
-      border-radius: 20px;
-      padding: 12px 20px;
-      background: #f0f0f0;
-      font-size: 15px;
-    }
-    .wrap-send input[type="text"]:focus {
-      outline: none;
-    }
-    .wrap-send .send-btn {
-      border: none;
-      background: #007bff;
-      color: #fff;
-      padding: 10px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .wrap-send .send-btn i {
-      font-size: 18px;
+    .chat-history li.my-message .chat-bubble { background: #686e73; color: #fff; }
+    .chat-history li.other-message .chat-bubble { background: #fff; color: #222; border: 1px solid #ececec; }
+
+    .chat-time { font-size: 0.82rem; color: #b0b0b0; margin-top: 2px; display: none; }
+    .chat-time.show { display: block; }
+
+    .date-separator {
+      width: 100%;
+      text-align: center; font-size: 0.85rem; color: #999;
+      margin: 12px 0;
     }
 
-    /* ===== 강제 오버라이드: 말풍선 무조건 보이게 ===== */
-    #messageList .bubble {
-      display: inline-block !important;
-      background-color: #f1f0f0 !important;
-      color: #000 !important;
-      padding: 12px 16px !important;
-      border-radius: 18px !important;
-      max-width: 60% !important;
-      word-wrap: break-word !important;
-      font-size: 15px !important;
-      line-height: 1.4 !important;
+    .chat-input-area { padding: 10px 12px; background: #fff;
+      border-top: 1.5px solid #ececec; border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; }
+    .chat-input-area .input-group { display: flex; }
+    .chat-input-area textarea {
+      resize: none; overflow: hidden; border-radius: 18px 0 0 18px;
+      height: 56px; font-size: 16px; background: #f5f6fa;
+      border: 1.5px solid #ececec; border-right: none; flex: 1; padding: 13px 20px;
     }
-    #messageList .my-message .bubble {
-      background-color: #007bff !important;
-      color: #fff      !important;
+    .chat-input-area .btn {
+      min-width: 80px; border-radius: 0 18px 18px 0; font-weight: bold;
+      background: #333; color: #fff; border: 1.5px solid #ececec; border-left: none;
+      font-size: 17px; display: flex; align-items: center; justify-content: center;
+      transition: background .2s; padding: 0 10px; height: 56px;
     }
-    #messageList .other-message .bubble {
-      background-color: #f1f0f0 !important;
-      color: #000       !important;
-    }
-    /* ============================================= */
+    .chat-input-area .btn:hover { background: #222; }
   </style>
 </head>
-
 <body>
-<main class="wrapper sb-default ecom">
+<div th:replace="fragments/user/header :: header"></div>
 
-  <!-- 공통 레이아웃 -->
-  <div th:replace="~{fragments/admin/header :: adminHeader}"></div>
-  <div th:replace="~{fragments/admin/sidebar :: adminSidebar}"></div>
-  <div th:replace="~{fragments/admin/notify-sidebar :: adminNotifySidebar}"></div>
-
-  <!-- 채팅방 컨텐츠 -->
-  <div class="gi-main-content">
-    <div class="container-fluid">
-      <div class="gi-chatapp">
-        <div class="gi-card chatapp-card">
-          <div id="fx_chat">
-            <div class="content">
-
-              <!-- 상대방 프로필 -->
-              <div class="contact-profile">
-                <div class="user-detail">
-                  <img src="/assets/img/user/2.jpg" alt="user">
-                  <div class="name">
-                    <p th:text="${chatPartnerName}">채팅 상대 이름</p>
-                    <span class="online">Online</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 메시지 리스트 -->
-              <div class="messages" id="chat-message-list">
-                <ul id="messageList">
-                  <li class="message-row"
-                      th:each="msg : ${messages}"
-                      th:classappend="${msg.senderType.name()} == 'USER' ? ' my-message' : ' other-message'">
-                    <div class="bubble" th:text="${msg.messageContext}">
-                      메시지 내용
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- 입력창 -->
-              <div class="message-input">
-                <div class="wrap-send">
-                  <input id="messageInput" type="text" placeholder="메시지를 입력하세요">
-                  <button type="button" onclick="sendMessage()" class="submit send-btn">
-                    <i class="ri-send-plane-line"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="profile">
+      <img src="/assets/img/user/2.jpg" alt="user">
+      <div>
+        <span class="name" th:text="${chatPartnerName}">채팅 상대 이름</span>
+        <span class="status">● Online</span>
       </div>
     </div>
+    <button class="back-btn" onclick="history.back()" aria-label="뒤로가기">
+      ←
+    </button>
   </div>
 
-  <!-- Footer / Scripts -->
-  <div th:replace="~{fragments/admin/footer :: adminFooter}"></div>
-  <div th:replace="~{fragments/admin/script :: adminScripts}"></div>
+  <div class="chat-history" id="chat-message-list">
+    <ul id="messageList">
+      <li th:each="msg : ${messages}"
+          th:classappend="${msg.senderType.name()} == 'USER'? 'my-message':'other-message'"
+          th:attr="data-date=${#temporals.format(msg.createdAt,'yyyy-MM-dd')}">
+        <img class="chat-profile" th:if="${msg.senderType.name()} != 'USER'"
+             th:src="${msg.senderProfileUrl != null ? msg.senderProfileUrl : '/assets/img/user/2.jpg'}" alt="프로필">
+        <div class="chat-content">
+          <div class="chat-bubble" th:text="${msg.messageContext}">메시지 내용</div>
+          <div class="chat-time" th:text="${#temporals.format(msg.createdAt,'HH:mm')}">17:56</div>
+        </div>
+      </li>
+    </ul>
+  </div>
 
-  <!-- Hidden Field -->
-  <input type="hidden" id="chatRoomId" th:value="${roomId}">
+  <div class="chat-input-area">
+    <div class="input-group">
+      <textarea id="messageInput" placeholder="메시지를 입력하세요"></textarea>
+      <button type="button" onclick="sendMessage()" class="btn">전송</button>
+    </div>
+  </div>
+</div>
 
-  <!-- WebSocket + JS -->
-  <script th:inline="javascript">
-    const socket       = new WebSocket("ws://" + window.location.host + "/ws/chat");
-    const messageInput = document.getElementById("messageInput");
-    const chatRoomId   = document.getElementById("chatRoomId").value;
-    const chatList     = document.getElementById("chat-message-list");
+<div th:replace="fragments/user/footer :: footer"></div>
+<input type="hidden" id="chatRoomId" th:value="${roomId}">
 
-    socket.onopen = () => console.log("✅ WebSocket 연결 성공!");
+<script th:inline="javascript">
+  const socket = new WebSocket(`ws://${window.location.host}/ws/chat`);
+  const messageInput = document.getElementById('messageInput');
+  const listEl = document.getElementById('messageList');
+  const chatList = document.getElementById('chat-message-list');
+  const roomId = document.getElementById('chatRoomId').value;
 
-    socket.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      appendMessage(msg.messageContext, msg.senderType);
-      scrollToBottom();
-    };
+  socket.onopen = () => console.log('✅ 연결 성공!');
+  socket.onmessage = event => {
+    const msg = JSON.parse(event.data);
+    appendMessage(msg);
+    scrollToBottom();
+  };
 
-    function sendMessage() {
-      const message = messageInput.value.trim();
-      if (!message) return;
-      socket.send(JSON.stringify({
-        chatRoomId,
-        senderType: "USER",
-        messageContext: message,
-        messageType: "TEXT"
-      }));
-      messageInput.value = "";
+  function appendMessage({ messageContext, senderType, createdAt }) {
+    const dateStr = createdAt.split('T')[0];
+    const lastItem = [...listEl.children].reverse().find(li => !li.classList.contains('date-separator'));
+    const lastDate = lastItem?.getAttribute('data-date');
+
+    if (lastDate !== dateStr) {
+      const sep = document.createElement('li');
+      sep.className = 'date-separator';
+      sep.textContent = formatDateReadable(dateStr);
+      listEl.append(sep);
     }
 
-    window.addEventListener("keyup", e => {
-      if (e.key === "Enter" && !e.shiftKey && document.activeElement === messageInput) {
-        e.preventDefault();
-        sendMessage();
+    const li = document.createElement('li');
+    li.className = senderType === 'USER' ? 'my-message' : 'other-message';
+    li.setAttribute('data-date', dateStr);
+    const content = document.createElement('div');
+    content.className = 'chat-content';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    bubble.textContent = messageContext;
+
+    const time = document.createElement('div');
+    time.className = 'chat-time';
+    time.textContent = formatTime(createdAt);
+
+    content.append(bubble, time);
+    li.append(content);
+    listEl.append(li);
+  }
+
+  function formatTime(iso) {
+    const d = new Date(iso);
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  }
+
+  function formatDateReadable(dateStr) {
+    const d = new Date(dateStr);
+    return `${d.getMonth() + 1}월 ${d.getDate()}일 (${['일','월','화','수','목','금','토'][d.getDay()]})`;
+  }
+
+  function insertDateSeparators() {
+    let prevDate = null;
+    const items = [...listEl.children].filter(el => !el.classList.contains('date-separator'));
+    items.forEach(el => {
+      const currDate = el.getAttribute('data-date');
+      if (currDate !== prevDate) {
+        const sep = document.createElement('li');
+        sep.className = 'date-separator';
+        sep.textContent = formatDateReadable(currDate);
+        listEl.insertBefore(sep, el);
+        prevDate = currDate;
       }
     });
+  }
 
-    function appendMessage(content, senderType) {
-      const li = document.createElement("li");
-      li.className = 'message-row ' + ((senderType||'').toUpperCase()==='USER' ? 'my-message' : 'other-message');
-      const bubble = document.createElement("div");
-      bubble.className = 'bubble';
-      bubble.textContent = content;
-      li.appendChild(bubble);
-      document.getElementById("messageList").appendChild(li);
-    }
+  function adjustTimestamps() {
+    const items = [...listEl.children].filter(el => !el.classList.contains('date-separator'));
+    items.forEach((li, idx) => {
+      const timeEl = li.querySelector('.chat-time');
+      if (!timeEl) return;
+      const curr = timeEl.textContent;
+      const next = items[idx + 1]?.querySelector('.chat-time')?.textContent;
+      timeEl.classList.toggle('show', curr !== next);
+    });
+  }
 
-    function scrollToBottom() {
-      chatList.scrollTop = chatList.scrollHeight;
+  function scrollToBottom() {
+    insertDateSeparators();
+    adjustTimestamps();
+    chatList.scrollTop = chatList.scrollHeight;
+  }
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text) return;
+    socket.send(JSON.stringify({
+      chatRoomId: roomId,
+      senderType: 'USER',
+      messageContext: text,
+      createdAt: new Date().toISOString()
+    }));
+    messageInput.value = '';
+    messageInput.focus();
+  }
+
+  messageInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.repeat) {
+      e.preventDefault();
+      sendMessage();
     }
-  </script>
-</main>
+  });
+
+  document.addEventListener('DOMContentLoaded', scrollToBottom);
+</script>
 </body>
 </html>
