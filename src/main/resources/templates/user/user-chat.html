@@ -54,14 +54,23 @@
       border-top: 1.5px solid #ececec;
     }
     .chat-input-area .input-group { display: flex; align-items: stretch; }
+    .chat-input-area .upload-btn {
+      min-width: 56px;
+      border-radius: 18px 0 0 18px;
+      font-weight: bold;
+      background: #333; color: #fff;
+      border: 1.5px solid #ececec; border-right: none;
+      font-size: 20px; display: flex; align-items: center; justify-content: center;
+    }
     .chat-input-area textarea {
-      resize: none; border-radius: 18px 0 0 18px; height: 56px;
-      font-size: 16px; background: #f5f6fa; border: 1.5px solid #ececec; border-right: none;
+      resize: none; border-radius: 0; height: 56px;
+      font-size: 16px; background: #f5f6fa; border: 1.5px solid #ececec; border-left: none; border-right: none;
       flex: 1 1 auto; padding: 13px 20px;
     }
-    .chat-input-area .btn {
+    .chat-input-area .btn.send-btn {
       min-width: 80px; border-radius: 0 18px 18px 0;
-      font-weight: bold; background: #333; color: #fff; border: 1.5px solid #ececec; border-left: none;
+      font-weight: bold; background: #333; color: #fff;
+      border: 1.5px solid #ececec; border-left: none;
       font-size: 17px; display: flex; align-items: center; justify-content: center;
     }
   </style>
@@ -87,7 +96,7 @@
         <img class="chat-profile" th:if="${msg.senderType.name()} != 'USER'" th:src="${msg.senderProfileUrl}" alt="프로필">
         <div class="chat-content">
           <div class="chat-meta">
-            <span class="sender" th:if="${msg.senderType.name()} != 'USER'" th:text="${msg.senderName}">상대</span>
+            <span class="sender" th:if="${msg.senderType.name()} != 'USER'" th:text="${msg.senderName}"></span>
           </div>
           <div class="chat-bubble" th:text="${msg.messageContext}">메시지</div>
           <div class="chat-time" th:text="${#temporals.format(msg.createdAt, 'HH:mm')}">17:56</div>
@@ -98,8 +107,10 @@
 
   <div class="chat-input-area">
     <div class="input-group">
-      <textarea id="messageInput" class="form-control" placeholder="메시지를 입력하세요" rows="2"></textarea>
-      <button type="button" onclick="sendMessage()" class="btn">전송</button>
+      <button type="button" class="btn upload-btn" onclick="document.getElementById('imageInput').click()">＋</button>
+      <textarea id="messageInput" class="form-control" placeholder="메시지를 입력하세요"></textarea>
+      <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="uploadImage(this)">
+      <button type="button" onclick="sendMessage()" class="btn send-btn">전송</button>
     </div>
   </div>
 </div>
@@ -116,12 +127,14 @@
   socket.onopen = () => console.log("✅ WebSocket 연결 성공!");
   socket.onmessage = (event) => {
     const msg = JSON.parse(event.data);
-    appendMessage(msg.messageContext, msg.senderType, msg.createdAt, msg.senderName, msg.senderProfileUrl);
+    appendMessage(msg.messageContext, msg.senderType, msg.createdAt, msg.senderName, msg.senderProfileUrl, msg.messageType);
+    adjustTimestamps();
     scrollToBottom();
   };
 
   window.addEventListener("DOMContentLoaded", () => {
     restoreTempMessage();
+    adjustTimestamps();
     scrollToBottom();
   });
 
@@ -162,7 +175,31 @@
     fetch(`/chatroom/temp-message?chatRoomId=${chatRoomId}`, { method: "DELETE", credentials: "include" });
   }
 
-  function appendMessage(content, senderType, createdAt, senderName, senderProfileUrl) {
+  function uploadImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("/chat-images/upload", {
+      method: "POST",
+      credentials: "include",
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        socket.send(JSON.stringify({
+          chatRoomId,
+          senderType: "USER",
+          messageContext: data.imageUrl,
+          messageType: "IMAGE"
+        }));
+      })
+      .catch(console.error);
+  }
+
+  function appendMessage(content, senderType, createdAt, senderName, senderProfileUrl, messageType) {
     const li = document.createElement("li");
     const isMine = (senderType || '').toUpperCase() === 'USER';
     li.className = isMine ? 'my-message' : 'other-message';
@@ -183,14 +220,23 @@
       meta.className = 'chat-meta';
       const senderSpan = document.createElement("span");
       senderSpan.className = 'sender';
-      senderSpan.textContent = senderName || '상대';
+      senderSpan.textContent = senderName || '';  // ✅ 기본값 제거
       meta.appendChild(senderSpan);
       contentDiv.appendChild(meta);
     }
 
     const bubble = document.createElement("div");
     bubble.className = 'chat-bubble';
-    bubble.textContent = content;
+
+    if (messageType === 'IMAGE') {
+      const imgTag = document.createElement('img');
+      imgTag.src = content;
+      imgTag.style.maxWidth = '100%';
+      bubble.appendChild(imgTag);
+    } else {
+      bubble.textContent = content;
+    }
+
     contentDiv.appendChild(bubble);
 
     const timeDiv = document.createElement("div");
@@ -200,6 +246,9 @@
 
     li.appendChild(contentDiv);
     document.getElementById("messageList").appendChild(li);
+
+    adjustTimestamps();
+    scrollToBottom();
   }
 
   function formatTime(isoString) {
@@ -227,7 +276,6 @@
   }
 
   function scrollToBottom() {
-    adjustTimestamps();
     chatList.scrollTop = chatList.scrollHeight;
   }
 </script>
