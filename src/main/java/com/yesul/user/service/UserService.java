@@ -52,4 +52,6 @@ public interface UserService {
     Optional<User> findUserByEmail(String email);
 
     void updateUserProfile(Long userId, UserUpdateDto userUpdateDto);
+
+    void changePassword(Long userId, String newPassword);
 }

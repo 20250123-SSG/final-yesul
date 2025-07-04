@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
     private final JavaMailSender javaMailSender;
     private final ImageUpload imageUpload;
 
-
     /**
      * 일반 사용자 회원가입 처리 (이메일 인증 대기 상태로 저장 및 인증 메일 발송)
      *
@@ -220,5 +219,14 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new UpdateFailedException("사용자 프로필 업데이트에 실패했습니다.");
         }
+    }
+
+    @Override
+    public void changePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

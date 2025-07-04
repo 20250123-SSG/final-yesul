@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.yesul.user.model.dto.UserPasswordResetDto;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.model.dto.UserUpdateDto;
 import com.yesul.user.service.PrincipalDetails;
@@ -30,7 +31,7 @@ public class UserController {
     private final UserService userService;
     private final RegistrationAsyncService asyncRegService;
 
-
+    // Regist Start
     // 회원가입 페이지 이동
     @GetMapping("/regist")
     public String registForm(Model model) {
@@ -151,6 +152,55 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
             return "redirect:/user/profile/edit";
         }
+        return "redirect:/user/profile";
+    }
+
+    @GetMapping("/user-reset-password")
+    public String resetPasswordForm(Model model) {
+        model.addAttribute("passwordResetDto", new UserPasswordResetDto());
+        return "user/reset-password";
+    }
+
+    @PostMapping("/user/reset-password")
+    public String resetPasswordProcess(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Validated @ModelAttribute("passwordResetDto") UserPasswordResetDto dto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (principalDetails == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute(
+                    "org.springframework.validation.BindingResult.passwordResetDto",
+                    bindingResult
+            );
+            redirectAttributes.addFlashAttribute("passwordResetDto", dto);
+            return "redirect:/user/user-reset-password";
+        }
+
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            bindingResult.rejectValue("confirmPassword", "passwordMismatch", "비밀번호가 일치하지 않습니다.");
+            redirectAttributes.addFlashAttribute(
+                    "org.springframework.validation.BindingResult.passwordResetDto",
+                    bindingResult
+            );
+            redirectAttributes.addFlashAttribute("passwordResetDto", dto);
+            return "redirect:/user/user-reset-password";
+        }
+
+        Long userId = principalDetails.getUser().getId();
+        try {
+            userService.changePassword(userId, dto.getNewPassword());
+            redirectAttributes.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "비밀번호 변경 중 오류가 발생했습니다.");
+            return "redirect:/user/user-reset-password";
+        }
+
         return "redirect:/user/profile";
     }
 

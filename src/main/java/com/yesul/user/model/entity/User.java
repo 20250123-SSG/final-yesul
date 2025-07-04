@@ -61,6 +61,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "email_check_token_generated_at")
     private LocalDateTime emailCheckTokenGeneratedAt;
 
+    @Column(name = "description")
+    private String description;
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
@@ -98,7 +101,7 @@ public class User extends BaseTimeEntity {
     private List<Like> likes = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String password, String name, String nickname, String birthday, String address, Character type, Character status, String profile, String provider, String providerId) {
+    public User(Long id, String email, String password, String name, String nickname, String birthday, String address, Character type, Character status, String profile, String provider, String providerId, String description) {
         this.id = id;
         this.password = password;
         this.name = name;
@@ -111,5 +114,6 @@ public class User extends BaseTimeEntity {
         this.profile = profile;
         this.provider = provider;
         this.providerId = providerId;
+        this.description = description;
     }
 }
