@@ -22,6 +22,7 @@ import com.yesul.user.model.dto.UserUpdateDto;
 import com.yesul.user.service.PrincipalDetails;
 import com.yesul.user.service.RegistrationAsyncService;
 import com.yesul.user.model.dto.UserRegisterDto;
+import com.yesul.user.model.dto.UserResignDto;
 import com.yesul.user.service.UserService;
 
 @Slf4j
@@ -208,4 +209,45 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
+    @GetMapping("/resign")
+    public String resignForm(Model model) {
+        model.addAttribute("userResignDto", new UserResignDto());
+        return "user/resign";
+    }
+
+    // 2) POST: 탈퇴 처리
+    @PostMapping("/resign")
+    public String resignProcess(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Validated @ModelAttribute("userResignDto") UserResignDto dto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes) {
+
+        if (principalDetails == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
+
+        // 폼 검증
+        if (bindingResult.hasErrors()) {
+            return "user/resign";
+        }
+
+        try {
+            // Service에서 비밀번호 확인 및 type 변경
+            userService.resignUser(
+                    principalDetails.getUser().getId(),
+                    dto.getCurrentPassword()
+            );
+            // 정상 탈퇴하면 Spring Security 로그아웃 경로로 리다이렉트
+            return "redirect:/logout";
+        } catch (IllegalArgumentException e) {
+            // 비밀번호 불일치 등
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/user/resign";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "탈퇴 중 오류가 발생했습니다.");
+            return "redirect:/user/resign";
+        }
+    }
 }
