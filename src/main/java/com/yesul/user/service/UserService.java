@@ -54,4 +54,17 @@ public interface UserService {
     void updateUserProfile(Long userId, UserUpdateDto userUpdateDto);
 
     void changePassword(Long userId, String newPassword);
+
+    /**
+     * 회원 탈퇴 처리
+     * @param userId 현재 로그인한 사용자 ID
+     * @param rawPassword 입력된 현재 비밀번호
+     * @throws IllegalArgumentException 비밀번호 불일치 시
+     */
+    void resignUser(Long userId, String rawPassword);
+
+    void resendSignUpVerification(String email);
+    void resendPasswordResetLink(String email);
+    boolean isPasswordResetTokenValid(String email, String token);
+    void resetPassword(String email, String token, String newPassword);
 }

@@ -33,6 +33,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final ImageUpload imageUpload;
+    private final PasswordAsyncService passwordAsyncService;
+    private final EmailAsyncService emailAsyncService;
+
 
     /**
      * 일반 사용자 회원가입 처리 (이메일 인증 대기 상태로 저장 및 인증 메일 발송)
@@ -228,5 +231,68 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void resignUser(Long userId, String rawPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 1) 비밀번호 체크
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
+        }
+
+        // 2) type 컬럼을 '3'으로 변경
+        user.setType('3');
+        userRepository.save(user);
+    }
+
+    /** 가입 인증 미완료 유저용 재발송 */
+    @Override
+    @Transactional
+    public void resendSignUpVerification(String email) {
+        User u = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
+        emailAsyncService.sendSignUpVerificationMail(u);
+    }
+
+    /** 가입 인증 완료 유저용 비밀번호 재설정 링크 발송 */
+    @Override
+    @Transactional
+    public void resendPasswordResetLink(String email) {
+        User u = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
+        emailAsyncService.sendPasswordResetMail(u);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isPasswordResetTokenValid(String email, String token) {
+        return userRepository.findByEmail(email)
+                .filter(u -> token.equals(u.getEmailCheckToken()))
+                .filter(u -> u.getEmailCheckTokenGeneratedAt()
+                        .plusMinutes(15)
+                        .isAfter(LocalDateTime.now()))
+                .isPresent();
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String email, String token, String newPassword) {
+        User u = userRepository.findByEmail(email)
+                .filter(x -> token.equals(x.getEmailCheckToken()))
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않거나 만료된 링크입니다."));
+
+        if (u.getEmailCheckTokenGeneratedAt().plusMinutes(15)
+                .isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("링크가 만료되었습니다.");
+        }
+
+        u.setPassword(passwordEncoder.encode(newPassword));
+        u.setEmailCheckToken(null);
+        u.setEmailCheckTokenGeneratedAt(null);
+        userRepository.save(u);
     }
 }
