@@ -62,4 +62,9 @@ public interface UserService {
      * @throws IllegalArgumentException 비밀번호 불일치 시
      */
     void resignUser(Long userId, String rawPassword);
+
+    void resendSignUpVerification(String email);
+    void resendPasswordResetLink(String email);
+    boolean isPasswordResetTokenValid(String email, String token);
+    void resetPassword(String email, String token, String newPassword);
 }
