@@ -9,8 +9,6 @@ import java.util.List;
 @Setter
 @ToString
 @Builder
-
-
 public class PostRequestDto {
     private String boardName;
     private String title;
