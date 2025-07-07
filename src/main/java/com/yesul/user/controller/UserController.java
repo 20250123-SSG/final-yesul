@@ -173,13 +173,11 @@ public class UserController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes) {
 
-        // 로그인 체크
         if (principalDetails == null) {
             redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/login";
         }
 
-        // 폼 유효성 검사
         if (bindingResult.hasErrors()) {
             redirectAttributes.addFlashAttribute(
                     "org.springframework.validation.BindingResult.passwordResetDto",
@@ -188,7 +186,6 @@ public class UserController {
             return "redirect:/user/reset-password";
         }
 
-        // 1) 기존 비밀번호 일치 확인
         if (!passwordEncoder.matches(dto.getCurrentPassword(), principalDetails.getPassword())) {
             bindingResult.rejectValue("currentPassword", "wrongPassword", "현재 비밀번호가 올바르지 않습니다.");
             redirectAttributes.addFlashAttribute(
@@ -198,7 +195,6 @@ public class UserController {
             return "redirect:/user/reset-password";
         }
 
-        // 2) 새 비밀번호로 업데이트
         try {
             userService.changePassword(principalDetails.getUser().getId(), dto.getNewPassword());
             redirectAttributes.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다.");
@@ -216,7 +212,6 @@ public class UserController {
         return "user/resign";
     }
 
-    // 2) POST: 탈퇴 처리
     @PostMapping("/resign")
     public String resignProcess(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -235,7 +230,6 @@ public class UserController {
         }
 
         try {
-            // Service에서 비밀번호 확인 및 type 변경
             userService.resignUser(
                     principalDetails.getUser().getId(),
                     dto.getCurrentPassword()
@@ -258,7 +252,6 @@ public class UserController {
         return "user/password-request";
     }
 
-    // 2) 요청 처리
     @PostMapping("/password-request")
     public String handleRequest(
             @Valid @ModelAttribute("requestDto") UserPasswordRequestDto dto,

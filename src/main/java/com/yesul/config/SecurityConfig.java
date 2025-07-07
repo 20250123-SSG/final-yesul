@@ -84,6 +84,7 @@ public class SecurityConfig {
                                 "/user/regist",
                                 "/user/regist-process",
                                 "/user/user-regist-mail",
+                                "/user/password-request",
                                 "/", "/main", "/user/assets/**", "/community/**", "/error",
                                 "/assets/**",
                                 "/asserts/**",

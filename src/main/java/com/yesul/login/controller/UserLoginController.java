@@ -18,11 +18,11 @@ public class UserLoginController {
             return "redirect:/user/profile";
         }
         // 로그인 상태가 아닐 시
-        return "/user/login";
+        return "/login/login";
     }
 
     @GetMapping("/logout")
     public String logout() {
-        return "redirect:/user/login?logout";
+        return "redirect:/login/login?logout";
     }
 }
