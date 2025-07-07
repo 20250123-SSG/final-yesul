@@ -1,16 +1,12 @@
 package com.yesul.user.controller;
 
-import com.yesul.user.model.dto.*;
-import com.yesul.user.model.entity.User;
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import com.yesul.exception.handler.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,12 +15,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.yesul.exception.handler.EntityNotFoundException;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
 import com.yesul.user.service.RegistrationAsyncService;
 import com.yesul.user.service.UserService;
-
-import java.util.Optional;
+import com.yesul.user.model.dto.*;
 
 @Slf4j
 @Controller

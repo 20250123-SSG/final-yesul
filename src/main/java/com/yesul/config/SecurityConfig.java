@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/.well-known/appspecific/**",
                                 "/user/verify-email",
                                 "/user/regist",
                                 "/user/regist-process",
