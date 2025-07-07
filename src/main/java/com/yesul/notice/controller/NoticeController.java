@@ -63,14 +63,13 @@ public class NoticeController {
     @PostMapping("/regist")
     public String noticeRegist(@ModelAttribute NoticeDto noticeDto, Model model, RedirectAttributes redirectAttributes) {
         try {
-            System.out.println(noticeDto);
             noticeService.saveNotice(noticeDto);
             redirectAttributes.addFlashAttribute("successMessage", "공지사항이 등록되었습니다.");
             return "redirect:/admin/notice";
         } catch (Exception e) {
             model.addAttribute("errorMessage", "공지사항 등록 중 오류가 발생했습니다.");
-            model.addAttribute("noticeDto", noticeDto);  // 다시 모델에 넣기
-            return "/admin/notice/regist";  // 리다이렉트X, 뷰 이름 직접 반환
+            model.addAttribute("noticeDto", noticeDto);
+            return "/admin/notice/regist";
         }
     }
 
