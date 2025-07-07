@@ -2,6 +2,7 @@ package com.yesul.alcohol.controller;
 
 import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
+import com.yesul.alcohol.model.dto.AlcoholSearchConditionDto;
 import com.yesul.alcohol.service.AlcoholService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +35,12 @@ public class AlcoholController {
     @GetMapping("")
     @ResponseBody
     public Page<AlcoholDetailDto> getAlcohols(
-            @RequestParam(defaultValue = "0") int page
+            AlcoholSearchConditionDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(page, 10); // 페이지 크기 10개 고정
-        return alcoholService.getAlcohols(pageable);
+        Pageable pageable = PageRequest.of(page, size);
+        return alcoholService.searchAlcohols(condition, pageable);
     }
 
     @GetMapping("/detail")
