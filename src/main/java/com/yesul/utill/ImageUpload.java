@@ -67,5 +67,4 @@ public class ImageUpload {
             throw new RuntimeException("이미지 삭제 실패: " + imageUrl, e);
         }
     }
-    
 }
