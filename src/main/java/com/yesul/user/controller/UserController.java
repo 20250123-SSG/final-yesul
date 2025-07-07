@@ -271,7 +271,7 @@ public class UserController {
 
     @PostMapping("/password-request")
     public String handleRequest(
-            @Valid @ModelAttribute("requestDto") UserPasswordRequestDto dto,
+            @Validated @ModelAttribute("requestDto") UserPasswordRequestDto dto,
             BindingResult br,
             RedirectAttributes ra) {
 
@@ -324,7 +324,7 @@ public class UserController {
     public String handleReset(
             @RequestParam String email,
             @RequestParam String token,
-            @Valid @ModelAttribute("resetDto") UserPasswordResetDto dto,
+            @Validated @ModelAttribute("resetDto") UserPasswordResetDto dto,
             BindingResult br,
             RedirectAttributes ra) {
 
