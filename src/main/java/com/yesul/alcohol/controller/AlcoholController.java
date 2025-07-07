@@ -3,7 +3,10 @@ package com.yesul.alcohol.controller;
 import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
 import com.yesul.alcohol.model.dto.AlcoholSearchDto;
+
+import com.yesul.alcohol.model.dto.ClovaAskRequestDto;
 import com.yesul.alcohol.service.AlcoholService;
+import com.yesul.alcohol.service.ClovaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -13,15 +16,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @Slf4j
 @RestController
-@RequestMapping("/alcohols")
 @RequiredArgsConstructor
+@RequestMapping("/alcohols")
 public class AlcoholController {
 
     private final AlcoholService alcoholService;
+    private final ClovaService clovaService;
+
+    @PostMapping("/clova")
+    @ResponseBody
+    public ResponseEntity<String> ask(@RequestBody ClovaAskRequestDto dto) {
+        String response = clovaService.callClovaAPI(dto);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{id}")
     public AlcoholDetailDto getAlcoholDetail(@PathVariable Long id) {
