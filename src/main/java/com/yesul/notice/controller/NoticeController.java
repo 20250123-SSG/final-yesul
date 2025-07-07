@@ -2,6 +2,7 @@ package com.yesul.notice.controller;
 
 import com.yesul.notice.model.dto.NoticeDto;
 import com.yesul.notice.service.NoticeService;
+import com.yesul.utill.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,9 +11,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/admin/notice")
@@ -20,6 +23,7 @@ import java.util.List;
 public class NoticeController {
 
     private final NoticeService noticeService;
+    private final ImageUpload imageUpload;
 
     @GetMapping
     public String notice(@PageableDefault(size = 10) Pageable pageable, Model model) {
@@ -36,11 +40,24 @@ public class NoticeController {
     }
 
     @GetMapping("/regist")
-    public String sNoticeRegistForm(Model model) {
+    public String NoticeRegistForm(Model model) {
         if (!model.containsAttribute("noticeDto")) {
             model.addAttribute("noticeDto", new NoticeDto());
         }
         return "admin/notice/regist";
+    }
+
+    @PostMapping("/upload")
+    @ResponseBody
+    public Map<String, String> upload(@RequestParam("file") MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("업로드할 파일이 비어 있습니다.");
+        }
+
+        String domain = "notice";
+        String url = imageUpload.uploadAndGetUrl(domain, file);
+
+        return Map.of("url", url);
     }
 
     @PostMapping("/regist")

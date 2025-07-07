@@ -41,14 +41,20 @@
                         style="cursor: pointer;">
 
                         <td th:text="${iterStat.count + 10 * (noticeListPageable.number)}"></td>
-                        <td class="text-start fw-bold text-dark text-decoration-none" th:text="${notice.title}"></td>
+                        <td class="text-start text-dark text-decoration-none" th:text="${notice.title}"></td>
                         <td style="max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                            th:text="${notice.content}"></td>
+                            th:utext="${notice.content}"></td>
                         <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></td>
                         <td>
                             <a th:if="${notice.imageUrl != null && !notice.imageUrl.isEmpty()}"
                                th:href="${notice.imageUrl}" target="_blank">
                                 <span class="remix-icons ri-attachment-line"></span>
+                            </a>
+                        </td>
+
+                        <td>
+                            <a th:href="@{/admin/notice/delete/{id}(id=${notice.id})}" target="_blank">
+                                <span class="remix-icons ri-delete-bin-5-line"></span>
                             </a>
                         </td>
                     </tr>
@@ -64,7 +70,7 @@
                     <div class="col-auto dataTables_info" id="product_list_info" role="status" aria-live="polite">
                      총 [[${noticeListPageable.totalElements}]]건 </div>
                     <div class="col-auto dataTables_paginate paging_simple_numbers" id="product_list_paginate" th:if="${noticeListPageable.totalPages > 1}">
-                    <ul class="pagination justify-content-end">
+                        <ul class="pagination justify-content-end">
                         <li class="paginate_button page-item previous " th:classappend="${noticeListPageable.first} ? 'disabled'" id="product_list_previous">
                             <a th:href="@{|/admin/notice?page=${noticeListPageable.number - 1}|}" aria-controls="product_list" data-dt-idx="0" tabindex="0" class="page-link">Previous</a></li>
 
@@ -76,14 +82,15 @@
                         <li class="paginate_button page-item next" id="product_list_next" th:classappend="${noticeListPageable.last} ? 'disabled'">
                             <a th:href="@{|/admin/notice?page=${noticeListPageable.number + 1}|}" aria-controls="product_list" data-dt-idx="3" tabindex="0" class="page-link">Next</a></li>
                     </ul>
-                </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div th:replace="fragments/admin/footer :: adminFooter"></div>
     <div th:replace="fragments/admin/script :: adminScripts"></div>
-</main>
+
+    </main>
 </body>
 </html>
 
