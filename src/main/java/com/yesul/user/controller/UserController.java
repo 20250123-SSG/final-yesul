@@ -1,5 +1,6 @@
 package com.yesul.user.controller;
 
+import com.yesul.user.model.entity.User;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -108,12 +110,27 @@ public class UserController {
     }
 
     @GetMapping("/profile/edit")
-    public String userProfileEdit(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            String username = authentication.getName();
-            userService.findUserByEmail(username).ifPresent(user -> model.addAttribute("user", user));
+    public String userProfileEdit(Model model,
+                                  @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                  RedirectAttributes redirectAttributes) {
+
+        if (principalDetails == null) {
+            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/login";
         }
+
+        User currentUser = principalDetails.getUser();
+
+        UserUpdateDto dto = new UserUpdateDto();
+        dto.setName(currentUser.getName());
+        dto.setNickname(currentUser.getNickname());
+        dto.setBirthday(currentUser.getBirthday());
+        dto.setAddress(currentUser.getAddress());
+        dto.setEmail(currentUser.getEmail());
+        dto.setProfile(currentUser.getProfile());
+
+        model.addAttribute("user", dto);
+
         return "user/user-edit";
     }
 
@@ -140,7 +157,11 @@ public class UserController {
 
         try {
             userService.updateUserProfile(userId, userUpdateDto);
-            redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 업데이트되었습니다.");
+            User updatedUser = userService.findUserByEmail(principalDetails.getUser().getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
+            principalDetails.setUser(updatedUser);
+
+            redirectAttributes.addFlashAttribute("success", "회원 정보가 수정되었습니다.");
         } catch (UserNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/user/profile/edit";
