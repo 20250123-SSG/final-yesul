@@ -1,0 +1,175 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">Add commentMore actions
+
+<head th:replace="fragments/admin/head :: adminHead"></head>
+<body>
+<main class="wrapper sb-default">
+    <div th:replace="fragments/admin/header :: adminHeader"></div>
+    <div th:replace="fragments/admin/sidebar :: adminSidebar"></div>
+    <div th:replace="fragments/admin/notify-sidebar :: adminNotifySidebar"></div>
+
+    <!-- main content -->
+    <div class="gi-main-content">
+        <div class="container-fluid">
+            <!-- Page title & breadcrumb -->
+            <div class="gi-page-title gi-page-title-2">
+                <div class="gi-breadcrumb">
+                    <h5>회원관리</h5>
+                    <ul>
+                        <li>회원 관리</li>
+                        <li>회원 정보 조회</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="gi-card card-default product-list">
+                        <div class="gi-card-content ">
+                            <div class="table-responsive">
+                                <table id="product_list" class="table" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                        <th style="text-align: center;">ID</th>
+                                        <th style="text-align: center;">닉네임</th>
+                                        <th style="text-align: center;">이메일</th>
+                                        <th style="text-align: center;">생년월일</th>
+                                        <th style="text-align: center;">가입일</th>
+                                        <th style="text-align: center;">상태</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <a th:href="@{/admin/user/{id}(id=${userInfo.id})/status}">
+                                        <tr th:each="userInfo : ${userInfoList}">
+                                            <td style="text-align: center;" th:text="${userInfo.id}"></td>
+                                            <td style="text-align: center;" th:text="${userInfo.nickname}"></td>
+                                            <td style="text-align: center;" th:text="${userInfo.email}"></td>
+                                            <td style="text-align: center;" th:text="${userInfo.getFormattedBirthday}"></td>
+                                            <td style="text-align: center;" th:text="${#temporals.format(userInfo.createdAt, 'yyyy-MM-dd')}"></td>
+
+                                            <td>
+                                                <div class="d-flex justify-content-center">
+                                                    <th:block th:switch="${userInfo.displayStatus}">
+                                                        <!-- 일반: 버튼 + 회색 -->
+                                                        <th:block th:case="'일반'">
+                                                            <button type="button"
+                                                                    class="gi-btn outline-btn color-light"
+                                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                                    aria-expanded="false" data-display="static"
+                                                                    th:text="${userInfo.displayStatus}">일반</button>
+                                                        </th:block>
+
+                                                        <!-- 미인증: 녹색 텍스트 -->
+                                                        <th:block th:case="'미인증'">
+                                                            <span class="text-success fw-bold"
+                                                                  th:text="${userInfo.displayStatus}">미인증</span>
+                                                        </th:block>
+
+                                                        <!-- 탈퇴: 검정색 텍스트 -->
+                                                        <th:block th:case="'탈퇴'">
+                                                            <span class="text-dark fw-bold"
+                                                                  th:text="${userInfo.displayStatus}">탈퇴</span>
+                                                        </th:block>
+
+                                                        <!-- 정지: 버튼 + 빨간색 -->
+                                                        <th:block th:case="'정지'">
+                                                            <button type="button"
+                                                                    class="gi-btn outline-btn color-danger"
+                                                                    data-bs-toggle="dropdown" aria-haspopup="true"
+                                                                    aria-expanded="false" data-display="static"
+                                                                    th:text="${userInfo.displayStatus}">정지</button>
+                                                        </th:block>
+                                                    </th:block>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item"
+                                                           href="javascript:void(0);"
+                                                           th:if="${userInfo.displayStatus == '정지'}"
+                                                           th:attr="data-user-id=${userInfo.id}"
+                                                           data-action="unblock"
+                                                           onclick="updateUserStatus(this)">정지 해제</a>
+
+                                                        <a class="dropdown-item"
+                                                           href="javascript:void(0);"
+                                                           th:if="${userInfo.displayStatus == '일반'}"
+                                                           th:attr="data-user-id=${userInfo.id}"
+                                                           data-action="block"
+                                                           onclick="updateUserStatus(this)">정지</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="fragments/admin/footer :: adminFooter"></div>
+    <div th:replace="fragments/admin/script :: adminScripts"></div>
+</main>
+</body>
+
+<script>
+    function updateUserStatus(element) {
+        const userId = element.getAttribute('data-user-id');
+        const action = element.getAttribute('data-action');
+        const newStatus = action === 'block' ? "정지" : '일반';
+
+        const formData = new FormData();
+        formData.append('displayStatus', newStatus);
+
+        fetch(`/admin/user/${userId}/status`, {
+            method: 'PATCH',
+            body: formData
+        })
+            .then(response => {
+            if (response.ok) {
+                const td = element.closest("td");
+                const statusDisplay = td.querySelector(".d-flex > *:first-child");
+
+                statusDisplay.textContent = newStatus;
+
+                if (statusDisplay.tagName === "BUTTON") {
+                    statusDisplay.className = "gi-btn outline-btn";
+                    if (newStatus === "정지") {
+                        statusDisplay.classList.add("color-danger");
+                    } else {
+                        statusDisplay.classList.add("color-light");
+                    }
+                } else if (statusDisplay.tagName === "SPAN") {
+                    if (newStatus === "미인증") {
+                        statusDisplay.className = "text-success fw-bold";
+                    } else if (newStatus === "탈퇴") {
+                        statusDisplay.className = "text-dark fw-bold";
+                    }
+                }
+
+                const dropdownMenu = element.closest(".dropdown-menu");
+
+                if (newStatus === "일반" || newStatus === "정지") {
+                    // 일반 ↔ 정지 상태일 때만 메뉴 출력
+                    dropdownMenu.innerHTML = `
+                                    <a class="dropdown-item"
+                                       href="javascript:void(0);"
+                                       data-user-id="${userId}"
+                                       data-action="${newStatus === "정지" ? "unblock" : "block"}"
+                                       onclick="updateUserStatus(this)">
+                                        ${newStatus === "정지" ? "정지 해제" : "정지"}
+                                    </a>
+                                `;
+
+                } else {
+                    dropdownMenu.innerHTML = "";
+                }
+            }
+        })
+            .catch(error => {
+                console.error(error);
+                alert('요청 중 오류가 발생했습니다.');
+            });
+    }
+</script>
+</html>

@@ -15,11 +15,11 @@ public class PostImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 어떤 게시글의 이미지인지
+    @Setter // 반드시 있어야 함
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_url", columnDefinition = "TEXT", nullable = false)
     private String imageUrl;
 }
