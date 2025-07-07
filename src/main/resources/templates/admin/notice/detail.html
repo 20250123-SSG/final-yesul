@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    디테일 페이지입니다.
+    <span type="text" th:text="${notice.id}"></span><br>
+    <span type="text" th:text="${notice.title}"></span><br>
+    <span type="text" th:text="${notice.content}"></span><br>
+    <span type="text" th:text="${notice.imageUrl}"></span><br>
+    <span type="text" th:text="${notice.createdAt}"></span>
+    <a th:href="@{/admin/notice/edit}" class="btn btn-success">수정</a><br>
+    <a th:href="@{/admin/notice/delete/{id}(id=${notice.id})}" class="btn btn-danger">삭제</a>
+</body>
+</html>

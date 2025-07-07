@@ -36,16 +36,14 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each=" notice, iterStat : ${noticeListPageable.getContent()}">
-                        <td th:text="${iterStat.count + 10*(noticeListPageable.number)}"></td>
-                        <td class="text-start">
-                            <a th:href="@{/admin/notice/{id}(id=${notice.id})}"
-                               th:text="${notice.title}" class="fw-bold text-dark text-decoration-none">
-                            </a>
-                        </td>
+                    <tr th:each="notice, iterStat : ${noticeListPageable.getContent()}"
+                        th:onclick="|location.href='@{/admin/notice/{id}(id=${notice.id})}'|"
+                        style="cursor: pointer;">
+
+                        <td th:text="${iterStat.count + 10 * (noticeListPageable.number)}"></td>
+                        <td class="text-start fw-bold text-dark text-decoration-none" th:text="${notice.title}"></td>
                         <td style="max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                            th:text="${notice.content}">
-                        </td>
+                            th:text="${notice.content}"></td>
                         <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></td>
                         <td>
                             <a th:if="${notice.imageUrl != null && !notice.imageUrl.isEmpty()}"
@@ -54,6 +52,7 @@
                             </a>
                         </td>
                     </tr>
+
                     <tr th:if="${noticeListPageable == null or #lists.isEmpty(noticeListPageable)}">
                         <td colspan="5" class="text-center text-muted">등록된 게시글이 없습니다.</td>
                     </tr>

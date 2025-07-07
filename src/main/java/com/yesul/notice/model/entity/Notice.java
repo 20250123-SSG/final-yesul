@@ -5,20 +5,22 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "notice")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@ToString
 public class Notice extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 50, nullable = false)
+    @Column(name = "title", length = 50, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(name = "content",columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "image_url", length = 200)

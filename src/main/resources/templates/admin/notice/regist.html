@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/admin/head :: adminHead"></head>
+<head>
+    <th:block th:insert="fragments/admin/head :: adminHead"></th:block>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+
+    <!-- 외부 플러그인 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+</head>
 <body>
-<main class="wrapper sb-default ecom">
     <!-- 헤더 / 사이드바 -->
-    <div th:replace="fragments/admin/header :: adminHeader"></div>
-    <div th:replace="fragments/admin/sidebar :: adminSidebar"></div>
+    <main class="wrapper sb-default ecom">
     <div class="gi-main-content">
         <div class="container-fluid">
             <!-- Page title & breadcrumb -->
@@ -18,32 +24,95 @@
                     </ul>
                 </div>
             </div>
-            <form th:action="@{/admin/notice/regist}" method="post"> <!--enctype="multipart/form-data"-->
-            <div class="mb-3">
-                <label for="title" class="form-label">제목</label>
-                <input type="text" name="title" th:value="${noticeDto.title}" class="form-control"  id="title" required />
-            </div>
+            <div>
+                <form th:action="@{/admin/notice/regist}" id="postForm" method="post" enctype="multipart/form-data">
 
-            <div class="mb-3">
-                <label for="content" class="form-label">내용</label>
-                <textarea name="content" th:text="${noticeDto.content}" class="form-control" id="content" rows="6" required></textarea>
-            </div>
+                    <div class="form-group mb-3">
+                        <label for="title">제목</label>
+                        <input type="text" id="title" name="title" th:value="${noticeDto.title}" class="form-control" required />
+                    </div>
 
-            <div class="mb-3">
-                <label for="imageUrl" class="form-label">이미지 URL (선택)</label>
-                <input type="text" name="imageUrl" th:text="${noticeDto.imageUrl}" class="form-control" id="imageUrl" />
-            </div>
+                    <!-- Toast UI Editor -->
+                    <div class="form-group mb-3">
+                        <label for="editor">내용</label>
+                        <div id="editor"></div>
+                        <input type="hidden" id="content" name="content"/>
+                    </div>
 
-            <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">등록</button>
+                    <div class="form-group mb-3">
+                        <label for="imageUrl">이미지 URL</label>
+                        <input type="text" id="imageUrl" name="imageUrl" class="form-control" />
+                    </div>
+
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-success px-4">등록하기</button>
+                    </div>
+                </form>
             </div>
-        </form>
         </div>
     </div>
 
-    <!-- 푸터 및 스크립트 -->
     <div th:replace="fragments/admin/footer :: adminFooter"></div>
-    <div th:replace="fragments/admin/script :: adminScripts"></div>
-</main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-zoom/1.7.21/jquery.zoom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+
+    <!-- Toast UI Editor JS -->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+    <!-- Editor 초기화 -->
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            console.log("DOM fully loaded");
+
+            const editorContainer = document.querySelector('#editor');
+            if (!editorContainer) {
+                console.error("에디터 컨테이너(#editor)를 찾을 수 없습니다!");
+                return;
+            }
+
+            const editor = new toastui.Editor({
+                el: editorContainer,
+                height: '500px',
+                initialEditType: 'wysiwyg',
+                previewStyle: 'vertical'
+            });
+
+            // id로 폼 선택
+            const form = document.querySelector('#postForm');
+            if (!form) {
+                console.error("form을 찾을 수 없습니다!");
+                return;
+            }
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault(); // 기본 제출 막기
+                console.log("submit 이벤트 발생");
+
+                const htmlContent = editor.getHTML();
+                console.log("htmlContent:", htmlContent);
+
+                document.querySelector('#content').value = htmlContent;
+
+                const tempDoc = document.createElement('div');
+                tempDoc.innerHTML = htmlContent;
+                const firstImg = tempDoc.querySelector('img');
+                if (firstImg) {
+                    document.querySelector('#imageUrl').value = firstImg.getAttribute('src');
+                }
+
+                form.submit();
+            });
+        });
+    </script>
+
+    <th:block th:insert="fragments/admin/header :: adminHeader"></th:block>
+    <div th:replace="fragments/admin/sidebar :: adminSidebar"></div>
+
+    <th:block th:insert="fragments/admin/script :: adminScripts"></th:block>
+    </main>
 </body>
 </html>
