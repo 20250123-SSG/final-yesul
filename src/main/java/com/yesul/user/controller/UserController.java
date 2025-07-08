@@ -1,13 +1,9 @@
 package com.yesul.user.controller;
 
-import com.yesul.user.model.entity.User;
-import jakarta.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -22,6 +18,7 @@ import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
 import com.yesul.user.service.RegistrationAsyncService;
 import com.yesul.user.service.UserService;
+import com.yesul.user.model.entity.User;
 import com.yesul.user.model.dto.*;
 
 @Slf4j
@@ -34,7 +31,6 @@ public class UserController {
     private final RegistrationAsyncService asyncRegService;
     private final PasswordEncoder passwordEncoder;
 
-    // Regist Start
     // 회원가입 페이지 이동
     @GetMapping("/regist")
     public String registForm(Model model) {
@@ -82,9 +78,8 @@ public class UserController {
             return "redirect:/user/regist";
         }
     }
-    // Regist End
 
-    // Mypage Start
+    // 유저 정보 페이지
     @GetMapping("/profile")
     public String userProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -104,11 +99,10 @@ public class UserController {
                             redirectAttributes.addFlashAttribute("error", "사용자를 찾을 수 없습니다.");
                         }
                 );
-
-        // 3) 사용자 정보 페이지로 이동
         return "user/user-profile";
     }
 
+    // 유저 정보 수정 페이지
     @GetMapping("/profile/edit")
     public String userProfileEdit(Model model,
                                   @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -134,6 +128,7 @@ public class UserController {
         return "user/user-edit";
     }
 
+    // 유저정보 수정
     @PostMapping("/profile/update")
     public String updateUserProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -147,7 +142,6 @@ public class UserController {
 
         if (bindingResult.hasErrors()) {
             log.error("유효성 검사 오류: {}", bindingResult.getAllErrors());
-            // 오류가 있으면 다시 폼 페이지로 돌아가 오류 메시지를 표시
             redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
             redirectAttributes.addFlashAttribute("user", userUpdateDto);
             return "redirect:/user/profile/edit";
@@ -177,16 +171,18 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    @GetMapping("/reset-password")
-    public String resetPasswordForm(Model model) {
-        model.addAttribute("passwordResetDto", new UserPasswordResetDto());
-        return "user/reset-password";
+    // 비밀번호 변경 페이지 이동
+    @GetMapping("/change-password")
+    public String changePasswordForm(Model model) {
+        model.addAttribute("passwordChangeDto", new UserPasswordChangeDto());
+        return "user/change-password";
     }
 
-    @PostMapping("/reset-password")
-    public String resetPasswordProcess(
+    // 비밀번호 변경
+    @PostMapping("/change-password")
+    public String changePasswordProcess(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @Validated @ModelAttribute("passwordResetDto") UserPasswordResetDto dto,
+            @Validated @ModelAttribute("passwordChangeDto") UserPasswordChangeDto dto,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes) {
 
@@ -223,12 +219,14 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
+    // 회원 탈퇴 페이지 이동
     @GetMapping("/resign")
     public String resignForm(Model model) {
         model.addAttribute("userResignDto", new UserResignDto());
         return "user/resign";
     }
 
+    // 회원 탈퇴
     @PostMapping("/resign")
     public String resignProcess(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -263,15 +261,17 @@ public class UserController {
         }
     }
 
-    @GetMapping("/password-request")
+    // 비밀번호 초기화 페이지 이동
+    @GetMapping("/reset-password")
     public String showRequestForm(Model model) {
-        model.addAttribute("requestDto", new UserPasswordRequestDto());
-        return "user/password-request";
+        model.addAttribute("resetDto", new UserPasswordResetDto());
+        return "user/reset-password";
     }
 
-    @PostMapping("/password-request")
+    // 비밀번호 초기화
+    @PostMapping("/reset-password")
     public String handleRequest(
-            @Validated @ModelAttribute("requestDto") UserPasswordRequestDto dto,
+            @Validated @ModelAttribute("requestDto") UserPasswordResetDto dto,
             BindingResult br,
             RedirectAttributes ra) {
 
@@ -300,7 +300,6 @@ public class UserController {
         return "user/password-request-complete";
     }
 
-    // 3) 비밀번호 재설정 폼
     @GetMapping("/password-reset")
     public String showResetForm(
             @RequestParam String email,
@@ -315,7 +314,7 @@ public class UserController {
 
         model.addAttribute("email", email);
         model.addAttribute("token", token);
-        model.addAttribute("resetDto", new UserPasswordResetDto());
+        model.addAttribute("resetDto", new UserPasswordChangeDto());
         return "user/password-reset";
     }
 
@@ -324,7 +323,7 @@ public class UserController {
     public String handleReset(
             @RequestParam String email,
             @RequestParam String token,
-            @Validated @ModelAttribute("resetDto") UserPasswordResetDto dto,
+            @Validated @ModelAttribute("resetDto") UserPasswordChangeDto dto,
             BindingResult br,
             RedirectAttributes ra) {
 

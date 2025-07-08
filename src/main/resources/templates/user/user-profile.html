@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <!-- 1) 공통 head -->
-<head th:replace="~{layout/user-default :: head('User Profile')}"></head>
+<head th:replace="~{layout/user-default :: head('내 정보')}"></head>
 
 <body>
 <!-- 2) 공통 header -->
@@ -111,14 +111,12 @@
   </div>
 </section>
 
-<!-- 4) 공통 feature -->
-<div th:replace="~{layout/user-default :: feature}"></div>
-
-<!-- 5) 공통 footer -->
 <div th:replace="~{layout/user-default :: footer}"></div>
 
-<!-- 6) 공통 JS 불러오기 -->
+<div th:replace="~{layout/user-default :: feature}"></div>
+
 <div th:replace="~{layout/user-default :: scripts}"></div>
+
 </body>
 
 </html>
