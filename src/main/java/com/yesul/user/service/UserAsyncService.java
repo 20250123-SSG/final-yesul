@@ -89,7 +89,7 @@ public class UserAsyncService {
     }
 
     private String buildPasswordResetContent(User user) {
-        String link = "http://localhost:8080/password-reset?"
+        String link = "http://localhost:8080/user/reset-new-password?"
                 + "email=" + user.getEmail()
                 + "&token=" + user.getEmailCheckToken();
         return "<p>안녕하세요, " + user.getName() + "님!</p>"

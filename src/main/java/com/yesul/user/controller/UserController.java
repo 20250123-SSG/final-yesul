@@ -261,7 +261,21 @@ public class UserController {
         }
     }
 
-    // 4) 비밀번호 재설정
+    // 패스워드 신규 설정 페이지로 이동
+    @GetMapping("/reset-new-password")
+    public String resetNewPasswordForm(Model model) {
+        model.addAttribute("userPasswordResetDto", new UserPasswordResetDto());
+        return "user/resign";
+    }
+    
+    // 패스워드 신규 설정 Post
+//    @PostMapping("/reset-new-password")
+//    public String resetNewPasswordForm(Model model) {
+//        return "user/resign";
+//    }
+
+
+    // 패스워드 변경 Post
     @PostMapping("/password-reset")
     public String handleReset(
             @RequestParam String email,
