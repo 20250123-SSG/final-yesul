@@ -72,7 +72,7 @@ public class PostServiceImpl implements PostService {
     // 키워드 검색 (게시판 + 제목에 포함되는 키워드)
     @Override
     public Page<PostResponseDto> searchByBoardNameAndKeyword(String boardName, String keyword, Pageable pageable) {
-        return postRepository.findByBoardNameAndTitleContainingIgnoreCase(boardName, keyword, pageable)
+        return postRepository.searchByBoardNameAndKeyword(boardName, keyword, pageable)
                 .map(this::convertToDto);
     }
 
