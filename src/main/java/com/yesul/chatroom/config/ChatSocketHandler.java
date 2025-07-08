@@ -72,7 +72,8 @@ public class ChatSocketHandler extends TextWebSocketHandler {
         if (receiverSession != null && receiverSession.isOpen()) {
             receiverSession.sendMessage(new TextMessage(responseJson));
         } else {
-            log.info("수신자 오프라인: {}", messageResponseDto.getReceiverId());
+            System.out.println("수신자 없음");
+            log.info(" 수신자 오프라인: {}", messageResponseDto.getReceiverId());
             // TODO: Push 알림 처리
         }
 
