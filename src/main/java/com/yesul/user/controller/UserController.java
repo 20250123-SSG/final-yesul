@@ -261,64 +261,7 @@ public class UserController {
         }
     }
 
-    // 비밀번호 초기화 페이지 이동
-    @GetMapping("/reset-password")
-    public String showRequestForm(Model model) {
-        model.addAttribute("resetDto", new UserPasswordResetDto());
-        return "user/reset-password";
-    }
-
-    // 비밀번호 초기화
-    @PostMapping("/reset-password")
-    public String handleRequest(
-            @Validated @ModelAttribute("requestDto") UserPasswordResetDto dto,
-            BindingResult br,
-            RedirectAttributes ra) {
-
-        if (br.hasErrors()) return "user/password-request";
-
-        userService.findUserByEmail(dto.getEmail())
-                .ifPresentOrElse(user -> {
-                    if (user.getType() == '2') {
-                        userService.resendSignUpVerification(dto.getEmail());
-                        ra.addFlashAttribute("message", "가입 인증 메일을 재발송했습니다.");
-                    } else if (user.getType() == '1') {
-                        userService.resendPasswordResetLink(dto.getEmail());
-                        ra.addFlashAttribute("message", "비밀번호 재설정 메일을 발송했습니다.");
-                    } else {
-                        ra.addFlashAttribute("message", "현재 상태에서 요청을 처리할 수 없습니다.");
-                    }
-                }, () -> {
-                    ra.addFlashAttribute("message", "등록되지 않은 이메일입니다.");
-                });
-
-        return "redirect:/user/password-request-complete";
-    }
-
-    @GetMapping("/password-request-complete")
-    public String showRequestComplete() {
-        return "user/password-request-complete";
-    }
-
-    @GetMapping("/password-reset")
-    public String showResetForm(
-            @RequestParam String email,
-            @RequestParam String token,
-            Model model,
-            RedirectAttributes ra) {
-
-        if (!userService.isPasswordResetTokenValid(email, token)) {
-            ra.addFlashAttribute("message", "유효하지 않거나 만료된 링크입니다.");
-            return "redirect:/user/password-request";
-        }
-
-        model.addAttribute("email", email);
-        model.addAttribute("token", token);
-        model.addAttribute("resetDto", new UserPasswordChangeDto());
-        return "user/password-reset";
-    }
-
-    // 4) 비밀번호 재설정 처리
+    // 4) 비밀번호 재설정
     @PostMapping("/password-reset")
     public String handleReset(
             @RequestParam String email,
