@@ -6,115 +6,277 @@
   <link rel="stylesheet" th:href="@{/assets/css/plugins/bootstrap.css}">
   <link rel="stylesheet" th:href="@{/assets/css/style.css}">
   <style>
-    #chat-message-list {
-      height: 400px;
-      overflow-y: scroll;
-      border: 1px solid #ccc;
-      padding: 10px;
+    body { background: #f5f6fa; }
+    .chat-container {
+      max-width: 480px; margin: 32px auto; background: #fff;
+      border-radius: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      display: flex; flex-direction: column; min-height: 600px;
+    }
+    .chat-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 16px; border-bottom: 1.5px solid #ececec;
+      border-top-left-radius: 18px; border-top-right-radius: 18px; background: #f9fafb;
+    }
+    .chat-header .profile { display: flex; align-items: center; }
+    .chat-header img { width: 44px; height: 44px; border-radius: 50%; margin-right: 12px; object-fit: cover; background: #eee; }
+    .chat-header .name { font-weight: bold; font-size: 1.1rem; }
+    .chat-header .status { font-size: 0.98rem; color: #4caf50; margin-left: 8px; }
+    .chat-header .back-btn { background: none; border: none; padding: 0 4px; cursor: pointer; }
+
+    .chat-history {
+      flex: 1 1 0; padding: 24px 16px 12px; background: #f5f6fa;
+      overflow-y: auto; display: flex; flex-direction: column;
+    }
+    .chat-history ul { padding: 0; margin: 0; list-style: none; }
+    .chat-history li { display: flex; align-items: flex-end; margin-bottom: 18px; }
+    .chat-history li.my-message { flex-direction: row; }
+    .chat-profile { width: 36px; height: 36px; border-radius: 50%; margin: 0 8px; object-fit: cover; background: #eee; }
+    .chat-content { max-width: 70%; display: flex; flex-direction: column; align-items: flex-start; }
+    .chat-history li.my-message .chat-content { align-items: flex-start; }
+    .chat-meta { font-size: 0.92rem; color: #b0b0b0; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+    .chat-meta .sender { font-weight: 500; color: #888; margin-right: 2px; }
+    .chat-bubble {
+      position: relative; display: inline-block; padding: 14px 18px;
+      border-radius: 16px; font-size: 15px; line-height: 1.6; word-break: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      background: #686e73; color: #fff;
+    }
+    .chat-history li.other-message .chat-bubble {
+      background: #fff; color: #222; border: 1px solid #ececec;
+    }
+    .chat-time {
+      font-size: 0.82rem; color: #b0b0b0; margin-top: 2px; display: none;
+    }
+    .chat-time.show { display: block; }
+
+    .chat-input-area {
+      padding: 10px 12px; background: #fff;
+      border-bottom-left-radius: 18px; border-bottom-right-radius: 18px;
+      border-top: 1.5px solid #ececec;
+    }
+    .chat-input-area .input-group { display: flex; align-items: stretch; }
+    .chat-input-area .upload-btn {
+      min-width: 56px;
+      border-radius: 18px 0 0 18px;
+      font-weight: bold;
+      background: #333; color: #fff;
+      border: 1.5px solid #ececec; border-right: none;
+      font-size: 20px; display: flex; align-items: center; justify-content: center;
+    }
+    .chat-input-area textarea {
+      resize: none; border-radius: 0; height: 56px;
+      font-size: 16px; background: #f5f6fa; border: 1.5px solid #ececec; border-left: none; border-right: none;
+      flex: 1 1 auto; padding: 13px 20px;
+    }
+    .chat-input-area .btn.send-btn {
+      min-width: 80px; border-radius: 0 18px 18px 0;
+      font-weight: bold; background: #333; color: #fff;
+      border: 1.5px solid #ececec; border-left: none;
+      font-size: 17px; display: flex; align-items: center; justify-content: center;
     }
   </style>
 </head>
 <body>
 <div th:replace="fragments/user/header :: header"></div>
 
-<div id="chat-message-list">
-  <ul id="messageList">
-    <!-- 서버사이드 렌더링된 메시지 -->
-    <li th:each="msg : ${messages}" th:text="${msg.messageContext}">메시지 내용</li>
-  </ul>
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="profile">
+      <img src="/assets/img/user/2.jpg" alt="user">
+      <div>
+        <span class="name" th:text="${chatPartnerName}">채팅 상대 이름</span>
+        <span class="status">● Online</span>
+      </div>
+    </div>
+    <button class="back-btn" onclick="history.back()" aria-label="뒤로가기">←</button>
+  </div>
+
+  <div class="chat-history" id="chat-message-list">
+    <ul id="messageList">
+      <li th:each="msg : ${messages}" th:classappend="${msg.senderType.name()} == 'USER' ? 'my-message' : 'other-message'">
+        <img class="chat-profile" th:if="${msg.senderType.name()} != 'USER'" th:src="${msg.senderProfileUrl}" alt="프로필">
+        <div class="chat-content">
+          <div class="chat-meta">
+            <span class="sender" th:if="${msg.senderType.name()} != 'USER'" th:text="${msg.senderName}"></span>
+          </div>
+          <div class="chat-bubble" th:text="${msg.messageContext}">메시지</div>
+          <div class="chat-time" th:text="${#temporals.format(msg.createdAt, 'HH:mm')}">17:56</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="chat-input-area">
+    <div class="input-group">
+      <button type="button" class="btn upload-btn" onclick="document.getElementById('imageInput').click()">＋</button>
+      <textarea id="messageInput" class="form-control" placeholder="메시지를 입력하세요"></textarea>
+      <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="uploadImage(this)">
+      <button type="button" onclick="sendMessage()" class="btn send-btn">전송</button>
+    </div>
+  </div>
 </div>
 
-<!-- 메시지 입력창 -->
-<input type="text" id="messageInput" placeholder="메시지를 입력하세요">
-<button onclick="sendMessage()">전송</button>
-
-<!-- 히든 필드 -->
-<input type="hidden" id="lastMessageId" th:value="${lastMessageId}">
+<div th:replace="fragments/user/footer :: footer"></div>
 <input type="hidden" id="chatRoomId" th:value="${roomId}">
 
 <script th:inline="javascript">
   const socket = new WebSocket("ws://" + window.location.host + "/ws/chat");
+  const messageInput = document.getElementById("messageInput");
+  const chatRoomId = document.getElementById("chatRoomId").value;
+  const chatList = document.getElementById("chat-message-list");
 
-  socket.onopen = function() {
-    console.log("✅ WebSocket 연결 성공!");
-  };
-
-  socket.onmessage = function(event) {
+  socket.onopen = () => console.log("✅ WebSocket 연결 성공!");
+  socket.onmessage = (event) => {
     const msg = JSON.parse(event.data);
-    appendMessage(msg.messageContext);
+    appendMessage(msg.messageContext, msg.senderType, msg.createdAt, msg.senderName, msg.senderProfileUrl, msg.messageType);
+    adjustTimestamps();
     scrollToBottom();
   };
 
-  function sendMessage() {
-    const messageInput = document.getElementById("messageInput");
-    const message = messageInput.value.trim();
-    if (!message) return;
+  window.addEventListener("DOMContentLoaded", () => {
+    restoreTempMessage();
+    adjustTimestamps();
+    scrollToBottom();
+  });
 
-    const payload = {
-      chatRoomId: document.getElementById("chatRoomId").value,
-      userId: document.getElementById("userId").value,
-      senderType: "USER",
-      messageContext: message,
-      messageType: "TEXT"
-    };
-
-    socket.send(JSON.stringify(payload));
-    messageInput.value = "";
-  }
-
-
-  function appendMessage(content) {
-    const messageList = document.getElementById("messageList");
-    const li = document.createElement("li");
-    li.textContent = content;
-    messageList.appendChild(li);
-  }
-
-  function prependMessage(content) {
-    const messageList = document.getElementById("messageList");
-    const li = document.createElement("li");
-    li.textContent = content;
-    messageList.insertBefore(li, messageList.firstChild);
-  }
-
-  function scrollToBottom() {
-    const chatList = document.getElementById("chat-message-list");
-    chatList.scrollTop = chatList.scrollHeight;
-  }
-
-  // 초기 진입 시 맨 아래로 스크롤
-  scrollToBottom();
-
-  // 무한 스크롤: 위로 올릴 때 더 가져오기
-  const chatList = document.getElementById("chat-message-list");
-  chatList.addEventListener("scroll", function() {
-    if (chatList.scrollTop === 0) {
-      loadMoreMessages();
+  messageInput.addEventListener("input", () => {
+    const temp = messageInput.value.trim();
+    if (temp) {
+      const params = new URLSearchParams();
+      params.append("chatRoomId", chatRoomId);
+      params.append("message", temp);
+      fetch("/chatroom/temp-message", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params
+      });
     }
   });
 
-  function loadMoreMessages() {
-    const roomId = document.getElementById("chatRoomId").value;
-    const lastMessageId = document.getElementById("lastMessageId").value;
+  messageInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 
-    fetch(`/api/users/chatroom/${roomId}/messages?lastMessageId=${lastMessageId}&size=20`)
-      .then(res => res.json())
+  function restoreTempMessage() {
+    fetch(`/chatroom/temp-message?chatRoomId=${chatRoomId}`, { credentials: "include" })
+      .then(res => res.text())
+      .then(tempMessage => { if (tempMessage) messageInput.value = tempMessage; })
+      .catch(console.error);
+  }
+
+  function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
+    socket.send(JSON.stringify({ chatRoomId, senderType: "USER", messageContext: message, messageType: "TEXT" }));
+    messageInput.value = "";
+    fetch(`/chatroom/temp-message?chatRoomId=${chatRoomId}`, { method: "DELETE", credentials: "include" });
+  }
+
+  function uploadImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    fetch("/chat-images/upload", {
+      method: "POST",
+      credentials: "include",
+      body: formData
+    })
+      .then(response => response.json())
       .then(data => {
-        if (data.content && data.content.length > 0) {
-          data.content.reverse().forEach(msg => {
-            prependMessage(msg.messageContext);
-          });
-
-          document.getElementById("lastMessageId").value = data.content[data.content.length - 1].messageId;
-        }
-
-        if (!data.hasNext) {
-          console.log("📌 더 이상 가져올 메시지가 없습니다.");
-        }
+        socket.send(JSON.stringify({
+          chatRoomId,
+          senderType: "USER",
+          messageContext: data.imageUrl,
+          messageType: "IMAGE"
+        }));
       })
-      .catch(err => {
-        console.error("메시지 불러오기 실패:", err);
-      });
+      .catch(console.error);
+  }
+
+  function appendMessage(content, senderType, createdAt, senderName, senderProfileUrl, messageType) {
+    const li = document.createElement("li");
+    const isMine = (senderType || '').toUpperCase() === 'USER';
+    li.className = isMine ? 'my-message' : 'other-message';
+
+    if (!isMine) {
+      const img = document.createElement("img");
+      img.className = 'chat-profile';
+      img.src = senderProfileUrl || '/assets/img/user/2.jpg';
+      img.alt = '프로필';
+      li.appendChild(img);
+    }
+
+    const contentDiv = document.createElement("div");
+    contentDiv.className = 'chat-content';
+
+    if (!isMine) {
+      const meta = document.createElement("div");
+      meta.className = 'chat-meta';
+      const senderSpan = document.createElement("span");
+      senderSpan.className = 'sender';
+      senderSpan.textContent = senderName || '';  // ✅ 기본값 제거
+      meta.appendChild(senderSpan);
+      contentDiv.appendChild(meta);
+    }
+
+    const bubble = document.createElement("div");
+    bubble.className = 'chat-bubble';
+
+    if (messageType === 'IMAGE') {
+      const imgTag = document.createElement('img');
+      imgTag.src = content;
+      imgTag.style.maxWidth = '100%';
+      bubble.appendChild(imgTag);
+    } else {
+      bubble.textContent = content;
+    }
+
+    contentDiv.appendChild(bubble);
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = 'chat-time';
+    timeDiv.textContent = createdAt ? formatTime(createdAt) : '';
+    contentDiv.appendChild(timeDiv);
+
+    li.appendChild(contentDiv);
+    document.getElementById("messageList").appendChild(li);
+
+    adjustTimestamps();
+    scrollToBottom();
+  }
+
+  function formatTime(isoString) {
+    const date = new Date(isoString);
+    const hh = String(date.getHours()).padStart(2,'0');
+    const mm = String(date.getMinutes()).padStart(2,'0');
+    return `${hh}:${mm}`;
+  }
+
+  function adjustTimestamps() {
+    const items = Array.from(document.querySelectorAll('#messageList li'));
+    let lastTime = null;
+
+    for (let i = items.length - 1; i >= 0; i--) {
+      const timeEl = items[i].querySelector('.chat-time');
+      if (!timeEl) continue;
+      const current = timeEl.textContent.trim();
+      if (current !== lastTime) {
+        timeEl.classList.add('show');
+        lastTime = current;
+      } else {
+        timeEl.classList.remove('show');
+      }
+    }
+  }
+
+  function scrollToBottom() {
+    chatList.scrollTop = chatList.scrollHeight;
   }
 </script>
 </body>
