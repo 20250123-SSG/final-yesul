@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.yesul.exception.handler.EntityNotFoundException;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
-import com.yesul.user.service.RegistrationAsyncService;
+import com.yesul.user.service.UserAsyncService;
 import com.yesul.user.service.UserService;
 import com.yesul.user.model.entity.User;
 import com.yesul.user.model.dto.*;
@@ -28,7 +28,7 @@ import com.yesul.user.model.dto.*;
 public class UserController {
 
     private final UserService userService;
-    private final RegistrationAsyncService asyncRegService;
+    private final UserAsyncService asyncRegService;
     private final PasswordEncoder passwordEncoder;
 
     // 회원가입 페이지 이동

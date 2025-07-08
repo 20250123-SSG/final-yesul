@@ -33,8 +33,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final ImageUpload imageUpload;
-    private final PasswordAsyncService passwordAsyncService;
-    private final EmailAsyncService emailAsyncService;
 
 
     /**
@@ -249,35 +247,6 @@ public class UserServiceImpl implements UserService {
         // 2) type 컬럼을 '3'으로 변경
         user.setType('3');
         userRepository.save(user);
-    }
-
-    /** 가입 인증 미완료 유저용 재발송 */
-    @Override
-    @Transactional
-    public void resendSignUpVerification(String email) {
-        User u = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
-        emailAsyncService.sendSignUpVerificationMail(u);
-    }
-
-    /** 가입 인증 완료 유저용 비밀번호 재설정 링크 발송 */
-    @Override
-    @Transactional
-    public void resendPasswordResetLink(String email) {
-        User u = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
-        emailAsyncService.sendPasswordResetMail(u);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isPasswordResetTokenValid(String email, String token) {
-        return userRepository.findByEmail(email)
-                .filter(u -> token.equals(u.getEmailCheckToken()))
-                .filter(u -> u.getEmailCheckTokenGeneratedAt()
-                        .plusMinutes(15)
-                        .isAfter(LocalDateTime.now()))
-                .isPresent();
     }
 
     @Override
