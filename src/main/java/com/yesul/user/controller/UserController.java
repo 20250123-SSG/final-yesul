@@ -207,7 +207,7 @@ public class UserController {
                     "org.springframework.validation.BindingResult.passwordResetDto",
                     bindingResult);
             redirectAttributes.addFlashAttribute("passwordResetDto", dto);
-            return "redirect:/user/reset-password";
+            return "redirect:/user/change-password";
         }
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), principalDetails.getPassword())) {
@@ -216,7 +216,7 @@ public class UserController {
                     "org.springframework.validation.BindingResult.passwordResetDto",
                     bindingResult);
             redirectAttributes.addFlashAttribute("passwordResetDto", dto);
-            return "redirect:/user/reset-password";
+            return "redirect:/user/change-password";
         }
 
         try {
