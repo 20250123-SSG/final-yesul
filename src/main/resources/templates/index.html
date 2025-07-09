@@ -3622,16 +3622,6 @@
 </section>
 <!-- Blog Section End -->
 
-<!-- 공통 feature -->
-<div th:fragment="feature">
-    <div th:replace="~{fragments/user/feature :: feature}"></div>
-</div>
-
-<!-- 공통 푸터 -->
-<div th:fragment="footer">
-    <div th:replace="~{fragments/user/footer :: footer}"></div>
-</div>
-
 <!-- Quickview Modal -->
 <div class="modal fade quickview-modal" id="gi_quickview_modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -3728,6 +3718,16 @@
     </div>
 </div>
 <!-- Newsletter Modal end -->
+
+<!-- 공통 feature -->
+<div th:fragment="feature">
+    <div th:replace="~{fragments/user/feature :: feature}"></div>
+</div>
+
+<!-- 공통 푸터 -->
+<div th:fragment="footer">
+    <div th:replace="~{fragments/user/footer :: footer}"></div>
+</div>
 
 <!-- 공통 js -->
 <div th:fragment="js">
