@@ -35,7 +35,7 @@ public class UserLoginController {
 
         // 로그인 확인
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            return "redirect:/user/profile";
+            return "redirect:/";
         }
         // 로그인 상태가 아닐 시
         return "login/login";

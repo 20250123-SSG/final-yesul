@@ -265,7 +265,7 @@ public class UserController {
     @GetMapping("/reset-new-password")
     public String resetNewPasswordForm(Model model) {
         model.addAttribute("userPasswordResetDto", new UserPasswordResetDto());
-        return "user/resign";
+        return "user/password-reset";
     }
     
     // 패스워드 신규 설정 Post
