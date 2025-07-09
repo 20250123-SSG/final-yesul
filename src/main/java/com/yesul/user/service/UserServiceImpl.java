@@ -200,16 +200,6 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setProfile(userUpdateDto.getProfile());
         }
-/*
-        if (userUpdateDto.getNewPassword() != null && !userUpdateDto.getNewPassword().isEmpty()) {
-            if (!userUpdateDto.getNewPassword().equals(userUpdateDto.getConfirmPassword())) {
-                throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-            }
-            user.encodePassword(passwordEncoder);
-             user.setPassword(passwordEncoder.encode(userUpdateDto.getNewPassword()));
-        }
-
-*/
         try {
             userRepository.save(user);
         } catch (Exception e) {
