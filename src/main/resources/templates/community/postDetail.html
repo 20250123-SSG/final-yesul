@@ -169,7 +169,7 @@
 
     if (likeBtn && likeCount && postId) {
       likeBtn.addEventListener('click', () => {
-        fetch(`/likes/toggle/${postId}`, {
+        fetch(`/likes/${postId}`, {
           method: 'POST'
         })
                 .then(res => res.json())
