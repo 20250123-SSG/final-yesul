@@ -47,8 +47,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/admin/login", "/asserts/**"
                         ).permitAll()
-                        .requestMatchers("/admin/otp").hasAuthority("ADMIN_PENDING_OTP")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/otp","/admin/otp/verify").hasAuthority("ADMIN_PENDING_OTP")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
