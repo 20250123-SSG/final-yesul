@@ -33,8 +33,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JavaMailSender javaMailSender;
     private final ImageUpload imageUpload;
-    private final PasswordAsyncService passwordAsyncService;
-    private final EmailAsyncService emailAsyncService;
 
 
     /**
@@ -47,27 +45,20 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional // 메서드 실행 중 예외 발생 시 롤백 처리
     public User registerUser(UserRegisterDto userRegisterDto) {
-        // 1. 이메일 중복 확인 (기존 isMailDuplicated 역할)
         if (isEmailDuplicated(userRegisterDto.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
-        // 2. 닉네임 중복 확인 (새로 추가)
         if (isNicknameDuplicated(userRegisterDto.getNickname())) {
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
 
-        // 3. User 엔티티 생성 및 초기 설정
         User user = userRegisterDto.toEntity(passwordEncoder.encode(userRegisterDto.getPassword()));
         user.setStatus('2');
         user.generateEmailCheckToken();
 
-        // 4. 사용자 정보 저장
         User savedUser = userRepository.save(user);
 
-        // 5. 이메일 인증 메일 발송
-        sendVerificationEmail(savedUser);
-
-        log.info("새 사용자 등록 및 인증 이메일 발송 대기: {}", savedUser.getEmail());
+        log.info("새 사용자 등록: {}", savedUser.getEmail());
         return savedUser;
     }
 
@@ -209,14 +200,6 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setProfile(userUpdateDto.getProfile());
         }
-
-        if (userUpdateDto.getNewPassword() != null && !userUpdateDto.getNewPassword().isEmpty()) {
-            if (!userUpdateDto.getNewPassword().equals(userUpdateDto.getConfirmPassword())) {
-                throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-            }
-            user.encodePassword(passwordEncoder);
-             user.setPassword(passwordEncoder.encode(userUpdateDto.getNewPassword()));
-        }
         try {
             userRepository.save(user);
         } catch (Exception e) {
@@ -247,35 +230,6 @@ public class UserServiceImpl implements UserService {
         // 2) type 컬럼을 '3'으로 변경
         user.setType('3');
         userRepository.save(user);
-    }
-
-    /** 가입 인증 미완료 유저용 재발송 */
-    @Override
-    @Transactional
-    public void resendSignUpVerification(String email) {
-        User u = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
-        emailAsyncService.sendSignUpVerificationMail(u);
-    }
-
-    /** 가입 인증 완료 유저용 비밀번호 재설정 링크 발송 */
-    @Override
-    @Transactional
-    public void resendPasswordResetLink(String email) {
-        User u = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
-        emailAsyncService.sendPasswordResetMail(u);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isPasswordResetTokenValid(String email, String token) {
-        return userRepository.findByEmail(email)
-                .filter(u -> token.equals(u.getEmailCheckToken()))
-                .filter(u -> u.getEmailCheckTokenGeneratedAt()
-                        .plusMinutes(15)
-                        .isAfter(LocalDateTime.now()))
-                .isPresent();
     }
 
     @Override
