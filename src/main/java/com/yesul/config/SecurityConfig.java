@@ -30,11 +30,12 @@ public class SecurityConfig {
     public SecurityConfig(
             @Qualifier("userDetailsServiceImpl") UserDetailsService adminUserDetailsService,
             CustomUserDetailsService customUserDetailsService,
-            CustomOAuth2UserService oAuth2MemberService) {
+            CustomOAuth2UserService oAuth2MemberService,
+            VisitorTrackingFilter visitorTrackingFilter) {
         this.adminUserDetailsService = adminUserDetailsService;
         this.customUserDetailsService = customUserDetailsService;
         this.oAuth2MemberService = oAuth2MemberService;
-        this.visitorTrackingFilter = new VisitorTrackingFilter();
+        this.visitorTrackingFilter = visitorTrackingFilter;
     }
 
     @Bean
