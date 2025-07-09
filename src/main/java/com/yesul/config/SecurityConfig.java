@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.yesul.user.service.CustomOAuth2UserService;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -23,6 +24,7 @@ public class SecurityConfig {
     private final UserDetailsService adminUserDetailsService;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService oAuth2MemberService;
+    private final VisitorTrackingFilter visitorTrackingFilter;
 
     // @RequiredArgsConstructor 제거, @Qualifier로 직접 명시, Ambiguty 처리
     public SecurityConfig(
@@ -32,6 +34,7 @@ public class SecurityConfig {
         this.adminUserDetailsService = adminUserDetailsService;
         this.customUserDetailsService = customUserDetailsService;
         this.oAuth2MemberService = oAuth2MemberService;
+        this.visitorTrackingFilter = new VisitorTrackingFilter();
     }
 
     @Bean
@@ -47,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(visitorTrackingFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
@@ -103,6 +107,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(visitorTrackingFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
