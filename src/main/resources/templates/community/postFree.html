@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head>
+<head th:replace="~{fragments/user/head :: head}">
   <meta charset="UTF-8">
   <title>Community Free Board</title>
   <link rel="icon" th:href="@{/assets/img/favicon/favicon.png}" sizes="32x32">
@@ -19,9 +19,6 @@
 </head>
 
 <body>
-
-<!-- 헤드 -->
-<div th:replace="fragments/user/head :: header"></div>
 
 <!-- 헤더 -->
 <div th:insert="~{fragments/user/header :: header}"></div>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{fragments/user/head :: head}">
   <meta charset="UTF-8">
   <title>게시글 작성</title>
 
@@ -16,7 +16,7 @@
   <link rel="stylesheet" th:href="@{/assets/css/plugins/bootstrap.css}">
   <link rel="stylesheet" th:href="@{/assets/css/style.css}" id="main_style">
 
-  <!-- ✅ 에디터 이미지 스타일 추가 -->
+  <!-- 에디터 이미지 스타일 추가 -->
   <style>
     .toastui-editor-contents img {
       max-width: 100%;
