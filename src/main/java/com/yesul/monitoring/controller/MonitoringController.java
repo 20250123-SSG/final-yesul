@@ -1,10 +1,14 @@
 package com.yesul.monitoring.controller;
 
+import com.yesul.login.model.dto.AdminLoginLogDto;
+import com.yesul.login.model.entity.AdminLoginLog;
 import com.yesul.monitoring.service.MonitoringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/admin")
@@ -13,16 +17,23 @@ public class MonitoringController {
 
     private final MonitoringService monitoringService;
 
-    @ResponseBody
     @GetMapping("/dashboard")
     public String dashboardPage(Model model) {
         int todayVisitor = monitoringService.getTodayVisitorCount();
         int realTimeUser = monitoringService.getRealTimeUserCount();
 
+        // 시스템 모니터링
         model.addAttribute("todayVisitor", todayVisitor);
         model.addAttribute("realTimeUser", realTimeUser);
 
         return "admin/dashboard";
+    }
+
+    @GetMapping("/dashboard/login-log")
+    public String loginLogPage(Model model) {
+        List<AdminLoginLogDto> adminLoginLog = monitoringService.getAllLoginLogs(); //형변환 / 뷰 어떻게 보여줄지
+        model.addAttribute("adminLoginLog", adminLoginLog);
+        return "admin/dashboard/login-log";
     }
 
 }

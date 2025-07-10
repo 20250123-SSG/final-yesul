@@ -1,20 +1,26 @@
 package com.yesul.monitoring.service;
 
-import com.yesul.monitoring.model.dto.DashboardDto;
+import com.yesul.login.model.dto.AdminLoginLogDto;
+import com.yesul.login.model.entity.AdminLoginLog;
+import com.yesul.login.repository.AdminLoginLogRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MonitoringService {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final AdminLoginLogRepository logRepository;
+    private final ModelMapper modelMapper;
 
     public int getTodayVisitorCount() {
         String todayKey = "visitors:" + LocalDate.now();
@@ -39,5 +45,20 @@ public class MonitoringService {
         }
 
         return count;
+    }
+
+    public void logAdminLogin(String ip, String userAgent) {
+        AdminLoginLog log = AdminLoginLog.builder()
+                .ip(ip)
+                .userAgent(userAgent)
+                .build();
+
+        logRepository.save(log);
+    }
+
+    public List<AdminLoginLogDto> getAllLoginLogs() {
+        List<AdminLoginLog> logs = logRepository.findAll();
+
+        return logs.stream().map(log -> modelMapper.map(log, AdminLoginLogDto.class)).collect(Collectors.toList());
     }
 }
