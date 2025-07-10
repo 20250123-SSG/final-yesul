@@ -2,7 +2,9 @@ package com.yesul.monitoring.service;
 
 import com.yesul.monitoring.model.dto.DashboardDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,6 +23,21 @@ public class MonitoringService {
     }
 
     public int getRealTimeUserCount() {
-        return redisTemplate.keys("online-users:*").size();
+        ScanOptions options = ScanOptions.scanOptions() //SCAN 설정
+                .match("online-users:*")
+                .count(1000)
+                .build();
+
+        Cursor<byte[]> cursor = (Cursor<byte[]>) redisTemplate.executeWithStickyConnection(
+                connection -> connection.scan(options)
+        );
+
+        int count = 0;
+        while (cursor != null && cursor.hasNext()) {
+            cursor.next();
+            count++;
+        }
+
+        return count;
     }
 }
