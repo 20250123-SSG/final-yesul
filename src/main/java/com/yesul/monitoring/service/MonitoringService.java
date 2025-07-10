@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -17,5 +18,9 @@ public class MonitoringService {
         String todayKey = "visitors:" + LocalDate.now();
         Long count = redisTemplate.opsForSet().size(todayKey);
         return count != null ? count.intValue() : 0;
+    }
+
+    public int getRealTimeUserCount() {
+        return redisTemplate.keys("online-users:*").size();
     }
 }

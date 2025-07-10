@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Component
-public class VisitorTrackingFilter implements Filter {
+public class SystemMonitoringFilter implements Filter {
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -35,6 +35,10 @@ public class VisitorTrackingFilter implements Filter {
         if (Boolean.TRUE.equals(redisTemplate.getExpire(todayKey) == -1)) { // 키의 남은 TTL이 -1이라면 (TTL 설정 전, 오늘 첫방문을 의미)
             redisTemplate.expire(todayKey, Duration.ofDays(2)); // 만료기간설정
         }
+
+        String activeKey = "online-users:" + visitorId;
+        redisTemplate.opsForValue().set(activeKey, "active");
+        redisTemplate.expire(activeKey, Duration.ofMinutes(10));
 
         chain.doFilter(request, response);
     }

@@ -17,8 +17,11 @@ public class MonitoringController {
     @GetMapping("/dashboard")
     public String dashboardPage(Model model) {
         int todayVisitor = monitoringService.getTodayVisitorCount();
+        int realTimeUser = monitoringService.getRealTimeUserCount();
 
         model.addAttribute("todayVisitor", todayVisitor);
+        model.addAttribute("realTimeUser", realTimeUser);
+
         return "admin/dashboard";
     }
 

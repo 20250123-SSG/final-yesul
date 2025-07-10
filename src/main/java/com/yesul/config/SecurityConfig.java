@@ -24,18 +24,18 @@ public class SecurityConfig {
     private final UserDetailsService adminUserDetailsService;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService oAuth2MemberService;
-    private final VisitorTrackingFilter visitorTrackingFilter;
+    private final SystemMonitoringFilter systemMonitoringFilter;
 
     // @RequiredArgsConstructor 제거, @Qualifier로 직접 명시, Ambiguty 처리
     public SecurityConfig(
             @Qualifier("userDetailsServiceImpl") UserDetailsService adminUserDetailsService,
             CustomUserDetailsService customUserDetailsService,
             CustomOAuth2UserService oAuth2MemberService,
-            VisitorTrackingFilter visitorTrackingFilter) {
+            SystemMonitoringFilter systemMonitoringFilter) {
         this.adminUserDetailsService = adminUserDetailsService;
         this.customUserDetailsService = customUserDetailsService;
         this.oAuth2MemberService = oAuth2MemberService;
-        this.visitorTrackingFilter = visitorTrackingFilter;
+        this.systemMonitoringFilter = systemMonitoringFilter;
     }
 
     @Bean
@@ -51,7 +51,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(visitorTrackingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(systemMonitoringFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
@@ -108,7 +108,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(visitorTrackingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(systemMonitoringFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
