@@ -19,6 +19,12 @@
   <link rel="stylesheet" th:href="@{/assets/css/user-mypage.css}">
 </head>
 <body>
+
+<!-- 공통 헤더 -->
+<div th:fragment="head">
+  <div th:replace="~{fragments/user/head :: head}"></div>
+</div>
+
 <!-- 공통 헤더 -->
 <div th:fragment="header">
   <div th:replace="~{fragments/user/header :: header}"></div>

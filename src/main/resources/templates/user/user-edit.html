@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<!-- 1) 공통 head -->
-<head th:replace="~{layout/user-default :: head('내정보 수정')}"></head>
+<head th:replace="~{fragments/user/head :: head}"></head>
 
 <body>
-<!-- 2) 공통 header -->
-<div th:replace="~{layout/user-default :: header}"></div>
+
+<div th:replace="~{fragments/user/header :: header}"></div>
 <!-- Loader -->
 <div id="gi-overlay">
   <div class="loader"></div>
@@ -132,15 +131,19 @@
 </section>
 <!-- Vendor setting section end -->
 
-<!-- Footer Start -->
-<div th:replace="~{fragments/user/footer.html}"></div>
-<!-- Footer Area End -->
+<div th:fragment="feature">
+  <div th:replace="~{fragments/user/feature :: feature}"></div>
+</div>
 
-<!-- Feature tools -->
-<div th:replace="~{fragments/user/feature.html}"></div>
+<!-- 공통 푸터 -->
+<div th:fragment="footer">
+  <div th:replace="~{fragments/user/footer :: footer}"></div>
+</div>
 
-<!-- Plugins JS -->
-<div th:replace="~{layout/user-default :: scripts}"></div>
+<!-- 공통 js -->
+<div th:fragment="js">
+  <div th:replace="~{fragments/user/js :: js}"></div>
+</div>
 
 <!-- Back to top  -->
 <a class="gi-back-to-top"></a>
