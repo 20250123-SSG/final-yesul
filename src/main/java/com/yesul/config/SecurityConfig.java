@@ -1,5 +1,6 @@
 package com.yesul.config;
 
+import com.yesul.login.handler.AdminLoginSuccessHandler;
 import com.yesul.user.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.yesul.user.service.CustomOAuth2UserService;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -24,6 +26,7 @@ public class SecurityConfig {
     private final UserDetailsService adminUserDetailsService;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService oAuth2MemberService;
+    private final AdminLoginSuccessHandler adminLoginSuccessHandler;
     private final SystemMonitoringFilter systemMonitoringFilter;
 
     // @RequiredArgsConstructor 제거, @Qualifier로 직접 명시, Ambiguty 처리
@@ -31,10 +34,12 @@ public class SecurityConfig {
             @Qualifier("userDetailsServiceImpl") UserDetailsService adminUserDetailsService,
             CustomUserDetailsService customUserDetailsService,
             CustomOAuth2UserService oAuth2MemberService,
+            AdminLoginSuccessHandler adminLoginSuccessHandler,
             SystemMonitoringFilter systemMonitoringFilter) {
         this.adminUserDetailsService = adminUserDetailsService;
         this.customUserDetailsService = customUserDetailsService;
         this.oAuth2MemberService = oAuth2MemberService;
+        this.adminLoginSuccessHandler = adminLoginSuccessHandler;
         this.systemMonitoringFilter = systemMonitoringFilter;
     }
 
@@ -48,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/admin/login", "/asserts/**"
                         ).permitAll()
+                        .requestMatchers("/admin/otp","/admin/otp/verify").hasAuthority("ADMIN_PENDING_OTP")
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -55,7 +61,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
-                        .defaultSuccessUrl("/admin/dashboard", true)
+                        .successHandler(adminLoginSuccessHandler)
                         .failureHandler((request, response, exception) -> {
                             exception.printStackTrace();
                             response.sendRedirect("/admin/login?error");
@@ -87,13 +93,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 // 로그인 이후 구글 devtool
                                 "/.well-known/appspecific/**",
-                                // User단
+                                // Login
                                 "/user/verify-email",
                                 "/user/regist",
                                 "/user/regist-process",
                                 "/user/user-regist-mail",
                                 "/reset-password",
                                 "/password-reset-complete",
+                                "/user/reset-new-password",
 
                                 "/", "/main", "/user/assets/**", "/community/**", "/error",
                                 "/assets/**",
@@ -118,12 +125,12 @@ public class SecurityConfig {
                             exception.printStackTrace();
                             response.sendRedirect("/login?error");
                         })
-                        .defaultSuccessUrl("/user/profile")
+                        .defaultSuccessUrl("/", true)
                         .permitAll()
                 )
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/user/profile")
+                        .defaultSuccessUrl("/", true)
                         .failureHandler((request, response, exception) -> {
                             exception.printStackTrace();
                             response.sendRedirect("/login?error");
