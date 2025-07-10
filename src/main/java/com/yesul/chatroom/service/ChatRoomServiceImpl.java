@@ -15,11 +15,6 @@ import com.yesul.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,42 +44,30 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom created = chatroomRepository.save(ChatRoom.builder()
                 .user(user)
                 .lastMessage("")
-                .unreadCount(0)
+                .userUnreadCount(0)
                 .admin(admin)
                 .build());
 
         return new ChatRoomResult(created, true);
     }
+    //admin 기준 채팅방 리스트 조회
     @Override
     public AdminChatRoomsResponse getAdminChatRooms(Long cursor, int size) {
 
-        Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "id"));
-
-        List<ChatRoomSummaryResponse> content = chatroomRepositoryCustom.findChatRoomsWithCursor(cursor, size + 1);
-
-        boolean hasNext = false;
-        if (content.size() > size) {
-            hasNext = true;
-            content.remove(size);
-        }
-
-        Slice<ChatRoomSummaryResponse> slice = new SliceImpl<>(content, pageable, hasNext);
+        List<ChatRoomSummaryResponse> summaries = chatroomRepositoryCustom.findChatRoomsWithCursor(cursor, size);
 
         int totalUnread = chatroomRepositoryCustom.countTotalUnreadCount();
 
-        Long nextCursor = slice.hasNext()
-                ? slice.getContent().get(slice.getNumberOfElements() - 1).getRoomId()
-                : null;
+        Long nextCursor = summaries.isEmpty() ? null :
+                summaries.get(summaries.size() - 1).getRoomId();
 
         return AdminChatRoomsResponse.builder()
-                .chatRooms(slice.getContent())
+                .chatRooms(summaries)
                 .totalUnreadCount(totalUnread)
                 .nextCursor(nextCursor)
-                .hasNext(slice.hasNext())
                 .build();
     }
 
-    //유저 이름으로 채팅방 검색
     @Override
     @Transactional(readOnly = true)
     public List<ChatRoomSummaryResponse> searchChatRoom(String keyword) {

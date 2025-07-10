@@ -13,5 +13,4 @@ public class AdminChatRoomsResponse {
     private final List<ChatRoomSummaryResponse> chatRooms;
     private final int totalUnreadCount;
     private final Long nextCursor;
-    private final boolean hasNext;
 }

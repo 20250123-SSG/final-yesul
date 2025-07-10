@@ -31,7 +31,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
                         ChatRoomSummaryResponse.class,
                         cr.id,
                         cr.lastMessage,
-                        cr.unreadCount,
+                        cr.adminUnreadCount,
                         u.id,
                         u.name,
                         u.profile
@@ -39,20 +39,9 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
                 .from(cr)
                 .join(cr.user, u)
                 .where(builder)
-                .orderBy(cr.id.desc()) // 최신순
+                .orderBy(cr.id.desc())
                 .limit(size)
                 .fetch();
-    }
-    @Override
-    public int countTotalUnreadCount() {
-        QChatRoom cr = QChatRoom.chatRoom;
-
-        Integer sum = queryFactory
-                .select(cr.unreadCount.sum())
-                .from(cr)
-                .fetchOne();
-
-        return sum != null ? sum : 0;
     }
 
     @Override
@@ -62,7 +51,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
 
         BooleanBuilder builder = new BooleanBuilder();
         if (keyword != null && !keyword.isBlank()) {
-            builder.and(u.name.startsWithIgnoreCase(keyword));
+            builder.and(u.name.containsIgnoreCase(keyword));
         }
 
         return queryFactory
@@ -70,7 +59,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
                         ChatRoomSummaryResponse.class,
                         cr.id,
                         cr.lastMessage,
-                        cr.unreadCount,
+                        cr.adminUnreadCount,
                         u.id,
                         u.name,
                         u.profile
@@ -83,5 +72,14 @@ public class ChatRoomRepositoryImpl implements ChatRoomRepositoryCustom {
     }
 
 
+
+    @Override
+    public int countTotalUnreadCount() {
+        QChatRoom cr = QChatRoom.chatRoom;
+        return queryFactory
+                .select(cr.adminUnreadCount.sum())
+                .from(cr)
+                .fetchOne();
+    }
 }
 
