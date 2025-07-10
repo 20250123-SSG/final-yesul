@@ -1,0 +1,84 @@
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+.profile-upload-wrapper {
+  position: relative;
+  display: inline-block; /* 너비가 이미지 크기만큼 */
+}
+
+.profile-upload-wrapper .profile-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+/* 카메라 아이콘 오버레이 */
+.profile-upload-wrapper .camera-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.profile-upload-wrapper .camera-overlay:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+/* 숨긴 input */
+.profile-upload-wrapper .d-none {
+  display: none !important;
+}
+
+.profile-upload-wrapper-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.address-group {
+  display: flex;
+  gap: 0.5rem;             /* 요소 간 간격 */
+  align-items: center;     /* 수직 중앙 정렬 */
+}
+
+.address-group input {
+  flex: 1 1 auto;          /* 남은 공간을 차지하되, 줄어들 수 있도록 */
+  min-width: 0;            /* flex 아이템이 줄어들 때 overflow 방지 */
+  height: 3rem;            /* 기존에 맞춘 높이 */
+  padding: 0 0.75rem;
+}
+
+.address-group .address-btn {
+  flex: 0 0 auto;          /* 크기 고정 */
+  white-space: nowrap;
+  height: 3rem;            /* 입력창과 동일한 높이 */
+  line-height: 3rem;
+  padding: 0 1rem;
+}
+
+.address-group .form-control {
+  /* flex-grow: 1; 이미 주어졌으면 input이 남은 공간 채움 */
+}

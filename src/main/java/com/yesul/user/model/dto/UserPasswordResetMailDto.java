@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-public class UserPasswordRequestDto {
+public class UserPasswordResetMailDto {
     @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private String email;
