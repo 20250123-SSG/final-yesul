@@ -1,8 +1,8 @@
-package com.yesul.monitoring.service;
+package com.yesul.admin.service;
 
-import com.yesul.login.model.dto.AdminLoginLogDto;
-import com.yesul.login.model.entity.AdminLoginLog;
-import com.yesul.monitoring.repository.AdminLoginLogRepository;
+import com.yesul.admin.model.dto.AdminLoginLogDto;
+import com.yesul.admin.model.entity.AdminLoginLog;
+import com.yesul.admin.repository.AdminLoginLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.redis.core.Cursor;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MonitoringService {
+public class AdminService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final AdminLoginLogRepository logRepository;

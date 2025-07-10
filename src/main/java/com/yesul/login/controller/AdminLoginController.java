@@ -1,7 +1,7 @@
 package com.yesul.login.controller;
 
 import com.yesul.login.service.AdminOtpService;
-import com.yesul.monitoring.service.MonitoringService;
+import com.yesul.admin.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminLoginController {
 
     private final AdminOtpService adminOtpService;
-    private final MonitoringService monitoringService;
+    private final AdminService adminService;
 
     @GetMapping("/login")
     public void loginPage(){}
@@ -42,7 +42,7 @@ public class AdminLoginController {
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 
-        monitoringService.logAdminLogin(ip, userAgent);
+        adminService.logAdminLogin(ip, userAgent);
 
         return "redirect:/admin/dashboard";
     }
