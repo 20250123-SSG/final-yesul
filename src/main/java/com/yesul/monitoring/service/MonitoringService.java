@@ -2,7 +2,7 @@ package com.yesul.monitoring.service;
 
 import com.yesul.login.model.dto.AdminLoginLogDto;
 import com.yesul.login.model.entity.AdminLoginLog;
-import com.yesul.login.repository.AdminLoginLogRepository;
+import com.yesul.monitoring.repository.AdminLoginLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.redis.core.Cursor;

@@ -38,7 +38,7 @@ public class SystemMonitoringFilter implements Filter {
 
         String activeKey = "online-users:" + visitorId;
         redisTemplate.opsForValue().set(activeKey, "active");
-        redisTemplate.expire(activeKey, Duration.ofMinutes(10));
+        redisTemplate.expire(activeKey, Duration.ofMinutes(5));
 
         chain.doFilter(request, response);
     }
