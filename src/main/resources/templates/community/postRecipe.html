@@ -10,6 +10,9 @@
 </head>
 <body>
 
+<!-- 헤드 -->
+<div th:replace="fragments/user/head :: header"></div>
+
 <!-- 헤더 -->
 <div th:replace="fragments/user/header :: header"></div>
 
@@ -86,8 +89,7 @@
         <div style="position:absolute; left:50%; transform:translateX(-50%); z-index:1; width:220px; max-width:90vw;">
             <div class="oh-search-wrap" style="margin:0;">
                 <form class="oh-search-form" method="get" th:action="@{/community/{boardName}(boardName=${boardName})}">
-                    <input class="oh-search-input" type="text" name="keyword" th:value="${paramKeyword}" placeholder="게시글 검색">
-                    <button class="oh-search-btn" type="submit">
+                    <input class="oh-search-input" type="text" name="keyword" th:value="${paramKeyword}" placeholder="게시글 검색">                    <button class="oh-search-btn" type="submit">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
                 </form>
