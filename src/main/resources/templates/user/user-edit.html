@@ -2,9 +2,9 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/user/head :: head}"></head>
-
+<link rel="stylesheet" th:href="@{/assets/css/user-mypage.css}">
+<link rel="stylesheet" id="main_style" th:href="@{/assets/css/style.css}">
 <body>
-
 <div th:replace="~{fragments/user/header :: header}"></div>
 <!-- Loader -->
 <div id="gi-overlay">
@@ -131,19 +131,14 @@
 </section>
 <!-- Vendor setting section end -->
 
-<div th:fragment="feature">
-  <div th:replace="~{fragments/user/feature :: feature}"></div>
-</div>
+<div th:replace="~{layout/user-default :: feature}"></div>
 
 <!-- 공통 푸터 -->
 <div th:fragment="footer">
   <div th:replace="~{fragments/user/footer :: footer}"></div>
 </div>
 
-<!-- 공통 js -->
-<div th:fragment="js">
-  <div th:replace="~{fragments/user/js :: js}"></div>
-</div>
+<div th:replace="~{layout/user-default :: scripts}"></div>
 
 <!-- Back to top  -->
 <a class="gi-back-to-top"></a>
