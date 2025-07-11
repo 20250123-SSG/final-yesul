@@ -2,7 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <!-- 공통 헤드 -->
-<head th:replace="~{fragments/user/head :: head}"></head>
+<head th:replace="~{fragments/user/head :: head}">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&display=swap" rel="stylesheet">
+</head>
 
 <body>
 
@@ -15,10 +17,10 @@
 <!-- ✅ 중앙 채팅 화면 -->
 <div class="chat-wrapper">
   <div class="chat-box">
-    <div class="chat-title">🤖 AI와의 대화</div>
+    <div class="chat-title">AI 주락이와의 대화</div>
     <div id="chat-messages" class="chat-messages"></div>
     <div class="chat-input-area">
-      <input type="text" id="chat-input" placeholder="메시지를 입력하세요..."/>
+      <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." />
       <button id="chat-send-btn">보내기</button>
     </div>
   </div>
@@ -34,7 +36,7 @@
 <script th:src="@{/assets/js/ai-chat/ai-chat.js}"></script>
 <script th:src="@{assets/js/chatapp.js}"></script>
 
-
+<!-- ✅ 채팅 동작 스크립트 -->
 <script th:inline="javascript">
   const chatInput = document.getElementById('chat-input');
   const chatSendBtn = document.getElementById('chat-send-btn');
@@ -56,30 +58,26 @@
     chatMessages.appendChild(userMsg);
     chatInput.value = '';
 
-    // 2. 로딩 메시지 표시
+    // 2. 로딩 메시지 추가
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'message ai loading';
-
-    // 아이콘 + 텍스트 조합
     loadingMsg.innerHTML = `
-  <div class="spinner"></div>
-  <span>주락이 AI가 생각 중입니다 <span class="loading-dots"></span></span>
-`;
+      <div class="spinner"></div>
+      <span>주락이 AI가 생각 중입니다</span>
+      <div class="typing-bubble"><span></span><span></span><span></span></div>
+    `;
     chatMessages.appendChild(loadingMsg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // 3. API 요청
+    // 3. API 호출
     fetch('http://localhost:8080/alcohols/clova', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ask: text})
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ask: text })
     })
       .then(response => response.json())
       .then(data => {
-        // 4. 로딩 메시지 제거
         chatMessages.removeChild(loadingMsg);
-
-        // 5. 응답 메시지 표시 (타이핑 효과)
         const aiText = data.result?.finalAnswer || 'AI 응답을 가져오지 못했어요.';
         typeAIMessage(aiText);
       })
@@ -97,7 +95,6 @@
     chatMessages.appendChild(aiMsg);
 
     let index = 0;
-
     function typeChar() {
       if (index < message.length) {
         aiMsg.textContent += message.charAt(index);
@@ -107,11 +104,10 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }
     }
-
     typeChar();
   }
 
-  // ✅ 초기 인사 메시지
+  // ✅ 초기 인사
   window.addEventListener('DOMContentLoaded', () => {
     typeAIMessage('안녕하세요! 무엇을 도와드릴까요? 😊', 50);
   });
@@ -119,6 +115,13 @@
 
 <!-- ✅ 채팅 CSS -->
 <style>
+  /* 전체 배경 및 폰트 설정 */
+  body {
+    background-color: #f8f5f0;
+    font-family: 'Nanum Myeongjo', 'Apple SD Gothic Neo', serif;
+  }
+
+  /* 중앙 정렬 및 채팅 박스 래퍼 */
   .chat-wrapper {
     display: flex;
     justify-content: center;
@@ -127,30 +130,37 @@
     margin: 40px 0;
   }
 
+  /* 채팅 박스 */
   .chat-box {
     width: 100%;
-    max-width: 600px;
-    background: #ffffff;
-    border: 1px solid #ddd;
+    max-width: 1000px;
+    background: #fffdf7;
+    border: 1px solid #e5dcc9;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     overflow: hidden;
   }
 
+  /* 제목 헤더 */
   .chat-title {
-    background: #007bff;
-    color: white;
-    padding: 15px;
-    font-size: 18px;
+    background: #6f4e37;
+    color: #fffdf7;
+    padding: 18px;
+    font-size: 20px;
     font-weight: bold;
     text-align: center;
   }
 
+  /* 채팅 메시지 영역 */
   .chat-messages {
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: #faf7f2;
+    background-image: url('/assets/img/yesul/AI/bartender-ai-no-background.png'); /* 이미지 */
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 400px auto; /* 사이즈 */
     height: 600px;
     overflow-y: auto;
     display: flex;
@@ -158,103 +168,110 @@
     gap: 10px;
   }
 
+  /* 공통 메시지 박스 */
   .message {
-    max-width: 80%;
-    padding: 10px 14px;
+    max-width: 90%;
+    padding: 12px 16px;
     border-radius: 10px;
-    font-size: 15px;
-    line-height: 1.4;
+    font-size: 16px;
+    line-height: 1.6;
   }
 
+  /* 유저 메시지 스타일 */
   .message.user {
     align-self: flex-end;
-    background-color: #d1e7dd;
+    background-color: #dcead7;
+    color: #2e4a27;
+    border: 1px solid #b6d7a8;
   }
 
+  /* AI 메시지 스타일 */
   .message.ai {
     align-self: flex-start;
-    background-color: #f8d7da;
+    background-color: #fff1dd;
+    color: #4a3b28;
+    border: 1px solid #f3d2a9;
   }
 
-  /* 로딩 메시지 스타일 */
+  /* AI 로딩 메시지 */
   .message.ai.loading {
     font-style: italic;
     color: #888;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
-  /* 깜빡이는 점 5개 */
-  .loading-dots::after {
-    content: "";
-    display: inline-block;
-    width: 2.5em;
-    animation: dots 2s steps(5, end) infinite;
-    text-align: left;
-    overflow: hidden;
+  /* 타이핑 중 애니메이션 (버블) */
+  .typing-bubble {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
   }
 
-  .loading-dots {
-    margin-left: 4px;
+  .typing-bubble span {
+    width: 8px;
+    height: 8px;
+    background-color: #b9996d;
+    border-radius: 50%;
+    animation: bounce 1.3s infinite;
+    opacity: 0.5;
   }
 
-  @keyframes dots {
-    0% {
-      content: "";
-    }
-    33% {
-      content: ".";
-    }
-    66% {
-      content: "..";
-    }
-    100% {
-      content: "...";
-    }
+  .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-6px); opacity: 1; }
   }
 
-  /* 스피너 (회전 아이콘) */
+  /* 로딩 스피너 */
   .spinner {
     width: 16px;
     height: 16px;
     border: 2px solid #ccc;
-    border-top-color: #007bff;
+    border-top-color: #b28b5e;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
 
   @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
   }
 
+  /* 입력창 영역 */
   .chat-input-area {
     display: flex;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #e0d4ba;
+    background-color: #f5f1e6;
   }
 
   #chat-input {
     flex: 1;
     padding: 14px;
     border: none;
-    font-size: 15px;
+    font-size: 16px;
     outline: none;
+    background-color: #fffaf4;
   }
 
+  /* 보내기 버튼 */
   #chat-send-btn {
-    background-color: #007bff;
+    background-color: #b28b5e;
     color: white;
     border: none;
-    padding: 0 20px;
-    font-size: 15px;
+    padding: 0 24px;
+    font-size: 16px;
     cursor: pointer;
+    font-weight: bold;
   }
 
   #chat-send-btn:hover {
-    background-color: #0056b3;
+    background-color: #8c6c45;
   }
 </style>
+
 </body>
 </html>
