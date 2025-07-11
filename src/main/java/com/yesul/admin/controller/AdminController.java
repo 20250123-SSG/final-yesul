@@ -3,6 +3,7 @@ package com.yesul.admin.controller;
 import com.yesul.admin.model.dto.AdminLoginLogDto;
 import com.yesul.admin.service.AdminService;
 import com.yesul.community.model.dto.PostResponseDto;
+import com.yesul.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,8 @@ public class AdminController {
     public String dashboardPage(Model model) {
         int todayVisitor = adminService.getTodayVisitorCount();
         int realTimeUser = adminService.getRealTimeUserCount();
+        int totalUser = adminService.getUserCount();
+        int totalAlcohol = adminService.getAlcoholCount();
 
         List<PostResponseDto> popularPosts = adminService.getPopularPosts();
 
@@ -30,9 +33,11 @@ public class AdminController {
 
         // 인기순위
         model.addAttribute("popularPosts", popularPosts);
-        //model.addAttribute("popularAlcohol", popularAlcohol);
+        model.addAttribute("popularAlcohol", popularPosts); // 인기주류 리스트로 가정하고 구현
 
         // 전체 주류 수, 전체 회원 수
+        model.addAttribute("totalUser", totalUser);
+        model.addAttribute("totalAlcohol", totalAlcohol);
 
         return "admin/dashboard";
     }

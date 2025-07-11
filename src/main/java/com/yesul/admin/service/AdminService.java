@@ -3,6 +3,7 @@ package com.yesul.admin.service;
 import com.yesul.admin.model.dto.AdminLoginLogDto;
 import com.yesul.admin.model.entity.AdminLoginLog;
 import com.yesul.admin.repository.AdminLoginLogRepository;
+import com.yesul.alcohol.repository.AlcoholRepository;
 import com.yesul.community.model.dto.PostResponseDto;
 import com.yesul.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class AdminService {
     private final RedisTemplate<String, String> redisTemplate;
     private final AdminLoginLogRepository logRepository;
     private final PostRepository postRepository;
+    private final PostRepository userRepository;
+    private final AlcoholRepository alcoholRepository;
     private final ModelMapper modelMapper;
 
     public int getTodayVisitorCount() {
@@ -72,4 +75,12 @@ public class AdminService {
     //public List<PostResponseDto> getPopularAlcohol() {
     //    return AlcoholRepository.findPopularAlcoholByLikes();
     //}
+
+    public int getUserCount() {
+        return (int) userRepository.count();
+    }
+
+    public int getAlcoholCount() {
+        return (int) alcoholRepository.count();
+    }
 }
