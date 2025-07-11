@@ -51,6 +51,10 @@
     const text = chatInput.value.trim();
     if (!text) return;
 
+    // 입력 막기
+    chatInput.disabled = true;
+    chatSendBtn.disabled = true;
+
     // 1. 유저 메시지 추가
     const userMsg = document.createElement('div');
     userMsg.className = 'message user';
@@ -58,33 +62,49 @@
     chatMessages.appendChild(userMsg);
     chatInput.value = '';
 
-    // 2. 로딩 메시지 추가
+    // 2. 로딩 메시지 표시
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'message ai loading';
+
     loadingMsg.innerHTML = `
-      <div class="spinner"></div>
-      <span>주락이 AI가 생각 중입니다</span>
-      <div class="typing-bubble"><span></span><span></span><span></span></div>
-    `;
+    <div class="spinner"></div>
+    <span>주락이 AI가 생각 중입니다 </span>
+    <div class="typing-bubble">
+      <span></span><span></span><span></span>
+    </div>
+  `;
     chatMessages.appendChild(loadingMsg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
-    // 3. API 호출
+    // 3. API 요청
     fetch('http://localhost:8080/alcohols/clova', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ask: text })
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ask: text})
     })
       .then(response => response.json())
       .then(data => {
+        // 4. 로딩 메시지 제거
         chatMessages.removeChild(loadingMsg);
+
+        // 5. 응답 메시지 표시 (타이핑 효과)
         const aiText = data.result?.finalAnswer || 'AI 응답을 가져오지 못했어요.';
         typeAIMessage(aiText);
+
+        // 입력 활성화
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.focus();
       })
       .catch(error => {
         chatMessages.removeChild(loadingMsg);
         typeAIMessage('오류가 발생했어요. 다시 시도해주세요.');
         console.error('Error:', error);
+
+        // 입력 활성화
+        chatInput.disabled = false;
+        chatSendBtn.disabled = false;
+        chatInput.focus();
       });
   }
 
