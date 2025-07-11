@@ -261,8 +261,10 @@
   /* 입력창 영역 */
   .chat-input-area {
     display: flex;
-    border-top: 1px solid #e0d4ba;
-    background-color: #f5f1e6;
+    border-top: 1px solid #ddd;
+    background-color: #f7f3eb;
+    padding: 8px;
+    border-radius: 0 0 16px 16px;
   }
 
   #chat-input {
@@ -275,18 +277,33 @@
   }
 
   /* 보내기 버튼 */
+  #chat-input {
+    flex: 1;
+    padding: 14px 16px;
+    border: 2px solid #a67c52; /* 갈색 */
+    border-radius: 20px 0 0 20px;
+    font-size: 15px;
+    background-color: #fefcf7; /* 미색 종이 느낌 */
+    outline: none;
+    font-family: 'Nanum Myeongjo', serif;
+  }
+
   #chat-send-btn {
-    background-color: #b28b5e;
+    background: linear-gradient(to bottom, #b28b5e, #a07745); /* 따뜻한 갈색 톤 */
     color: white;
     border: none;
+    border-radius: 0 20px 20px 0;
     padding: 0 24px;
     font-size: 16px;
-    cursor: pointer;
     font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-family: 'Nanum Myeongjo', serif;
   }
 
   #chat-send-btn:hover {
-    background-color: #8c6c45;
+    background: linear-gradient(to bottom, #8c6c45, #7a5836);
   }
 
   #chat-send-btn:disabled {
