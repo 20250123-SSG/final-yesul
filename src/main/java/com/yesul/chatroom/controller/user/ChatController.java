@@ -1,6 +1,6 @@
 package com.yesul.chatroom.controller.user;
 
-import com.yesul.chatroom.model.dto.ChatRoomResult;
+import com.yesul.chatroom.model.dto.response.ChatRoomResult;
 import com.yesul.chatroom.model.entity.Message;
 import com.yesul.chatroom.model.entity.enums.Type;
 import com.yesul.chatroom.service.ChatRoomService;
