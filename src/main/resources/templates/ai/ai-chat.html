@@ -12,12 +12,249 @@
 <!-- 공통 feature -->
 <div th:replace="~{fragments/user/feature :: feature}"></div>
 
+<!-- ✅ 중앙 채팅 화면 -->
+<div class="chat-wrapper">
+  <div class="chat-box">
+    <div class="chat-title">🤖 AI와의 대화</div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+      <input type="text" id="chat-input" placeholder="메시지를 입력하세요..."/>
+      <button id="chat-send-btn">보내기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 공통 푸터 -->
 <div th:replace="~{fragments/user/footer :: footer}"></div>
 
 <!-- 공통 js -->
 <div th:replace="~{fragments/user/js :: js}"></div>
 
-</body>
+<!-- 채팅 js -->
+<script th:src="@{/assets/js/ai-chat/ai-chat.js}"></script>
+<script th:src="@{assets/js/chatapp.js}"></script>
 
+
+<script th:inline="javascript">
+  const chatInput = document.getElementById('chat-input');
+  const chatSendBtn = document.getElementById('chat-send-btn');
+  const chatMessages = document.getElementById('chat-messages');
+
+  chatSendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // 1. 유저 메시지 추가
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user';
+    userMsg.textContent = text;
+    chatMessages.appendChild(userMsg);
+    chatInput.value = '';
+
+    // 2. 로딩 메시지 표시
+    const loadingMsg = document.createElement('div');
+    loadingMsg.className = 'message ai loading';
+
+    // 아이콘 + 텍스트 조합
+    loadingMsg.innerHTML = `
+  <div class="spinner"></div>
+  <span>주락이 AI가 생각 중입니다 <span class="loading-dots"></span></span>
+`;
+    chatMessages.appendChild(loadingMsg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    // 3. API 요청
+    fetch('http://localhost:8080/alcohols/clova', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ask: text})
+    })
+      .then(response => response.json())
+      .then(data => {
+        // 4. 로딩 메시지 제거
+        chatMessages.removeChild(loadingMsg);
+
+        // 5. 응답 메시지 표시 (타이핑 효과)
+        const aiText = data.result?.finalAnswer || 'AI 응답을 가져오지 못했어요.';
+        typeAIMessage(aiText);
+      })
+      .catch(error => {
+        chatMessages.removeChild(loadingMsg);
+        typeAIMessage('오류가 발생했어요. 다시 시도해주세요.');
+        console.error('Error:', error);
+      });
+  }
+
+  // ✅ 타이핑 효과 함수
+  function typeAIMessage(message, delay = 30) {
+    const aiMsg = document.createElement('div');
+    aiMsg.className = 'message ai';
+    chatMessages.appendChild(aiMsg);
+
+    let index = 0;
+
+    function typeChar() {
+      if (index < message.length) {
+        aiMsg.textContent += message.charAt(index);
+        index++;
+        setTimeout(typeChar, delay);
+      } else {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    typeChar();
+  }
+
+  // ✅ 초기 인사 메시지
+  window.addEventListener('DOMContentLoaded', () => {
+    typeAIMessage('안녕하세요! 무엇을 도와드릴까요? 😊', 50);
+  });
+</script>
+
+<!-- ✅ 채팅 CSS -->
+<style>
+  .chat-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 70vh;
+    margin: 40px 0;
+  }
+
+  .chat-box {
+    width: 100%;
+    max-width: 600px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-title {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .chat-messages {
+    padding: 20px;
+    background-color: #f9f9f9;
+    height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .message {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .message.user {
+    align-self: flex-end;
+    background-color: #d1e7dd;
+  }
+
+  .message.ai {
+    align-self: flex-start;
+    background-color: #f8d7da;
+  }
+
+  /* 로딩 메시지 스타일 */
+  .message.ai.loading {
+    font-style: italic;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* 깜빡이는 점 5개 */
+  .loading-dots::after {
+    content: "";
+    display: inline-block;
+    width: 2.5em;
+    animation: dots 2s steps(5, end) infinite;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .loading-dots {
+    margin-left: 4px;
+  }
+
+  @keyframes dots {
+    0% {
+      content: "";
+    }
+    33% {
+      content: ".";
+    }
+    66% {
+      content: "..";
+    }
+    100% {
+      content: "...";
+    }
+  }
+
+  /* 스피너 (회전 아이콘) */
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .chat-input-area {
+    display: flex;
+    border-top: 1px solid #ddd;
+  }
+
+  #chat-input {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    font-size: 15px;
+    outline: none;
+  }
+
+  #chat-send-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  #chat-send-btn:hover {
+    background-color: #0056b3;
+  }
+</style>
+</body>
 </html>
