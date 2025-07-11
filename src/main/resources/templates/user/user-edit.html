@@ -1,41 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/user/head :: head}"></head>
+<head th:replace="~{layout/user-default :: head}"></head>
 <link rel="stylesheet" th:href="@{/assets/css/user-mypage.css}">
-<link rel="stylesheet" id="main_style" th:href="@{/assets/css/style.css}">
+
 <body>
-<div th:replace="~{fragments/user/header :: header}"></div>
-<!-- Loader -->
-<div id="gi-overlay">
-  <div class="loader"></div>
-</div>
 
-<!-- Breadcrumb start -->
-<div class="gi-breadcrumb m-b-40">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="row gi_breadcrumb_inner">
-          <div class="col-md-6 col-sm-12">
-            <h2 class="gi-breadcrumb-title">Vendor settings</h2>
-          </div>
-          <div class="col-md-6 col-sm-12">
-            <!-- gi-breadcrumb-list start -->
-            <ul class="gi-breadcrumb-list">
-              <li class="gi-breadcrumb-item"><a href="index.html">Home</a></li>
-              <li class="gi-breadcrumb-item active">settings</li>
-            </ul>
-            <!-- gi-breadcrumb-list end -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Breadcrumb end -->
+<div th:replace="~{layout/user-default :: header}"></div>
 
-<!-- Vendor setting section start -->
 <section class="gi-vendor-setting padding-tb-40">
   <div class="container">
     <div class="row mb-minus-24px">
@@ -129,20 +100,12 @@
     </div>
   </div>
 </section>
-<!-- Vendor setting section end -->
 
-<div th:replace="~{layout/user-default :: feature}"></div>
-
-<!-- 공통 푸터 -->
-<div th:fragment="footer">
-  <div th:replace="~{fragments/user/footer :: footer}"></div>
-</div>
-
-<div th:replace="~{layout/user-default :: scripts}"></div>
-
-<!-- Back to top  -->
 <a class="gi-back-to-top"></a>
 
+<div th:replace="~{layout/user-default :: feature}"></div>
+<div th:replace="~{layout/user-default :: footer}"></div>
+<div th:replace="~{layout/user-default :: user-js}"></div>
 <script th:src="'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'"></script>
 
 </body>
