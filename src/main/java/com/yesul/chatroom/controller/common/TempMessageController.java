@@ -23,7 +23,7 @@ public class TempMessageController {
             @RequestParam String message
     ) {
         Long userId = extractUserId(principal);
-        tempMessageService.saveTempMessage(chatRoomId, userId, message);
+        tempMessageService.saveTempMessage(chatRoomId, userId, message, 1);
     }
 
     @GetMapping
@@ -32,7 +32,7 @@ public class TempMessageController {
             @RequestParam Long chatRoomId
     ) {
         Long userId = extractUserId(principal);
-        String tempMessage = tempMessageService.getTempMessage(chatRoomId, userId);
+        String tempMessage = tempMessageService.getTempMessage(chatRoomId, userId,1);
         return tempMessage;
     }
 
@@ -42,7 +42,7 @@ public class TempMessageController {
             @RequestParam Long chatRoomId
     ) {
         Long userId = extractUserId(principal);
-        tempMessageService.deleteTempMessage(chatRoomId, userId);
+        tempMessageService.deleteTempMessage(chatRoomId, userId,1);
     }
 
     /**
