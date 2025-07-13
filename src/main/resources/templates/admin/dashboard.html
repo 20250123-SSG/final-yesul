@@ -3,14 +3,9 @@
 <head>
     <th:block th:insert="fragments/admin/head :: adminHead"></th:block>
     <style>
-        .gi-chatapp #fx_chat #chat_sidebar #contacts ul li.contact {
+        .gi-chatapp #fx_chat #chat_sidebar #contacts ul li{
             z-index: 10 !important;
 
-        }
-        #chat_sidebar{
-            width: 100% !important;
-            border-radius: 18px;
-            z-index: 10 !important;
         }
         .gi-chatapp, .gi-card.chatapp-card {
             height: 100%;
@@ -22,10 +17,35 @@
         .col-xxl-4.col-xl-12.p-0 {
             height: 100%;
         }
-        /* 차트 카드와 같은 row의 부모 row도 height: 100% 필요할 수 있음 */
         .row.same-height-row {
             height: 100%;
             align-items: stretch;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th {
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 16px !important;
+            padding: 8px 12px 12px 12px !important;
+        }
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .full-cell-link {
+            display: block;
+            width: 100%;
+            height: 100%;
+            text-decoration: none;
+            color: #000;
+            padding: 8px 12px;
+            transition: background-color 0.2s;
+        }
+        tr:hover td {
+            background-color: #f3f4f6;
         }
     </style>
 </head>
@@ -189,25 +209,22 @@
                     <div class="gi-chatapp" style="border-radius: 24px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.04); width: 100%; height: 100%;">
                         <div class="gi-card chatapp-card" style="width: 100%; box-sizing: border-box; border-radius: 24px; padding: 0; height: 100%; display: flex; flex-direction: column;">
                             <!-- 프로필 영역 -->
-                            <div style="display: flex; align-items: center; gap: 16px; padding: 24px 24px 0 24px;">
-                                <img src="https://via.placeholder.com/100x100" alt="profile" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #4ade80;">
+                            <div style="display: flex; align-items: center; gap: 16px; padding: 24px 24px 24px 24px;  border-bottom: 1px solid #f0f0f0;">
                                 <div>
-                                    <div style="font-weight: bold; font-size: 18px;">John Doe</div>
+                                    <div style="font-weight: bold; font-size: 18px;">1:1 문의</div>
                                 </div>
                             </div>
                             <!-- 채팅 목록 -->
                             <ul style="list-style: none; margin: 0; padding: 0 0 24px 0; flex: 1; overflow-y: auto; min-height: 0;">
                                 <li style="display: flex; align-items: center; padding: 16px 24px; border-bottom: 1px solid #f0f0f0;">
-                                    <span style="width: 10px; height: 10px; background: #ef4444; border-radius: 50%; margin-right: 12px;"></span>
                                     <div>
-                                        <div style="font-weight: bold;">Olive Yew</div>
-                                        <div style="color: #888;">Wrong. You take the gun, or you pull ...</div>
+                                        <div style="font-weight: bold;">고객 이름</div>
+                                        <div style="color: #888;">메시지 내용 ~~ </div>
                                     </div>
                                     <span style="margin-left: auto; background: #6366f1; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">3</span>
                                 </li>
                                 <li style="display: flex; align-items: center; padding: 16px 24px; border-bottom: 1px solid #f0f0f0;">
-                                    <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; margin-right: 12px;"></span>
-                                    <div>
+                                     <div>
                                         <div style="font-weight: bold;">Emma Grater</div>
                                         <div style="color: #888;">You just got LITT up, Mike.</div>
                                     </div>
@@ -264,7 +281,7 @@
                 <div class="col-xxl-6 col-xl-12">
                     <div class="gi-card" id="best_seller_tbl">
                         <div class="gi-card-header">
-                            <h4 class="gi-card-title">Best Seller</h4>
+                            <h4 class="gi-card-title">HOT 게시글 TOP 10</h4>
                             <div class="header-tools">
                                 <a href="javascript:void(0)" class="m-r-10 gi-full-card" title="Full Screen"><i
                                         class="ri-fullscreen-line"></i></a>
@@ -279,96 +296,22 @@
                                     <table id="best_seller_data_table" class="table">
                                         <thead>
                                         <tr>
-                                            <th>Vendor</th>
-                                            <th>Category</th>
-                                            <th>Stock</th>
-                                            <th>Sales</th>
+                                            <th>순위</th>
+                                            <th>제목</th>
+                                            <th>좋아요</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/1.jpg"
-                                                     alt="clients Image"><span class="name">Mens t-shirt</span>
+                                        <tr th:each="post, stat : ${popularPosts}">
+                                            <td>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${stat.count}">1</a>
                                             </td>
                                             <td>
-														<span class="cat">
-															<a href="product-list.html">Watches</a>
-															<a href="product-list.html">Clothes</a>
-															<a href="product-list.html">Phones</a>
-														</span>
-                                            </td>
-                                            <td>685</td>
-                                            <td>$1254</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/2.jpg"
-                                                     alt="clients Image"><span class="name">Sofa chair</span>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${post.title}">제목</a>
                                             </td>
                                             <td>
-														<span class="cat">
-															<a href="product-list.html">Phone</a>
-															<a href="product-list.html">Camera</a>
-															<a href="product-list.html">Clothes</a>
-															<a href="product-list.html">Phones</a>
-														</span>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${post.likeCount}">1,026</a>
                                             </td>
-                                            <td>874</td>
-                                            <td>$1768</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/3.jpg"
-                                                     alt="clients Image"><span class="name">Night Lamp</span>
-                                            </td>
-                                            <td>
-														<span class="cat">
-															<a href="product-list.html">Laptop</a>
-															<a href="product-list.html">Furniture</a>
-															<a href="product-list.html">Phones</a>
-														</span>
-                                            </td>
-                                            <td>95</td>
-                                            <td>$2296</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/4.jpg"
-                                                     alt="clients Image"><span class="name">Mens hoodie</span>
-                                            </td>
-                                            <td>
-														<span class="cat">
-															<a href="product-list.html">Clothes</a>
-															<a href="product-list.html">Phones</a>
-														</span>
-                                            </td>
-                                            <td>354</td>
-                                            <td>$2754</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/5.jpg"
-                                                     alt="clients Image"><span class="name">Digital Watch</span>
-                                            </td>
-                                            <td>
-														<span class="cat">
-															<a href="product-list.html">Tools</a>
-															<a href="product-list.html">Clothes</a>
-															<a href="product-list.html">Bags</a>
-														</span>
-                                            </td>
-                                            <td>675</td>
-                                            <td>$3105</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/clients/6.jpg"
-                                                     alt="clients Image"><span class="name">DSLR Camera.</span>
-                                            </td>
-                                            <td>
-														<span class="cat">
-															<a href="product-list.html">Shoes</a>
-															<a href="product-list.html">Clothes</a>
-															<a href="product-list.html">Jewellery</a>
-														</span>
-                                            </td>
-                                            <td>854</td>
-                                            <td>$3854</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -381,7 +324,7 @@
                 <div class="col-xxl-6 col-xl-12">
                     <div class="gi-card" id="top_product_tbl">
                         <div class="gi-card-header">
-                            <h4 class="gi-card-title">Top Product</h4>
+                            <h4 class="gi-card-title">인기 주류 순위 TOP 10</h4>
                             <div class="header-tools">
                                 <a href="javascript:void(0)" class="m-r-10 gi-full-card" title="Full Screen"><i
                                         class="ri-fullscreen-line"></i></a>
@@ -396,67 +339,24 @@
                                     <table id="top_product_data_table" class="table">
                                         <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Price</th>
-                                            <th>Orders</th>
-                                            <th>Stock</th>
-                                            <th>Total</th>
+                                            <th>순위</th>
+                                            <th>주류명</th>
+                                            <th>제조사</th>
+                                            <th>가격</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/1.jpg"
-                                                     alt="clients Image"><span class="name">Mens t-shirt</span>
+                                        <tr th:each="post, stat : ${popularPosts}">
+                                            <td>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${stat.count}">1</a>
                                             </td>
-                                            <td>$16</td>
-                                            <td>162</td>
-                                            <td>456</td>
-                                            <td>$3524</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/2.jpg"
-                                                     alt="clients Image"><span class="name">Sofa chair</span>
+                                            <td>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${post.title}">제목</a>
                                             </td>
-                                            <td>$52</td>
-                                            <td>178</td>
-                                            <td>958</td>
-                                            <td>$8654</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/3.jpg"
-                                                     alt="clients Image"><span class="name">Night Lamp</span>
+                                            <td>
+                                                <a th:href="@{/posts/{id}(id=${post.id})}" class="full-cell-link" th:text="${post.likeCount}">1,026</a>
                                             </td>
-                                            <td>$70</td>
-                                            <td>198</td>
-                                            <td>1524</td>
-                                            <td>$1152</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/4.jpg"
-                                                     alt="clients Image"><span class="name">Mens hoodie</span>
-                                            </td>
-                                            <td>$16</td>
-                                            <td>205</td>
-                                            <td>253</td>
-                                            <td>$5645</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/5.jpg"
-                                                     alt="clients Image"><span class="name">Digital Watch</span>
-                                            </td>
-                                            <td>$559</td>
-                                            <td>209</td>
-                                            <td>456</td>
-                                            <td>$20546</td>
-                                        </tr>
-                                        <tr>
-                                            <td><img class="cat-thumb" src="assets/img/product/6.jpg"
-                                                     alt="clients Image"><span class="name">DSLR Camera.</span>
-                                            </td>
-                                            <td>$1546</td>
-                                            <td>212</td>
-                                            <td>98</td>
-                                            <td>$33500</td>
+                                            <td>40,000원</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -483,33 +383,38 @@
             stacked: false
         },
         stroke: {
-            width: [0, 2, 3],
+            width: [2, 2, 3, 0],
             curve: 'smooth',
-            dashArray: [0, 0, 5]
+            dashArray: [0, 0, 5, 0]
         },
         plotOptions: {
             bar: {
-                columnWidth: '20%'
+                columnWidth: '10%'
             }
         },
         series: [
             {
-                name: 'Tickets',
-                type: 'column',
+                name: '자유게시판',
+                type: 'line',
                 data: [23, 11, 22, 27, 13, 35, 25]
             },
             {
-                name: 'Task',
+                name: '레시피게시판',
                 type: 'line',
                 data: [30, 20, 25, 45, 38, 18, 28]
             },
             {
-                name: 'Project',
+                name: '정보게시판',
                 type: 'line',
                 data: [13, 15, 20, 30, 40, 15, 25]
+            },
+            {
+                name: '방문자 수',
+                type: 'column',
+                data: [23, 11, 22, 27, 13, 35, 25]
             }
         ],
-        colors: ['#6366f1', '#10b981', '#ec4899'], // 파랑, 초록, 핑크
+        colors: ['#6366f1', '#10b981', '#ec4899','#f59e0b'],
         xaxis: {
             categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         },

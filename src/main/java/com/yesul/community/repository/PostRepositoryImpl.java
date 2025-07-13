@@ -1,6 +1,8 @@
 package com.yesul.community.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yesul.community.model.dto.PostResponseDto;
 import com.yesul.community.model.entity.QLike;
@@ -21,12 +23,15 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         QPost post = QPost.post;
         QLike like = QLike.like;
 
+        NumberTemplate<Integer> likeCount = Expressions.numberTemplate(
+                Integer.class, "count({0})", like.id);
+
         return queryFactory
-                .select(Projections.constructor(PostResponseDto.class, post.id, post.title))
+                .select(Projections.constructor(PostResponseDto.class, post.id, post.title, likeCount))
                 .from(post)
                 .join(like).on(like.post.eq(post))
                 .groupBy(post.id)
-                .orderBy(like.id.count().desc())
+                .orderBy(likeCount.desc())
                 .fetch();
     }
 
