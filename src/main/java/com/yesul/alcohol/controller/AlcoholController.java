@@ -26,39 +26,31 @@ public class AlcoholController {
     private final AlcoholService alcoholService;
     private final ClovaService clovaService;
 
+
+    // page
     @GetMapping("ai")
     public String ai() {
         return "ai/ai-chat";
     }
 
-    @GetMapping("takju")
-    public String takju() {
+    @GetMapping("/takju")
+    public String takju(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("탁주");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
         return "alcohol/takju";
     }
 
 
-    @PostMapping("/clova")
-    @ResponseBody
-    public ResponseEntity<String> ask(@RequestBody ClovaAskRequestDto dto) {
-        String response = clovaService.callClovaAPI(dto);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/{id}")
     public AlcoholDetailDto getAlcoholDetail(@PathVariable Long id) {
         return alcoholService.getAlcoholDetailById(id);
-    }
-
-    // 예: /api/alcohols?page=0
-    @GetMapping("")
-    @ResponseBody
-    public Page<AlcoholDetailDto> getAlcohols(
-            AlcoholSearchDto condition,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return alcoholService.searchAlcohols(condition, pageable);
     }
 
     @GetMapping("/detail")
@@ -70,6 +62,26 @@ public class AlcoholController {
     public String registForm(Model model) {
         model.addAttribute("alcoholRegisterDto");
         return "alcohol/regist";
+    }
+
+    // 클로바
+    @PostMapping("/clova")
+    @ResponseBody
+    public ResponseEntity<String> ask(@RequestBody ClovaAskRequestDto dto) {
+        String response = clovaService.callClovaAPI(dto);
+        return ResponseEntity.ok(response);
+    }
+
+    // 클로바(AI) 데이터 조회용
+    @GetMapping("")
+    @ResponseBody
+    public Page<AlcoholDetailDto> getAlcohols(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return alcoholService.searchAlcohols(condition, pageable);
     }
 
 }
