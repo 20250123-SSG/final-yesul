@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.yesul.community.model.dto.LikePostDto;
 import com.yesul.community.service.LikeService;
 import com.yesul.exception.handler.EntityNotFoundException;
-import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
 import com.yesul.user.service.UserAsyncService;
 import com.yesul.user.service.UserService;
@@ -163,7 +161,7 @@ public class UserController {
     // 비밀번호 변경 페이지 이동
     @GetMapping("/change-password")
     public String changePasswordForm(Model model) {
-        model.addAttribute("passwordChangeRequestDto", new UserPasswordChangeRequestDto());
+        model.addAttribute("passwordChangeRequestDto", UserPasswordChangeRequestDto.builder().build());
         return "user/change-password";
     }
 
@@ -210,7 +208,7 @@ public class UserController {
     // 회원 탈퇴 페이지 이동
     @GetMapping("/resign")
     public String resignForm(Model model) {
-        model.addAttribute("userResignDto", new UserResignRequestDto());
+        model.addAttribute("userResignDto", UserResignRequestDto.builder().build());
         return "user/resign";
     }
 
@@ -256,7 +254,7 @@ public class UserController {
 
         model.addAttribute("email", email);
         model.addAttribute("token", token);
-        model.addAttribute("userPasswordResetRequestDto", new UserPasswordResetRequestDto());
+        model.addAttribute("userPasswordResetRequestDto", UserPasswordResetRequestDto.builder().build());
         return "user/reset-password";
     }
 

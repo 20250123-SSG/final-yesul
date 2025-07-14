@@ -217,18 +217,8 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
         }
 
-        String resignedIdentifier = "resigned_user_" + user.getId();
-        user.setName("탈퇴한사용자");
-        user.setNickname(resignedIdentifier); // 유니크 제약조건이 있다면 고유값으로 변경
-        user.setEmail(resignedIdentifier + "@example.com"); // 이메일도 고유값으로 변경
-        user.setPassword(""); // 비밀번호 비우기
-        user.setAddress(null);
-        user.setBirthday(null);
-        user.setProfile(null);
-        user.setEmailCheckToken(null);
-        user.setStatus('3');
+        user.markAsResigned();
 
-        userRepository.save(user);
         log.info("사용자 탈퇴 처리 완료: ID {}", userId);
     }
 

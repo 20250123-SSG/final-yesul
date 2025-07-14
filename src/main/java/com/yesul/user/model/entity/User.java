@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.*;
 
 import com.yesul.common.BaseTimeEntity;
@@ -106,6 +105,10 @@ public class User extends BaseTimeEntity {
 
     public void updateProfileUrl(String profileUrl) {
         this.profile = profileUrl;
+    }
+
+    public void markAsResigned() {
+        this.status = '3';
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
