@@ -3,7 +3,7 @@ package com.yesul.user.repository;
 import java.util.List;
 import java.util.Optional;
 
-import com.yesul.user.model.dto.UserListDto;
+import com.yesul.user.model.dto.response.UserListResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.yesul.user.model.entity.User;
@@ -14,9 +14,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String mail);
     Optional<User> findByNickname(String nickName);
 
-    @Query("SELECT new com.yesul.user.model.dto.UserListDto(u.id, " +
+    @Query("SELECT new com.yesul.user.model.dto.UserListResponseDto(u.id, " +
             "u.email, u.nickname, u.birthday, u.status ,u.createdAt) FROM User u")
-    List<UserListDto> findAllUserInfoDto();
+    List<UserListResponseDto> findAllUserInfoDto();
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE User u SET u.status = :status WHERE u.id = :userId")

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.*;
 
@@ -12,10 +14,12 @@ import com.yesul.common.BaseTimeEntity;
 import com.yesul.community.model.entity.Like;
 
 @Entity
-@Table(name = "user")
 @Getter
-@Setter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
+@DynamicUpdate
 public class User extends BaseTimeEntity {
 
     @Id
@@ -64,6 +68,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "point")
+    private Integer point;
+
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
@@ -101,7 +108,7 @@ public class User extends BaseTimeEntity {
     private List<Like> likes = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String password, String name, String nickname, String birthday, String address, Character type, Character status, String profile, String provider, String providerId, String description) {
+    public User(Long id, String email, String password, String name, String nickname, String birthday, String address, Character type, Character status, String profile, String provider, String providerId, String description, Integer point) {
         this.id = id;
         this.password = password;
         this.name = name;
@@ -115,5 +122,6 @@ public class User extends BaseTimeEntity {
         this.provider = provider;
         this.providerId = providerId;
         this.description = description;
+        this.point = point;
     }
 }
