@@ -71,14 +71,15 @@ public class User extends BaseTimeEntity {
     @Column(name = "point")
     private Integer point;
 
-    public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(this.password);
-    }
-
     // 이메일 인증 토큰 설정
     public void generateEmailCheckToken() {
         this.emailCheckToken = java.util.UUID.randomUUID().toString();
         this.emailCheckTokenGeneratedAt = LocalDateTime.now();
+    }
+
+    public void refreshEmailCheckTokenAndMarkUnverified() {
+        this.generateEmailCheckToken();   // token + generatedAt 설정
+        this.status = '2';                // now unverified
     }
 
     public void completeSignUp() {
@@ -87,20 +88,24 @@ public class User extends BaseTimeEntity {
         this.emailCheckTokenGeneratedAt = null;
     }
 
-    public void setActivatedStatus(char status) {
-        this.status = status;
-    }
-
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void updateEmail(String email) {
-        this.email = email;
+    public void updateName(String name) {
+        this.name = name;
     }
 
-    public void updateProfile(String profile) {
-        this.profile = profile;
+    public void updateBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public void updateAddress(String address) {
+        this.address = address;
+    }
+
+    public void updateProfileUrl(String profileUrl) {
+        this.profile = profileUrl;
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

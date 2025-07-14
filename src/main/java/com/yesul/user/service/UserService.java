@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.yesul.user.model.dto.request.UserRegisterRequestDto;
 import com.yesul.user.model.dto.request.UserUpdateRequestDto;
+import com.yesul.user.model.dto.response.UserProfileResponseDto;
 import com.yesul.user.model.entity.User;
 
 
@@ -51,7 +52,7 @@ public interface UserService {
      */
     Optional<User> findUserByEmail(String email);
 
-    void updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto);
+    User updateUserProfile(Long userId, UserUpdateRequestDto dto);
 
     void changePassword(Long userId, String newPassword);
 

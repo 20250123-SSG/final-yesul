@@ -2,6 +2,8 @@ package com.yesul.user.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import com.yesul.user.model.dto.response.UserProfileResponseDto;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -142,10 +144,8 @@ public class UserServiceImpl implements UserService {
                 user.getEmailCheckTokenGeneratedAt() == null ||
                 user.getEmailCheckTokenGeneratedAt().plusMinutes(15).isBefore(LocalDateTime.now())) {
             
-            // 만료 시 토큰 재발급
             log.warn("이메일 인증 실패: 유효하지 않거나 만료된 토큰입니다. 이메일: {}", email);
-            user.generateEmailCheckToken();
-            user.setStatus('2');
+            user.refreshEmailCheckTokenAndMarkUnverified();
             userRepository.save(user);
             try {
                 sendVerificationEmail(user);
@@ -177,30 +177,25 @@ public class UserServiceImpl implements UserService {
     /**
      * 사용자 프로필을 업데이트하는 메서드
      * @param userId 업데이트할 사용자의 ID
-     * @param userUpdateRequestDto 업데이트할 데이터를 담은 DTO
+     * @param dto 업데이트할 데이터를 담은 DTO
      */
     @Override
     @Transactional
-    public void updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
+    public User updateUserProfile(Long userId, UserUpdateRequestDto dto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
-        user.setName(userUpdateRequestDto.getName());
-        user.setNickname(userUpdateRequestDto.getNickname());
-        user.setBirthday(userUpdateRequestDto.getBirthday());
-        user.setAddress(userUpdateRequestDto.getAddress());
+        if (dto.getName() != null)     user.updateName(dto.getName());
+        if (dto.getNickname() != null) user.updateNickname(dto.getNickname());
+        if (dto.getBirthday() != null) user.updateBirthday(dto.getBirthday());
+        if (dto.getAddress() != null)  user.updateAddress(dto.getAddress());
 
-        MultipartFile profileImageFile = userUpdateRequestDto.getProfileImage();
-        if (profileImageFile != null && !profileImageFile.isEmpty()) {
-            String imageUrl = imageUpload.uploadAndGetUrl("profile", profileImageFile);
-            user.setProfile(imageUrl);
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+            String url = imageUpload.uploadAndGetUrl("profile", dto.getProfileImage());
+            user.updateProfileUrl(url);
         }
 
-        try {
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new UpdateFailedException("사용자 프로필 업데이트에 실패했습니다.");
-        }
+        return user;
     }
 
     @Override

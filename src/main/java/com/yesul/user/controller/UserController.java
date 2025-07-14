@@ -114,18 +114,21 @@ public class UserController {
 
     // 유저 정보 수정 페이지
     @GetMapping("/profile/edit")
-    public String userProfileEdit(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails, ...) {
+    public String userProfileEdit(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Model model,
+            RedirectAttributes ra) {
 
-        User currentUser = principalDetails.getUser();
+        if (principalDetails == null) {
+            ra.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/login";
+        }
 
-        model.addAttribute("user", new UserProfileResponseDto(currentUser));
+        UserProfileResponseDto current = new UserProfileResponseDto(principalDetails.getUser());
+        model.addAttribute("userProfile", current);
 
-        UserUpdateRequestDto requestDto = new UserUpdateRequestDto();
-        requestDto.setName(currentUser.getName());
-        requestDto.setNickname(currentUser.getNickname());
-        requestDto.setBirthday(currentUser.getBirthday());
-        requestDto.setAddress(currentUser.getAddress());
-        model.addAttribute("userUpdateRequestDto", requestDto);
+        UserUpdateRequestDto emptyDto = UserUpdateRequestDto.builder().build();
+        model.addAttribute("userUpdateRequestDto", emptyDto);
 
         return "user/user-edit";
     }
@@ -134,40 +137,26 @@ public class UserController {
     @PostMapping("/profile/update")
     public String updateUserProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @Validated @ModelAttribute("userUpdateRequestDto") UserUpdateRequestDto userUpdateDto, // 변경
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            @Validated @ModelAttribute("userUpdateRequestDto") UserUpdateRequestDto dto,
+            BindingResult br,
+            RedirectAttributes ra) {
 
         if (principalDetails == null) {
-            return "redirect:/user/login";
+            ra.addFlashAttribute("error", "로그인이 필요합니다.");
+            return "redirect:/login";
         }
 
-        if (bindingResult.hasErrors()) {
-            log.error("유효성 검사 오류: {}", bindingResult.getAllErrors());
-            redirectAttributes.addFlashAttribute("user", userUpdateDto);
+        if (br.hasErrors()) {
+            ra.addFlashAttribute("org.springframework.validation.BindingResult.userUpdateRequestDto", br);
+            ra.addFlashAttribute("userUpdateRequestDto", dto);
             return "redirect:/user/profile/edit";
         }
 
-        Long userId = principalDetails.getUser().getId();
+        User updatedUser = userService.updateUserProfile(principalDetails.getUser().getId(), dto);
 
-        try {
-            userService.updateUserProfile(userId, userUpdateDto);
-            User updatedUser = userService.findUserByEmail(principalDetails.getUser().getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
-            principalDetails.setUser(updatedUser);
+        principalDetails.setUser(updatedUser);
 
-            redirectAttributes.addFlashAttribute("success", "회원 정보가 수정되었습니다.");
-        } catch (UserNotFoundException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/user/profile/edit";
-        } catch (IllegalArgumentException e) {
-            bindingResult.rejectValue("newPassword", "passwordMismatch", e.getMessage());
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.user", bindingResult);
-            return "redirect:/user/profile/edit";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "프로필 업데이트 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/user/profile/edit";
-        }
+        ra.addFlashAttribute("success", "회원 정보가 수정되었습니다.");
         return "redirect:/user/profile";
     }
 
