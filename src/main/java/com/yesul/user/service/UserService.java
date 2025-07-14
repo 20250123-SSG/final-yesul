@@ -31,12 +31,6 @@ public interface UserService {
     boolean isNicknameDuplicated(String nickname);
 
     /**
-     * 이메일 인증 메일 발송
-     * @param user 인증 메일을 받을 사용자 엔티티
-     */
-    void sendVerificationEmail(User user);
-
-    /**
      * 이메일 인증 링크를 통한 사용자 활성화 처리
      * @param email 인증을 요청한 사용자의 이메일
      * @param token 이메일로 발송된 인증 토큰
