@@ -111,6 +111,15 @@ public class User extends BaseTimeEntity {
         this.status = '3';
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void clearEmailCheckToken() {
+        this.emailCheckToken = null;
+        this.emailCheckTokenGeneratedAt = null;
+    }
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<Like> likes = new ArrayList<>();

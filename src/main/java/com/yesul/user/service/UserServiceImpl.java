@@ -2,8 +2,6 @@ package com.yesul.user.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-import com.yesul.user.model.dto.response.UserProfileResponseDto;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
@@ -13,12 +11,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.yesul.utill.ImageUpload;
-import com.yesul.exception.handler.UpdateFailedException;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.model.dto.request.UserUpdateRequestDto;
 import com.yesul.exception.handler.EntityNotFoundException;
@@ -163,22 +159,11 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
-    /**
-     * 이메일로 사용자 조회
-     *
-     * @param email 사용자 이메일
-     * @return User 엔티티 (Optional)
-     */
     @Override
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * 사용자 프로필을 업데이트하는 메서드
-     * @param userId 업데이트할 사용자의 ID
-     * @param dto 업데이트할 데이터를 담은 DTO
-     */
     @Override
     @Transactional
     public User updateUserProfile(Long userId, UserUpdateRequestDto dto) {
@@ -199,12 +184,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(Long userId, String newPassword) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
 
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        String encoded = passwordEncoder.encode(newPassword);
+        user.updatePassword(encoded);
+
+        log.info("비밀번호 변경 완료: userId={}", userId);
     }
 
     @Override
@@ -225,18 +213,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void resetPassword(String email, String token, String newPassword) {
-        User u = userRepository.findByEmail(email)
-                .filter(x -> token.equals(x.getEmailCheckToken()))
+        User user = userRepository.findByEmail(email)
+                .filter(u -> token.equals(u.getEmailCheckToken()))
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않거나 만료된 링크입니다."));
 
-        if (u.getEmailCheckTokenGeneratedAt().plusMinutes(15)
-                .isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("링크가 만료되었습니다.");
+        if (user.getEmailCheckTokenGeneratedAt().plusMinutes(15).isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("비밀번호 재설정 링크가 만료되었습니다.");
         }
 
-        u.setPassword(passwordEncoder.encode(newPassword));
-        u.setEmailCheckToken(null);
-        u.setEmailCheckTokenGeneratedAt(null);
-        userRepository.save(u);
+        String encoded = passwordEncoder.encode(newPassword);
+        user.updatePassword(encoded);
+
+        user.clearEmailCheckToken();
+
+        log.info("비밀번호 재설정 완료: {}", email);
     }
 }

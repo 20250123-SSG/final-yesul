@@ -125,8 +125,13 @@ public class UserController {
         UserProfileResponseDto current = new UserProfileResponseDto(principalDetails.getUser());
         model.addAttribute("userProfile", current);
 
-        UserUpdateRequestDto emptyDto = UserUpdateRequestDto.builder().build();
-        model.addAttribute("userUpdateRequestDto", emptyDto);
+        UserUpdateRequestDto dto = UserUpdateRequestDto.builder()
+                .name(current.getName())
+                .nickname(current.getNickname())
+                .birthday(current.getBirthday())
+                .address(current.getAddress())
+                .build();
+        model.addAttribute("userUpdateRequestDto", dto);
 
         return "user/user-edit";
     }
@@ -254,6 +259,7 @@ public class UserController {
 
         model.addAttribute("email", email);
         model.addAttribute("token", token);
+
         model.addAttribute("userPasswordResetRequestDto", UserPasswordResetRequestDto.builder().build());
         return "user/reset-password";
     }

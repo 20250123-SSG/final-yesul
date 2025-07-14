@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.yesul.user.model.dto.request.UserRegisterRequestDto;
 import com.yesul.user.model.dto.request.UserUpdateRequestDto;
-import com.yesul.user.model.dto.response.UserProfileResponseDto;
 import com.yesul.user.model.entity.User;
 
 
@@ -64,5 +63,9 @@ public interface UserService {
      */
     void resignUser(Long userId, String rawPassword);
 
+    /**
+     * @throws IllegalArgumentException 유효하지 않은 토큰이거나 만료된 경우
+     */
     void resetPassword(String email, String token, String newPassword);
+
 }
