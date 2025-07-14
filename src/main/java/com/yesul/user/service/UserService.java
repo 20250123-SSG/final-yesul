@@ -2,19 +2,19 @@ package com.yesul.user.service;
 
 import java.util.Optional;
 
-import com.yesul.user.model.dto.UserRegisterDto;
-import com.yesul.user.model.dto.UserUpdateDto;
+import com.yesul.user.model.dto.request.UserRegisterRequestDto;
+import com.yesul.user.model.dto.request.UserUpdateRequestDto;
 import com.yesul.user.model.entity.User;
 
 
 public interface UserService {
     /**
      * 일반 사용자 회원가입 처리 (이메일 인증 대기 상태로 인증 메일 발송)
-     * @param userRegisterDto 회원가입 요청 DTO
+     * @param userRegisterRequestDto 회원가입 요청 DTO
      * @return User Entity
      * @throws IllegalArgumentException 중복검증
      */
-    User registerUser(UserRegisterDto userRegisterDto);
+    User registerUser(UserRegisterRequestDto userRegisterRequestDto);
 
     /**
      * 이메일 중복 확인
@@ -51,7 +51,7 @@ public interface UserService {
      */
     Optional<User> findUserByEmail(String email);
 
-    void updateUserProfile(Long userId, UserUpdateDto userUpdateDto);
+    void updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto);
 
     void changePassword(Long userId, String newPassword);
 

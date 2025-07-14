@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import com.yesul.utill.ImageUpload;
 import com.yesul.exception.handler.UpdateFailedException;
 import com.yesul.exception.handler.UserNotFoundException;
-import com.yesul.user.model.dto.UserUpdateDto;
+import com.yesul.user.model.dto.request.UserUpdateRequestDto;
 import com.yesul.exception.handler.EntityNotFoundException;
-import com.yesul.user.model.dto.UserRegisterDto;
+import com.yesul.user.model.dto.request.UserRegisterRequestDto;
 import com.yesul.user.model.entity.User;
 import com.yesul.user.repository.UserRepository;
 
@@ -38,28 +38,25 @@ public class UserServiceImpl implements UserService {
     /**
      * 일반 사용자 회원가입 처리 (이메일 인증 대기 상태로 저장 및 인증 메일 발송)
      *
-     * @param userRegisterDto 회원가입 요청 DTO
+     * @param userRegisterRequestDto 회원가입 요청 DTO
      * @return 저장된 User 엔티티 (이메일 발송 등에 활용)
      * @throws IllegalArgumentException 중복된 이메일 또는 닉네임이 있을 경우
      */
     @Override
-    @Transactional // 메서드 실행 중 예외 발생 시 롤백 처리
-    public User registerUser(UserRegisterDto userRegisterDto) {
-        if (isEmailDuplicated(userRegisterDto.getEmail())) {
+    @Transactional
+    public User registerUser(UserRegisterRequestDto userRegisterRequestDto) {
+        if (isEmailDuplicated(userRegisterRequestDto.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
-        if (isNicknameDuplicated(userRegisterDto.getNickname())) {
+        if (isNicknameDuplicated(userRegisterRequestDto.getNickname())) {
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
 
-        User user = userRegisterDto.toEntity(passwordEncoder.encode(userRegisterDto.getPassword()));
-        user.setStatus('2');
+        // DTO → Entity
+        User user = userRegisterRequestDto.toEntity(passwordEncoder.encode(userRegisterRequestDto.getPassword()));
         user.generateEmailCheckToken();
+        return userRepository.save(user);
 
-        User savedUser = userRepository.save(user);
-
-        log.info("새 사용자 등록: {}", savedUser.getEmail());
-        return savedUser;
     }
 
     /**
@@ -180,26 +177,25 @@ public class UserServiceImpl implements UserService {
     /**
      * 사용자 프로필을 업데이트하는 메서드
      * @param userId 업데이트할 사용자의 ID
-     * @param userUpdateDto 업데이트할 데이터를 담은 DTO
+     * @param userUpdateRequestDto 업데이트할 데이터를 담은 DTO
      */
     @Override
     @Transactional
-    public void updateUserProfile(Long userId, UserUpdateDto userUpdateDto) {
+    public void updateUserProfile(Long userId, UserUpdateRequestDto userUpdateRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId));
 
-        user.setName(userUpdateDto.getName());
-        user.setNickname(userUpdateDto.getNickname());
-        user.setBirthday(userUpdateDto.getBirthday());
-        user.setAddress(userUpdateDto.getAddress());
+        user.setName(userUpdateRequestDto.getName());
+        user.setNickname(userUpdateRequestDto.getNickname());
+        user.setBirthday(userUpdateRequestDto.getBirthday());
+        user.setAddress(userUpdateRequestDto.getAddress());
 
-        MultipartFile profileImageFile = userUpdateDto.getProfileImage();
+        MultipartFile profileImageFile = userUpdateRequestDto.getProfileImage();
         if (profileImageFile != null && !profileImageFile.isEmpty()) {
             String imageUrl = imageUpload.uploadAndGetUrl("profile", profileImageFile);
             user.setProfile(imageUrl);
-        } else {
-            user.setProfile(userUpdateDto.getProfile());
         }
+
         try {
             userRepository.save(user);
         } catch (Exception e) {
@@ -222,14 +218,23 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
-        // 1) 비밀번호 체크
         if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 올바르지 않습니다.");
         }
 
-        // 2) type 컬럼을 '3'으로 변경
-        user.setType('3');
+        String resignedIdentifier = "resigned_user_" + user.getId();
+        user.setName("탈퇴한사용자");
+        user.setNickname(resignedIdentifier); // 유니크 제약조건이 있다면 고유값으로 변경
+        user.setEmail(resignedIdentifier + "@example.com"); // 이메일도 고유값으로 변경
+        user.setPassword(""); // 비밀번호 비우기
+        user.setAddress(null);
+        user.setBirthday(null);
+        user.setProfile(null);
+        user.setEmailCheckToken(null);
+        user.setStatus('3');
+
         userRepository.save(user);
+        log.info("사용자 탈퇴 처리 완료: ID {}", userId);
     }
 
     @Override
