@@ -31,6 +31,12 @@ public class AlcoholController {
         return "ai/ai-chat";
     }
 
+    @GetMapping("takju")
+    public String takju() {
+        return "alcohol/takju";
+    }
+
+
     @PostMapping("/clova")
     @ResponseBody
     public ResponseEntity<String> ask(@RequestBody ClovaAskRequestDto dto) {
