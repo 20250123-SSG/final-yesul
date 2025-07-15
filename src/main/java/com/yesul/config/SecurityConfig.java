@@ -1,5 +1,6 @@
 package com.yesul.config;
 
+import com.yesul.common.filter.SystemMonitoringFilter;
 import com.yesul.login.handler.AdminLoginSuccessHandler;
 import com.yesul.user.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.yesul.user.service.CustomOAuth2UserService;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
