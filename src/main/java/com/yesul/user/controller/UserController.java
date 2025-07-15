@@ -13,6 +13,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.yesul.community.model.dto.LikePostDto;
+import com.yesul.community.service.LikeService;
 import com.yesul.exception.handler.EntityNotFoundException;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
@@ -20,6 +22,8 @@ import com.yesul.user.service.UserAsyncService;
 import com.yesul.user.service.UserService;
 import com.yesul.user.model.entity.User;
 import com.yesul.user.model.dto.*;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -30,6 +34,8 @@ public class UserController {
     private final UserService userService;
     private final UserAsyncService asyncRegService;
     private final PasswordEncoder passwordEncoder;
+    private final LikeService likeService;
+
 
     // 회원가입 페이지 이동
     @GetMapping("/regist")
@@ -211,10 +217,9 @@ public class UserController {
         }
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), principalDetails.getPassword())) {
+
             bindingResult.rejectValue("currentPassword", "wrongPassword", "현재 비밀번호가 올바르지 않습니다.");
-            redirectAttributes.addFlashAttribute(
-                    "org.springframework.validation.BindingResult.passwordResetDto",
-                    bindingResult);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.passwordResetDto", bindingResult);
             redirectAttributes.addFlashAttribute("passwordResetDto", dto);
             return "redirect:/user/change-password";
         }
@@ -224,7 +229,7 @@ public class UserController {
             redirectAttributes.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "비밀번호 변경 중 오류가 발생했습니다.");
-            return "redirect:/user/reset-password";
+            return "redirect:/user/change-password";
         }
 
         return "redirect:/user/profile";
@@ -306,5 +311,16 @@ public class UserController {
             ra.addFlashAttribute("message", e.getMessage());
             return "redirect:/user/password-reset?email=" + email + "&token=" + token;
         }
+    }
+
+    @GetMapping("/like-post")
+    public String viewMyLikes(
+            @AuthenticationPrincipal PrincipalDetails principal,
+            Model model
+    ) {
+        Long userId = principal.getUser().getId();
+        List<LikePostDto> likePosts = likeService.getLikedPosts(userId);
+        model.addAttribute("likePosts", likePosts);
+        return "user/user-like-post";
     }
 }
