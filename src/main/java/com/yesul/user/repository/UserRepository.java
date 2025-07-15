@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import com.yesul.user.model.entity.User;
-import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
 
