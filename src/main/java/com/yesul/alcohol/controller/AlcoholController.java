@@ -17,6 +17,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -115,6 +118,24 @@ public class AlcoholController {
         Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/liqueur";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String getAlcoholDetail(@PathVariable Long id, Model model) {
+        AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailById(id);
+
+        Map<String, Integer> tasteLevels = new LinkedHashMap<>();
+        tasteLevels.put("단맛", alcohol.getSweetnessLevel());
+        tasteLevels.put("산미", alcohol.getAcidityLevel());
+        tasteLevels.put("바디감", alcohol.getBodyLevel());
+        tasteLevels.put("향", alcohol.getAromaLevel());
+        tasteLevels.put("떫은맛", alcohol.getTanninLevel());
+        tasteLevels.put("여운", alcohol.getFinishLevel());
+        tasteLevels.put("탄산감", alcohol.getSparklingLevel());
+
+        model.addAttribute("alcohol", alcohol);
+        model.addAttribute("tasteLevels", tasteLevels);
+        return "alcohol/detail";
     }
 
     // api
