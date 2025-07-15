@@ -138,6 +138,21 @@ public class AlcoholController {
         return "alcohol/detail";
     }
 
+    @GetMapping("/search")
+    public String search(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        model.addAttribute("condition", condition);
+        return "alcohol/search";
+    }
+
     // api
 
     @GetMapping("/{id}")
