@@ -61,27 +61,44 @@
     font-size: 0.95rem;
     color: #6b4c1b;
   }
+
   .gi-cat-icon.selected {
     position: relative;
-    background-color: #fff8e6;
-    animation: boxGlow 2s ease-in-out infinite;
     border-radius: 12px;
+    padding: 10px;
+    background-color: #fff8e6; /* 배경은 고정 */
+    z-index: 1;
   }
 
-  @keyframes boxGlow {
+  /* 무지개 테두리용 가상 요소 */
+  .gi-cat-icon.selected::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+    background: linear-gradient(270deg, #f6e6ff, #ffe8e8, #fffce0, #e6fff2, #e0f0ff, #f6e6ff);
+    background-size: 600% 600%;
+    border-radius: 14px;
+    animation: rainbowBorder 6s ease infinite;
+  }
+
+  @keyframes rainbowBorder {
     0% {
-      box-shadow: 0 0 8px rgba(255, 215, 130, 0.3);
+      background-position: 0% 50%;
     }
     50% {
-      box-shadow: 0 0 20px rgba(255, 180, 80, 0.7), 0 0 10px rgba(255, 200, 100, 0.5) inset;
+      background-position: 100% 50%;
     }
     100% {
-      box-shadow: 0 0 8px rgba(255, 215, 130, 0.3);
+      background-position: 0% 50%;
     }
   }
 
   .gi-cat-icon.selected .gi-cat-title {
-    color: #a25b0d;
+    color: #7a4a00;
     font-weight: bold;
   }
 </style>
@@ -97,7 +114,7 @@
       <div class="col-xl-12 border-content-color">
         <div class="gi-category-block owl-carousel">
           <div class="gi-cat-box gi-cat-box-1">
-            <div class="gi-cat-icon selected">
+            <div class="gi-cat-icon">
               <div class="gi-cat-detail">
                 <a href="/alcohols/unrefined-rice-wine">
                   <h4 class="gi-cat-title">탁주</h4>
@@ -142,7 +159,7 @@
             </div>
           </div>
           <div class="gi-cat-box gi-cat-box-6">
-            <div class="gi-cat-icon">
+            <div class="gi-cat-icon selected">
               <div class="gi-cat-detail">
                 <a href="s/alcohols/liqueur">
                   <h4 class="gi-cat-title">리큐르</h4>
@@ -165,7 +182,7 @@
     <div class="row">
       <div class="col-12">
         <h3 class="mb-4">
-          탁주 목록
+          리큐르 목록
           <span class="items text-muted" style="font-size: 1rem;" th:text="'(' + ${alcohols.totalElements} + '건)'">(0건)</span>
         </h3>
         <div class="row">
@@ -173,7 +190,7 @@
             <div class="alcohol-card">
               <img th:src="@{${alcohol.image}}" alt="술 이미지">
               <div class="alcohol-info">
-                <h5 th:text="${alcohol.name}" title="클릭 시 상세보기">술 이름</h5>
+                <h5 class="card-title text-center" th:text="${alcohol.name}">술 이름</h5>
                 <p><strong>브랜드:</strong> <span th:text="${alcohol.brand}">브랜드</span></p>
                 <p>
                   <strong>지역:</strong>
