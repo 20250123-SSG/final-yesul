@@ -33,8 +33,8 @@ public class AlcoholController {
         return "ai/ai-chat";
     }
 
-    @GetMapping("/takju")
-    public String takju(
+    @GetMapping("/unrefined-rice-wine")
+    public String unrefinedRiceWine(
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
@@ -44,9 +44,80 @@ public class AlcoholController {
         condition.setType("탁주");
         Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
         model.addAttribute("alcohols", alcohols);
-        return "alcohol/takju";
+        return "alcohol/unrefined-rice-wine";
     }
 
+    @GetMapping("/herbal-rice-wine")
+    public String herbalRiceWine(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("약주");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        return "alcohol/herbal-rice-wine";
+    }
+
+    @GetMapping("/clear-rice-wine")
+    public String clearRiceWine(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("청주");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        return "alcohol/clear-rice-wine";
+    }
+
+    @GetMapping("/fruit-wine")
+    public String fruitWine(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("과실주");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        return "alcohol/fruit-wine";
+    }
+
+    @GetMapping("/distilled-liquor")
+    public String distilledLiquor(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("증류주");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        return "alcohol/distilled-liquor";
+    }
+
+    @GetMapping("/liqueur")
+    public String liqueur(
+            AlcoholSearchDto condition,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            Model model
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        condition.setType("리큐르");
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        model.addAttribute("alcohols", alcohols);
+        return "alcohol/liqueur";
+    }
+
+    // api
 
     @GetMapping("/{id}")
     public AlcoholDetailDto getAlcoholDetail(@PathVariable Long id) {
@@ -56,12 +127,6 @@ public class AlcoholController {
     @GetMapping("/detail")
     public ResponseEntity<AlcoholDto> detail(int no){
         return null;
-    }
-
-    @GetMapping("/regist")
-    public String registForm(Model model) {
-        model.addAttribute("alcoholRegisterDto");
-        return "alcohol/regist";
     }
 
     // 클로바
