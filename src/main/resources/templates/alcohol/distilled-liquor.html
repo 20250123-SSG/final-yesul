@@ -187,7 +187,9 @@
         </h3>
         <div class="row">
           <div class="col-sm-6 col-lg-4 col-xl-3 mb-4" th:each="alcohol : ${alcohols.content}">
-            <div class="alcohol-card">
+            <div class="alcohol-card"
+                 th:onclick="|window.location.href='/alcohols/detail/${alcohol.id}'|"
+                 style="cursor: pointer;">
               <img th:src="@{${alcohol.image}}" alt="술 이미지">
               <div class="alcohol-info">
                 <h5 class="card-title text-center" th:text="${alcohol.name}">술 이름</h5>
