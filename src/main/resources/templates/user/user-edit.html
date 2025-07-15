@@ -18,7 +18,6 @@
                             <li><a th:href="@{/user/profile/edit}">내정보 변경</a></li>
                             <li><a th:href="@{/user/change-password}">비밀번호 변경</a></li>
                             <li><a th:href="@{/user/like-post}">좋아요 한 글 보기</a></li>
-                            <li><a th:href="@{/user/resign}">회원탈퇴</a></li>
                         </ul>
                     </div>
                 </div>
@@ -29,8 +28,7 @@
                         <form th:action="@{/user/profile/update}" th:object="${userUpdateRequestDto}" method="post" enctype="multipart/form-data">
                             <div class="gi-vendor-card-body">
                                 <div class="profile-header text-center mb-4">
-                                  <img id="previewImg" class="profile-img"
-                                       th:src="${userProfile.profile} != null ? ${userProfile.profile} : '/assets/img/app/default_profile.jpg'" alt="프로필 사진"/>
+                                    <img class="profile-img" th:src="@{${user != null and user.profileImage != null ? user.profileImage : '/assets/img/app/default_profile.jpg'}}" alt="프로필 사진">
                                     <label for="profileInput" class="camera-overlay">
                                         <i class="fa fa-camera"></i>
                                     </label>
@@ -110,15 +108,4 @@
             }
         }).open();
     }
-
-    document.getElementById('profileInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('previewImg').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
 </script>
