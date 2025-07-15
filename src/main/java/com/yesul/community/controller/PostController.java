@@ -26,10 +26,7 @@ public class PostController {
     private final PostImageService postImageService;
     private final PointService pointService;
 
-    /**
-     * /community/ → /community/recipe 로 리다이렉트
-     */
-    @GetMapping("/")
+    @GetMapping
     public String redirectToRecipe() {
         return "redirect:/community/recipe";
     }
