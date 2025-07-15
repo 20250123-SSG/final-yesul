@@ -14,6 +14,7 @@ import com.yesul.community.model.entity.Like;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
