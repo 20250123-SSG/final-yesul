@@ -5,6 +5,7 @@ import com.yesul.admin.service.AdminService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class AdminLoginController {
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
 
-        boolean success = adminOtpService.verifyOtpAndAuthenticate(otpCode, authentication);
+        boolean success = adminOtpService.verifyOtpAndAuthenticate(otpCode, authentication, request);
 
         if (!success) {
             redirectAttributes.addFlashAttribute("message", "OTP 인증 실패하였습니다.");

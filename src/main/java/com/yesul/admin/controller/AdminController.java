@@ -42,11 +42,10 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/dashboard/login-log")
-    public String loginLogPage(Model model) {
-        List<AdminLoginLogDto> adminLoginLog = adminService.getAllLoginLogs();
-        model.addAttribute("adminLoginLog", adminLoginLog);
-        return "admin/dashboard/login-log";
-    }
 
+    @GetMapping("/login-logs")
+    @ResponseBody
+    public List<AdminLoginLogDto> getLoginLogs() {
+        return adminService.getAllLoginLogs();
+    }
 }

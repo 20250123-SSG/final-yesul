@@ -63,9 +63,11 @@ public class AdminService {
     }
 
     public List<AdminLoginLogDto> getAllLoginLogs() {
-        List<AdminLoginLog> logs = logRepository.findAll();
+        List<AdminLoginLog> logs = logRepository.findAllByOrderByCreatedAtDesc();
 
-        return logs.stream().map(log -> modelMapper.map(log, AdminLoginLogDto.class)).collect(Collectors.toList());
+        return logs.stream()
+                .map(AdminLoginLogDto::from)
+                .collect(Collectors.toList());
     }
 
     public List<PostResponseDto> getPopularPosts() {
