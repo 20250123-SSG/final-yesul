@@ -28,7 +28,8 @@
                         <form th:action="@{/user/profile/update}" th:object="${userUpdateRequestDto}" method="post" enctype="multipart/form-data">
                             <div class="gi-vendor-card-body">
                                 <div class="profile-header text-center mb-4">
-                                    <img class="profile-img" th:src="@{${user != null and user.profile != null ? user.profile : '/assets/img/app/default_profile.jpg'}}" alt="프로필 사진">
+                                  <img class="profile-img"
+                                       th:src="${userProfile.profile} != null ? ${userProfile.profile} : '/assets/img/app/default_profile.jpg'" alt="프로필 사진"/>
                                     <label for="profileInput" class="camera-overlay">
                                         <i class="fa fa-camera"></i>
                                     </label>
@@ -108,4 +109,8 @@
             }
         }).open();
     }
+
+    document.querySelector('.camera-overlay').addEventListener('click', function() {
+      document.getElementById('profileInput').click();
+    });
 </script>
