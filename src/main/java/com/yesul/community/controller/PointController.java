@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "Point", description = "포인트")
@@ -24,9 +25,8 @@ public class PointController {
     @Operation(summary = "포인트 적립")
     @PostMapping("/earn")
     public ResponseEntity<?> earnPoint(@RequestParam Long userId,
-                                       @RequestParam PointType type,
-                                       @RequestParam String content) {
-        pointService.earnPoint(userId, type, content);
+                                       @RequestParam PointType type) {
+        pointService.earnPoint(userId, type);
         return ResponseEntity.ok().build();
     }
 
@@ -45,8 +45,7 @@ public class PointController {
     @Operation(summary = "출석 포인트 적립")
     @PostMapping("/attendance")
     public ResponseEntity<?> earnAttendancePoint(@RequestParam Long userId) {
-        String today = java.time.LocalDate.now().toString();
-        pointService.earnPoint(userId, PointType.ATTENDANCE, today);
+        pointService.earnPoint(userId, PointType.ATTENDANCE);
         return ResponseEntity.ok().build();
     }
 }

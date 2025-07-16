@@ -97,6 +97,7 @@ public class PostController {
         model.addAttribute("postRequestDto", dto);
         return "community/postCreate";
     }
+
     /**
      * 게시글 등록 처리
      */
@@ -104,10 +105,13 @@ public class PostController {
     public String createPost(@ModelAttribute PostRequestDto postRequestDto,
                              @AuthenticationPrincipal PrincipalDetails principalDetails) {
         if (principalDetails == null) {
+            System.out.println("❌ 중복 활동 감지됨!");
             return "redirect:/login";
         }
 
         Long userId = principalDetails.getUser().getId();
+
+        System.out.println("👉 createPost 들어옴 userId=" + userId);
 
         if (postRequestDto.getThumbnail() == null || postRequestDto.getThumbnail().isBlank()) {
             String extractedThumbnail = postImageService.extractFirstImageUrl(postRequestDto.getContent());
@@ -117,17 +121,17 @@ public class PostController {
         }
 
         // 중복 글쓰기 방지 로직 추가
-        String contentToCheck = postRequestDto.getTitle() + postRequestDto.getContent();
-        if (pointService.isDuplicatePost(userId, contentToCheck)) {
-            // 나중에 오류 메시지 뷰로 넘겨도 되고, 일단 단순 리다이렉트
+        if (pointService.isDuplicateActivity(userId, PointType.POST_CREATE)) {
             return "redirect:/community/create?error=duplicate";
         }
 
         // 글 등록
         PostResponseDto createdPost = postService.createPost(postRequestDto, userId);
 
-        // 포인트 적립 (등록된 글의 ID 말고, content 기반으로 중복방지 키 만들기)
-        pointService.earnPoint(userId, PointType.POST_CREATE, contentToCheck);
+        System.out.println("✅ earnPoint 호출 직전");
+
+        // 포인트 적립
+        pointService.earnPoint(userId, PointType.POST_CREATE);
 
         return "redirect:/community/" + createdPost.getBoardName() + "/" + createdPost.getId();
     }

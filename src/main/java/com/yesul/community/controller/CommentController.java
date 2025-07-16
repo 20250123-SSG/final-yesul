@@ -25,22 +25,21 @@ public class CommentController {
     public String save(@ModelAttribute CommentRequestDto dto,
                        @AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        Long userId = principalDetails.getUser().getId(); // 로그인 유저 ID
-        String content = dto.getContent();
+        Long userId = principalDetails.getUser().getId();
 
-        // 1. Redis 중복 체크
-        if (activityDuplicateCheckService.isDuplicate(userId, PointType.COMMENT_CREATE, content)) {
-            throw new IllegalArgumentException("동일한 댓글은 일정 시간 내에 다시 작성할 수 없습니다.");
+        // 1. Redis 중복 체크 (내용 검사 X, 단순 시간 제한)
+        if (activityDuplicateCheckService.isDuplicate(userId, PointType.COMMENT_CREATE)) {
+            throw new IllegalArgumentException("댓글은 잠시 후 다시 작성해주세요.");
         }
 
         // 2. 댓글 저장
         Long commentId = commentService.save(dto, userId);
 
         // 3. 포인트 적립
-        pointService.earnPoint(userId, PointType.COMMENT_CREATE, content);
+        pointService.earnPoint(userId, PointType.COMMENT_CREATE); // content 제거됨
 
-        // 4. Redis에 활동 기록 저장 (TTL: 3초)
-        activityDuplicateCheckService.saveActivity(userId, PointType.COMMENT_CREATE, content, 3);
+        // 4. Redis 저장 (TTL: 20초)
+        activityDuplicateCheckService.saveActivity(userId, PointType.COMMENT_CREATE, 20);
 
         return "redirect:/community/" + dto.getBoardName() + "/" + dto.getPostId();
     }
