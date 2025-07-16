@@ -12,4 +12,6 @@ public interface PointService {
     void usePoint(Long userId, PointType type);
 
     List<PointHistory> getPointHistories(Long userId);
-}
+
+    boolean isDuplicatePost(Long userId, String content);
+    }

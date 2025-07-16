@@ -85,14 +85,18 @@ public class PostController {
      * 게시글 작성 폼으로 이동
      */
     @GetMapping("/create")
-    public String createForm(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public String createForm(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails,
+                             @RequestParam(value = "boardName", required = false) String boardName) {
         if (principalDetails == null) {
             return "redirect:/login";
         }
-        model.addAttribute("postRequestDto", new PostRequestDto());
+        PostRequestDto dto = new PostRequestDto();
+        if (boardName != null) {
+            dto.setBoardName(boardName);
+        }
+        model.addAttribute("postRequestDto", dto);
         return "community/postCreate";
     }
-
     /**
      * 게시글 등록 처리
      */
@@ -112,9 +116,18 @@ public class PostController {
             }
         }
 
+        // 중복 글쓰기 방지 로직 추가
+        String contentToCheck = postRequestDto.getTitle() + postRequestDto.getContent();
+        if (pointService.isDuplicatePost(userId, contentToCheck)) {
+            // 나중에 오류 메시지 뷰로 넘겨도 되고, 일단 단순 리다이렉트
+            return "redirect:/community/create?error=duplicate";
+        }
+
+        // 글 등록
         PostResponseDto createdPost = postService.createPost(postRequestDto, userId);
 
-        pointService.earnPoint(userId, PointType.POST_CREATE, String.valueOf(createdPost.getId()));
+        // 포인트 적립 (등록된 글의 ID 말고, content 기반으로 중복방지 키 만들기)
+        pointService.earnPoint(userId, PointType.POST_CREATE, contentToCheck);
 
         return "redirect:/community/" + createdPost.getBoardName() + "/" + createdPost.getId();
     }

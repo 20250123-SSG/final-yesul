@@ -52,14 +52,19 @@ public class PointServiceImpl implements PointService {
         pointHistoryRepository.save(history);
 
         // 4. Redis에 활동 기록 저장 (활동 종류별 TTL)
-        int ttl = switch (type) {
-            case ATTENDANCE -> 1440; // 출석: 24시간 (1일 1회)
-            default -> 5;             // 댓글/게시글/좋아요 등 도배 방지: 3초
+        int ttlSeconds = switch (type) {
+            case ATTENDANCE -> 86400; // 출석: 24시간 = 60*60*24초
+            default -> 30;            // 댓글/게시글/좋아요 등 도배 방지: 30초
         };
 
-        activityDuplicateCheckService.saveActivity(userId, type, content, ttl);
+
+        activityDuplicateCheckService.saveActivity(userId, type, content, ttlSeconds);
     }
 
+    @Override
+    public boolean isDuplicatePost(Long userId, String content) {
+        return activityDuplicateCheckService.isDuplicate(userId, PointType.POST_CREATE, content);
+    }
 
     /**
      * 포인트 차감

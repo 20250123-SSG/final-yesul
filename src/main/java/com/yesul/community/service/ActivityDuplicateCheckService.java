@@ -22,11 +22,13 @@ public class ActivityDuplicateCheckService {
     /**
      * 최근 활동 저장
      */
-    public void saveActivity(Long userId, PointType activityType, String content, int expireMinutes) {
+    public void saveActivity(Long userId, PointType activityType, String content, int expireSeconds) {
         System.out.println("saveActivity 호출됨: userId=" + userId + ", type=" + activityType + ", content=" + content);
         RedisTemplate<String, String> redisTemplate = redisConfig.getRedisTemplate(RedisConstants.USER_POINT_DB_INDEX);
         String key = generateKey(userId, activityType, content);
-        redisTemplate.opsForValue().set(key, "1", Duration.ofMinutes(expireMinutes));
+
+        // 초 단위 TTL 적용
+        redisTemplate.opsForValue().set(key, "1", Duration.ofSeconds(expireSeconds));
     }
 
     /**
@@ -43,7 +45,8 @@ public class ActivityDuplicateCheckService {
      * Redis 키 생성
      * 예: activity:123:comment_create:927362
      */
-    private String generateKey(Long userId, PointType activityType, String content) {
-        return "activity:" + userId + ":" + activityType + ":" + content.trim();
+    public String generateKey(Long userId, PointType type, String content) {
+        String contentHash = org.apache.commons.codec.digest.DigestUtils.sha256Hex(content);
+        return "activity:" + userId + ":" + type + ":" + contentHash;
     }
 }
