@@ -1,8 +1,9 @@
 package com.yesul.user.model.dto.response;
 
-import com.yesul.user.model.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+
+import com.yesul.user.model.entity.User;
 
 @Getter
 @Builder

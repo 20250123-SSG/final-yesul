@@ -3,13 +3,12 @@ package com.yesul.user.model.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.yesul.like.model.entity.PostLike;
 import jakarta.persistence.*;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.*;
 
+import com.yesul.like.model.entity.PostLike;
 import com.yesul.common.BaseTimeEntity;
 
 @Entity
