@@ -14,6 +14,7 @@ import com.yesul.user.model.entity.User;
 import com.yesul.like.model.entity.AlcoholLike;
 import com.yesul.like.model.dto.AlcoholLikeDto;
 import com.yesul.exception.handler.UserNotFoundException;
+import com.yesul.exception.handler.AlcoholNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class AlcoholLikeServiceImpl implements AlcoholLikeService {
         }
 
         Alcohol alcohol = alcoholRepo.findById(alcoholId)
-                .orElseThrow(() -> new UserNotFoundException("술을 찾을 수 없습니다. ID=" + alcoholId));
+                .orElseThrow(() -> new AlcoholNotFoundException("술을 찾을 수 없습니다. ID=" + alcoholId));
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다. ID=" + userId));
 
