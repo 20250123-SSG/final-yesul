@@ -187,7 +187,7 @@
   let socketConnected = false;
 
   function connectChatWebSocket(roomId) {
-    if (socketConnected) return; // 이미 연결되면 또 안 붙음
+    if (socketConnected) return;
     socketConnected = true;
 
     chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat");
