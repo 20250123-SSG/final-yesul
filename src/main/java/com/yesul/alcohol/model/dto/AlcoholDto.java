@@ -26,7 +26,7 @@ public class AlcoholDto {
     private String image;
 
     public AlcoholDto(Long id, String name, String brand, String province,
-                      String city, String type, Integer volumeMl, BigDecimal abv) {
+                      String city, String type, Integer volumeMl, BigDecimal abv, String image) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -35,6 +35,7 @@ public class AlcoholDto {
         this.type = type;
         this.volumeMl = volumeMl;
         this.abv = abv;
+        this.image = image;
     }
 
 

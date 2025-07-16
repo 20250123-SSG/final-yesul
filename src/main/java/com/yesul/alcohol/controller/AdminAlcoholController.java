@@ -24,9 +24,9 @@ public class AdminAlcoholController {
     private final AlcoholService alcoholService;
 
     @GetMapping
-    public String alcoholMgmtPage(@PageableDefault(size = 10) Pageable pageable, Model model) {
+    public String alcoholMgmtPage(@PageableDefault(size = 12) Pageable pageable, Model model) {
         Page<AlcoholDto> alcoholListPageable = alcoholService.getAlcoholList(pageable);
-        model.addAttribute("alcoholListPageable", alcoholListPageable);
+        model.addAttribute("alcoholList", alcoholListPageable);
         return "/admin/alcohol/list";
     }
 

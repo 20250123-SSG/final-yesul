@@ -31,7 +31,8 @@ public class AlcoholRepositoryImpl implements AlcoholRepositoryCustom {
                         alcohol.city,
                         alcohol.type,
                         alcohol.volumeMl,
-                        alcohol.abv))
+                        alcohol.abv,
+                        alcohol.image))
                 .from(alcohol)
                 .orderBy(alcohol.createdAt.desc())
                 .offset(pageable.getOffset())
