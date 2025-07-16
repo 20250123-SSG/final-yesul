@@ -71,7 +71,6 @@ public class NotificationServiceImpl implements NotificationService {
 
         User user = userRepository.findById(commenterId)
                 .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다."));
-        System.out.println("여기까지는 됨");
 
         CreateNotificationRequestDto dto = CreateNotificationRequestDto.builder()
                 .senderId(commenterId)
