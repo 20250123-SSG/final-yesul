@@ -15,6 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.media.*;
 
 import com.yesul.like.model.dto.PostLikeDto;
 import com.yesul.like.service.PostLikeService;
@@ -26,6 +31,7 @@ import com.yesul.user.model.entity.User;
 
 import java.util.List;
 
+@Tag(name="사용자 관리 API", description="회원가입, 프로필, 비밀번호 변경, 탈퇴 등 사용자 관련 기능")
 @Slf4j
 @Controller
 @RequestMapping("/user")
@@ -38,14 +44,18 @@ public class UserController {
     private final PostLikeService likeService;
     private final AlcoholLikeService alcoholLikeService;
 
-    // 회원가입 페이지 이동
+    @Operation(summary="회원가입 폼", description="새 사용자 가입 폼을 반환합니다.")
     @GetMapping("/regist")
     public String registForm(Model model) {
         model.addAttribute("userRegisterRequestDto", UserRegisterRequestDto.builder().build());
         return "user/regist";
     }
 
-    // 회원가입
+    @Operation(summary="회원가입 처리", description="유효성 검사 후 사용자 등록 및 인증 메일 발송")
+    @ApiResponses({
+            @ApiResponse(responseCode="200", description="가입 요청 접수"),
+            @ApiResponse(responseCode="400", description="입력값 오류")
+    })
     @PostMapping("/regist-process")
     public String registProcess(
             @Validated @ModelAttribute("userRegisterRequestDto") UserRegisterRequestDto dto,
@@ -69,7 +79,7 @@ public class UserController {
         return "user/user-regist-mail";
     }
 
-    // 이메일 인증
+    @Operation(summary="이메일 인증", description="메일 링크로 받은 이메일/토큰으로 계정 활성화")
     @GetMapping("/verify-email")
     public String verifyEmail(@RequestParam String email, @RequestParam String token, RedirectAttributes redirectAttributes) {
         try {
@@ -94,7 +104,7 @@ public class UserController {
         }
     }
 
-    // 유저 정보 페이지
+    @Operation(summary="프로필 조회", description="로그인한 사용자의 프로필 정보를 조회합니다.")
     @GetMapping("/profile")
     public String userProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -112,7 +122,7 @@ public class UserController {
         return "user/user-profile";
     }
 
-    // 유저 정보 수정 페이지
+    @Operation(summary="프로필 수정 폼", description="현재 사용자 정보를 편집할 수 있는 폼을 보여줍니다.")
     @GetMapping("/profile/edit")
     public String userProfileEdit(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -138,7 +148,11 @@ public class UserController {
         return "user/user-edit";
     }
 
-    // 유저정보 수정
+    @Operation(summary="프로필 수정 처리", description="입력값 검증 후 프로필 정보를 업데이트합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode="200", description="수정 완료"),
+            @ApiResponse(responseCode="400", description="검증 오류")
+    })
     @PostMapping("/profile/update")
     public String updateUserProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -165,14 +179,14 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    // 비밀번호 변경 페이지 이동
+    @Operation(summary="비밀번호 변경 폼", description="로그인한 사용자 비밀번호 변경 폼을 보여줍니다.")
     @GetMapping("/change-password")
     public String changePasswordForm(Model model) {
         model.addAttribute("passwordChangeRequestDto", UserPasswordChangeRequestDto.builder().build());
         return "user/change-password";
     }
 
-    // 비밀번호 변경
+    @Operation(summary="비밀번호 변경 처리", description="현재 비밀번호 검증 후 새 비밀번호로 변경합니다.")
     @PostMapping("/change-password")
     public String changePasswordProcess(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -212,14 +226,14 @@ public class UserController {
         return "redirect:/user/profile";
     }
 
-    // 회원 탈퇴 페이지 이동
+    @Operation(summary="회원 탈퇴 폼", description="탈퇴 전 비밀번호 입력 폼을 보여줍니다.")
     @GetMapping("/resign")
     public String resignForm(Model model) {
         model.addAttribute("userResignDto", UserResignRequestDto.builder().build());
         return "user/resign";
     }
 
-    // 회원 탈퇴
+    @Operation(summary="회원 탈퇴 처리", description="비밀번호 검증 후 계정을 탈퇴 처리합니다.")
     @PostMapping("/resign")
     public String resignProcess(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -232,7 +246,6 @@ public class UserController {
             return "redirect:/login";
         }
 
-        // 폼 검증
         if (bindingResult.hasErrors()) {
             return "user/resign";
         }
@@ -252,7 +265,7 @@ public class UserController {
         }
     }
 
-    // 패스워드 신규 설정 페이지로 이동
+    @Operation(summary="비밀번호 재설정 폼", description="링크로 받은 이메일/토큰으로 비밀번호 재설정 폼을 제공합니다.")
     @GetMapping("/reset-new-password")
     public String resetNewPasswordForm(
             @RequestParam("email") String email,
@@ -261,13 +274,11 @@ public class UserController {
 
         model.addAttribute("email", email);
         model.addAttribute("token", token);
-
         model.addAttribute("userPasswordResetRequestDto", UserPasswordResetRequestDto.builder().build());
         return "user/reset-password";
     }
 
-
-    // 패스워드 변경 Post
+    @Operation(summary="비밀번호 재설정 처리", description="토큰 검증 후 새 비밀번호로 설정합니다.")
     @PostMapping("/reset-new-password")
     public String handleReset(
             @RequestParam String email,
@@ -291,6 +302,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary="내가 좋아요한 글 조회", description="내가 좋아요 누른 게시글 목록을 조회합니다.")
     @GetMapping("/like-post")
     public String viewMyLikes(
             @AuthenticationPrincipal PrincipalDetails principal,
@@ -302,6 +314,7 @@ public class UserController {
         return "user/user-like-post";
     }
 
+    @Operation(summary="내가 좋아요한 술 조회", description="내가 좋아요 누른 술 목록을 조회합니다.")
     @GetMapping("/like-alcohol")
     public String viewLikedAlcohols(@AuthenticationPrincipal PrincipalDetails principal,
                                     Model model) {
