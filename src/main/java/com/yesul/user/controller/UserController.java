@@ -1,5 +1,7 @@
 package com.yesul.user.controller;
 
+import com.yesul.like.model.dto.AlcoholLikeDto;
+import com.yesul.like.service.AlcoholLikeService;
 import com.yesul.user.model.dto.request.*;
 import com.yesul.user.model.dto.response.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.yesul.community.model.dto.LikePostDto;
-import com.yesul.community.service.LikeService;
+import com.yesul.like.model.dto.PostLikeDto;
+import com.yesul.like.service.PostLikeService;
 import com.yesul.exception.handler.EntityNotFoundException;
 import com.yesul.user.service.PrincipalDetails;
 import com.yesul.user.service.UserAsyncService;
@@ -33,8 +35,8 @@ public class UserController {
     private final UserService userService;
     private final UserAsyncService asyncRegService;
     private final PasswordEncoder passwordEncoder;
-    private final LikeService likeService;
-
+    private final PostLikeService likeService;
+    private final AlcoholLikeService alcoholLikeService;
 
     // 회원가입 페이지 이동
     @GetMapping("/regist")
@@ -295,8 +297,17 @@ public class UserController {
             Model model
     ) {
         Long userId = principal.getUser().getId();
-        List<LikePostDto> likePosts = likeService.getLikedPosts(userId);
-        model.addAttribute("likePosts", likePosts);
+        List<PostLikeDto> Postlikes = likeService.getLikedPosts(userId);
+        model.addAttribute("Postlikes", Postlikes);
         return "user/user-like-post";
+    }
+
+    @GetMapping("/like-alcohol")
+    public String viewLikedAlcohols(@AuthenticationPrincipal PrincipalDetails principal,
+                                    Model model) {
+        Long userId = principal.getUser().getId();
+        List<AlcoholLikeDto> list = alcoholLikeService.getLikedAlcohols(userId);
+        model.addAttribute("alcoholLikes", list);
+        return "user/user-like-alcohol";
     }
 }

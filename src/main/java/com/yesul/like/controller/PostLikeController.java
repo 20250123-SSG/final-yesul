@@ -1,27 +1,28 @@
-package com.yesul.community.controller;
+package com.yesul.like.controller;
 
-import com.yesul.user.service.PrincipalDetails;
-import com.yesul.community.service.LikeService;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.yesul.user.service.PrincipalDetails;
+import com.yesul.like.service.PostLikeService;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/likes")
-public class LikeController {
+public class PostLikeController {
 
-    private final LikeService likeService;
+    private final PostLikeService likeService;
 
     @PostMapping("/{postId}")
     @ResponseBody
     public Map<String, Object> toggleLike(@PathVariable Long postId,
                                           @AuthenticationPrincipal PrincipalDetails principalDetails) {
-        Long userId = principalDetails.getUser().getId();  // 로그인 유저 ID
+        Long userId = principalDetails.getUser().getId();
         boolean liked = likeService.toggleLike(postId, userId);
         int likeCount = likeService.getLikeCount(postId);
 
