@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="'술 상세 - ' + ${alcohol.name}">술 상세</title>
+  <style>
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+      font-family: sans-serif;
+    }
+
+    .header {
+      margin-bottom: 24px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 32px;
+    }
+
+    .detail-item {
+      margin-bottom: 8px;
+    }
+
+    .image-section img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+
+    .section-title {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .taste-levels span {
+      display: inline-block;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1 th:text="${alcohol.name}">술 이름</h1>
+    <p th:text="'브랜드: ' + ${alcohol.brand}">브랜드</p>
+    <p th:text="'지역: ' + ${alcohol.province} + ' ' + ${alcohol.city}">지역</p>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-item" th:text="'종류: ' + ${alcohol.type}">종류</div>
+    <div class="detail-item" th:text="'도수: ' + ${alcohol.abv} + '%'">도수</div>
+    <div class="detail-item" th:text="'용량: ' + ${alcohol.volumeMl} + 'ml'">용량</div>
+    <div class="detail-item" th:text="'가격: ' + ${alcohol.price} + '원'">가격</div>
+    <div class="detail-item" th:text="'원재료: ' + ${alcohol.ingredients}">원재료</div>
+    <div class="detail-item" th:text="'페어링 음식: ' + ${alcohol.pairingFoods}">페어링 음식</div>
+  </div>
+
+  <div class="section-title">설명</div>
+  <p th:text="${alcohol.description}">제품 설명</p>
+
+  <div class="section-title">맛 설명</div>
+  <p th:text="${alcohol.tasteDescription}">맛에 대한 설명</p>
+
+  <div class="section-title">맛 요소 수치</div>
+  <div class="taste-levels">
+    <p><span>단맛:</span> <span th:text="${alcohol.sweetnessLevel}">0</span></p>
+    <p><span>산도:</span> <span th:text="${alcohol.acidityLevel}">0</span></p>
+    <p><span>바디:</span> <span th:text="${alcohol.bodyLevel}">0</span></p>
+    <p><span>향:</span> <span th:text="${alcohol.aromaLevel}">0</span></p>
+    <p><span>탄닌:</span> <span th:text="${alcohol.tanninLevel}">0</span></p>
+    <p><span>피니시:</span> <span th:text="${alcohol.finishLevel}">0</span></p>
+    <p><span>탄산:</span> <span th:text="${alcohol.sparklingLevel}">0</span></p>
+  </div>
+
+  <div class="section-title">이미지</div>
+  <div class="image-section">
+    <img th:src="@{${alcohol.image}}" alt="술 이미지">
+  </div>
+</div>
+</body>
+</html>

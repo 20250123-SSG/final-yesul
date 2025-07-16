@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>술 관리</title>
+  <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<h2>술 관리</h2>
+
+<table border="1" width="100%">
+  <thead>
+  <tr>
+    <th>번호</th>
+    <th>이름</th>
+    <th>브랜드</th>
+    <th>지역</th>
+    <th>도시</th>
+  </tr>
+  </thead>
+  <tbody>
+  <<tr th:each="alcohol, stat : ${alcoholListPageable.content}"
+       th:onclick="|window.location.href='/admin/alcohols/${alcohol.id}'|"
+       style="cursor: pointer;">
+    <td th:text="${stat.index + 1 + alcoholListPageable.pageable.offset}">1</td>
+    <td th:text="${alcohol.name}">술 이름</td>
+    <td th:text="${alcohol.brand}">브랜드</td>
+    <td th:text="${alcohol.province}">지역</td>
+    <td th:text="${alcohol.city}">도시</td>
+  </tr>
+  <tr th:if="${alcoholListPageable.empty}">
+    <td colspan="5">등록된 술이 없습니다.</td>
+  </tr>
+  </tbody>
+</table>
+
+<!-- 페이지네이션 -->
+<div>
+  <ul>
+    <li th:if="${alcoholListPageable.hasPrevious()}">
+      <a th:href="@{|?page=${alcoholListPageable.number - 1}|}">이전</a>
+    </li>
+    <li th:each="i : ${#numbers.sequence(0, alcoholListPageable.totalPages - 1)}"
+        th:classappend="${alcoholListPageable.number == i} ? 'active'">
+      <a th:href="@{|?page=${i}|}" th:text="${i + 1}">1</a>
+    </li>
+    <li th:if="${alcoholListPageable.hasNext()}">
+      <a th:href="@{|?page=${alcoholListPageable.number + 1}|}">다음</a>
+    </li>
+  </ul>
+</div>
+</body>
+</html>
