@@ -122,14 +122,14 @@ public class UserController {
             return "redirect:/login";
         }
 
-        UserProfileResponseDto current = new UserProfileResponseDto(principalDetails.getUser());
-        model.addAttribute("userProfile", current);
+        UserProfileResponseDto userProfile  = new UserProfileResponseDto(principalDetails.getUser());
+        model.addAttribute("userProfile", userProfile );
 
         UserUpdateRequestDto dto = UserUpdateRequestDto.builder()
-                .name(current.getName())
-                .nickname(current.getNickname())
-                .birthday(current.getBirthday())
-                .address(current.getAddress())
+                .name(userProfile .getName())
+                .nickname(userProfile .getNickname())
+                .birthday(userProfile .getBirthday())
+                .address(userProfile .getAddress())
                 .build();
         model.addAttribute("userUpdateRequestDto", dto);
 
