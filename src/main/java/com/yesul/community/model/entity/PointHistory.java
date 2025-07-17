@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * 유저별 포인트 적립/차감 내역 기록 테이블
  */
 @Entity
-@Table(name = "points_history")
+@Table(name = "point_history")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -29,12 +29,4 @@ public class PointHistory extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Boolean isEarned;  // true: 적립, false: 차감
-
-    @Column(nullable = false)
-    private LocalDateTime createdAt;  // 생성일시
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
 }
