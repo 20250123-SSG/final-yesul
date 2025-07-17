@@ -3,7 +3,6 @@ package com.yesul.alcohol.controller;
 import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
 import com.yesul.alcohol.service.AlcoholService;
-import com.yesul.exception.handler.RegistrationFailedException;
 import com.yesul.utill.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,16 +48,17 @@ public class AdminAlcoholController {
 
         model.addAttribute("alcohol", alcohol);
         model.addAttribute("tasteLevels", tasteLevels);
-        return "admin/alcohol/detail";
+        return "/admin/alcohol/detail";
     }
 
     @GetMapping("/regist")
-    public String registPage() {
-        return "admin/alcohol/regist";
+    public String registPage(Model model) {
+        model.addAttribute("alcohol", new AlcoholDetailDto());
+        return "/admin/alcohol/alcohol-form";
     }
 
     @PostMapping("/regist")
-    public String alcoholRegist(@ModelAttribute AlcoholDetailDto alcoholDetailDto, MultipartFile imageFile) {
+    public String registAlcohol(@ModelAttribute AlcoholDetailDto alcoholDetailDto, MultipartFile imageFile) {
 
         String domain = "alcohol";
         String url = imageUpload.uploadAndGetUrl(domain, imageFile);
@@ -66,5 +66,32 @@ public class AdminAlcoholController {
         alcoholService.registAlcohol(alcoholDetailDto);
 
         return "redirect:/admin/alcohols";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editAlcohol(@PathVariable Long id, Model model) {
+        AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailById(id);
+        model.addAttribute("alcohol", alcohol);
+        return "/admin/alcohol/alcohol-form";
+    }
+
+    @PostMapping("/edit")
+    public String updateAlcohol(@ModelAttribute AlcoholDetailDto alcohol, MultipartFile imageFile) {
+        if (!imageFile.isEmpty()) {
+            String domain = "alcohol";
+            if (alcohol.getImage() != null) {
+                imageUpload.delete(alcohol.getImage(), domain);
+            }
+            String url = imageUpload.uploadAndGetUrl("alcohol", imageFile);
+            alcohol.setImage(url);
+        }
+        alcoholService.updateAlcohol(alcohol);
+        return "redirect:/admin/alcohols";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteAlcohol(@PathVariable Long id) {
+        alcoholService.deleteAlcoholById(id);
+        return "redirect:/admin/alcohol";
     }
 }

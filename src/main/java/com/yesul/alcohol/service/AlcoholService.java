@@ -48,6 +48,10 @@ public class AlcoholService {
         return null;
     }
 
+    public Page<AlcoholDto> getAlcoholList(Pageable pageable) {
+        return alcoholRepository.findAlcoholList(pageable);
+    }
+
     public void registAlcohol(AlcoholDetailDto alcohol) {
         try{
             alcoholRepository.save(modelMapper.map(alcohol, Alcohol.class));
@@ -56,8 +60,11 @@ public class AlcoholService {
         }
     }
 
-    public Page<AlcoholDto> getAlcoholList(Pageable pageable) {
-        Page<AlcoholDto> alcoholListPageable = alcoholRepository.findAlcoholList(pageable);
-        return alcoholListPageable;
+    public void updateAlcohol(AlcoholDetailDto dto) {
+        alcoholRepository.save(modelMapper.map(dto, Alcohol.class));
+    }
+
+    public void deleteAlcoholById(Long id) {
+        alcoholRepository.deleteById(id);
     }
 }
