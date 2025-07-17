@@ -3,6 +3,8 @@ package com.yesul.alcohol.controller;
 import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
 import com.yesul.alcohol.service.AlcoholService;
+import com.yesul.exception.handler.RegistrationFailedException;
+import com.yesul.utill.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -22,6 +25,7 @@ import java.util.Map;
 public class AdminAlcoholController {
 
     private final AlcoholService alcoholService;
+    private final ImageUpload imageUpload;
 
     @GetMapping
     public String alcoholMgmtPage(@PageableDefault(size = 12) Pageable pageable, Model model) {
@@ -49,8 +53,18 @@ public class AdminAlcoholController {
     }
 
     @GetMapping("/regist")
-    public String regist(Model model) {
+    public String registPage() {
         return "admin/alcohol/regist";
     }
 
+    @PostMapping("/regist")
+    public String alcoholRegist(@ModelAttribute AlcoholDetailDto alcoholDetailDto, MultipartFile imageFile) {
+
+        String domain = "alcohol";
+        String url = imageUpload.uploadAndGetUrl(domain, imageFile);
+        alcoholDetailDto.setImage(url);
+        alcoholService.registAlcohol(alcoholDetailDto);
+
+        return "redirect:/admin/alcohols";
+    }
 }
