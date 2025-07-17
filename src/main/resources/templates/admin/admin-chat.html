@@ -103,7 +103,7 @@
         <li th:each="msg : ${messages}"
             th:classappend="${msg.senderType.name()} == 'ADMIN' ? 'admin-message' : 'user-message'">
           <span class="sender-name"
-                th:if="${msg.senderType.name()} == 'ADMIN'">관리자</span>
+                th:if="${msg.senderType.name()} == 'ADMIN'"></span>
           <span class="sender-name"
                 th:if="${msg.senderType.name()} != 'ADMIN'"
                 th:text="${chatPartnerName}">상대방</span>
@@ -143,6 +143,8 @@
     </li>
   </ul>
 </div>
+<div th:replace="~{fragments/user/js :: js}"></div>
+
 
 
 <!--  footer fragment 유지 -->
