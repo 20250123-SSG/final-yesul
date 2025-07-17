@@ -36,7 +36,10 @@
             </div>
             <div class="gi-vender-about-block">
               <h5>About Me</h5>
-              <p>Yesul 서비스에 오신 것을 환영합니다! 이 페이지에서 회원님의 정보를 확인하고 관리할 수 있습니다.</p>
+              <p th:text=" ${user.description} != null and ${user.description} != ''
+            ? ${user.description} : '작성된 자기소개 글이 없습니다. 자신을 소개해보세요.'">
+                작성된 자기소개 글이 없습니다. 자신을 소개해보세요.
+              </p>
             </div>
             <div class="gi-vender-about-block">
               <h5>Account Information

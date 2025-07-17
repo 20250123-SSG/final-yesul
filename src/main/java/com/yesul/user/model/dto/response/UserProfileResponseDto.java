@@ -20,6 +20,7 @@ public class UserProfileResponseDto {
     private String profile;
     private char type;
     private String provider;
+    private String description;
     private Integer point;
 
     // Entity To Dto
@@ -32,6 +33,7 @@ public class UserProfileResponseDto {
         this.profile = user.getProfile();
         this.type = user.getType();
         this.provider = user.getProvider();
+        this.description = user.getDescription();
         this.point = user.getPoint();
     }
 }

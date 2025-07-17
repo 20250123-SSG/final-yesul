@@ -139,6 +139,10 @@ public class UserController {
                 .nickname(userProfile .getNickname())
                 .birthday(userProfile .getBirthday())
                 .address(userProfile .getAddress())
+                .description(
+                        userProfile.getDescription() != null
+                        ? userProfile.getDescription() : ""
+                )
                 .build();
         model.addAttribute("userUpdateRequestDto", dto);
 

@@ -77,7 +77,16 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="gi-vender-about-block mt-4">
+                                <h5>자기소개</h5>
+                                <textarea th:field="*{description}"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="자기소개를 입력하세요 (최대 500자)"></textarea>
+                                <div th:if="${#fields.hasErrors('description')}" class="text-danger">
+                                    <p th:each="e : ${#fields.errors('description')}" th:text="${e}"></p>
+                                </div>
+                            </div>
                             <div class="edit text-center mt-4">
                                 <button type="submit" class="gi-btn-2">
                                   <i class="ri-save-line"></i> 정보 저장

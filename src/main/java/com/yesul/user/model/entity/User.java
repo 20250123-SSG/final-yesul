@@ -116,6 +116,10 @@ public class User extends BaseTimeEntity {
         this.password = encodedPassword;
     }
 
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
     public void clearEmailCheckToken() {
         this.emailCheckToken = null;
         this.emailCheckTokenGeneratedAt = null;
