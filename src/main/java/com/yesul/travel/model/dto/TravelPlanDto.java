@@ -3,7 +3,6 @@ package com.yesul.travel.model.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor

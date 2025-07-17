@@ -2,6 +2,7 @@ package com.yesul.travel.model.entity;
 
 import com.yesul.common.BaseTimeEntity;
 import com.yesul.user.model.entity.User;
+
 import jakarta.persistence.*;
 import lombok.*;
 
