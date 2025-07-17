@@ -41,7 +41,7 @@
               <tr th:each="dto : ${alcoholLikes}">
                 <td th:text="${dto.alcoholId}"></td>
                 <td>
-                  <img th:src="@{${dto.thumbnailUrl}}"
+                  <img th:src="@{${dto != null and dto.thumbnailUrl != null ? dto.thumbnailUrl : '/assets/img/yesul/default/default_image.jpg'}}"
                        class="prod-img"
                        width="48" height="48"
                        style="object-fit:cover"/>
