@@ -30,7 +30,7 @@
                         <form th:action="@{/user/profile/update}" th:object="${userUpdateRequestDto}" method="post" enctype="multipart/form-data">
                             <div class="gi-vendor-card-body">
                                 <div class="profile-header text-center mb-4">
-                                    <img class="profile-img" th:src="${userProfile.profile} != null ? ${userProfile.profile}: '/assets/img/app/default_profile.jpg'" alt="프로필 사진"/>
+                                    <img id="previewImg" class="profile-img" th:src="${userProfile.profile} != null ? ${userProfile.profile}: '/assets/img/app/default_profile.jpg'" alt="프로필 사진"/>
                                     <label for="profileInput" class="camera-overlay">
                                         <i class="fa fa-camera"></i>
                                     </label>
@@ -110,4 +110,14 @@
             }
         }).open();
     }
+    document.getElementById('profileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('previewImg').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
 </script>
