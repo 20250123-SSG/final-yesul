@@ -5,9 +5,13 @@
     <th:block th:insert="fragments/admin/head :: adminHead"></th:block>
     <style>
         .alcohol-detail-container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 60px auto;
             padding: 40px;
+
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
         }
 
         .detail-grid {
@@ -124,7 +128,7 @@
             <div class="alcohol-detail-container">
 
                 <!-- 상세 정보 -->
-                <div class="detail-grid">
+                <div class="detail-grid" style="padding-top: 20px">
                     <div class="image-section">
                         <img id="zoomImage" th:src="@{${alcohol.image}}" alt="술 이미지">
                     </div>

@@ -48,4 +48,9 @@ public class AdminAlcoholController {
         return "admin/alcohol/detail";
     }
 
+    @GetMapping("/regist")
+    public String regist(Model model) {
+        return "admin/alcohol/regist";
+    }
+
 }
