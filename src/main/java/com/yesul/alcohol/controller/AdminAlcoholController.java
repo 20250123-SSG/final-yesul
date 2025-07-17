@@ -26,6 +26,8 @@ public class AdminAlcoholController {
     private final AlcoholService alcoholService;
     private final ImageUpload imageUpload;
 
+    private static final String DOMAIN = "alcohol";
+
     @GetMapping
     public String alcoholMgmtPage(@PageableDefault(size = 12) Pageable pageable, Model model) {
         Page<AlcoholDto> alcoholListPageable = alcoholService.getAlcoholList(pageable);
@@ -60,8 +62,7 @@ public class AdminAlcoholController {
     @PostMapping("/regist")
     public String registAlcohol(@ModelAttribute AlcoholDetailDto alcoholDetailDto, MultipartFile imageFile) {
 
-        String domain = "alcohol";
-        String url = imageUpload.uploadAndGetUrl(domain, imageFile);
+        String url = imageUpload.uploadAndGetUrl(DOMAIN, imageFile);
         alcoholDetailDto.setImage(url);
         alcoholService.registAlcohol(alcoholDetailDto);
 
@@ -78,20 +79,23 @@ public class AdminAlcoholController {
     @PostMapping("/edit")
     public String updateAlcohol(@ModelAttribute AlcoholDetailDto alcohol, MultipartFile imageFile) {
         if (!imageFile.isEmpty()) {
-            String domain = "alcohol";
             if (alcohol.getImage() != null) {
-                imageUpload.delete(alcohol.getImage(), domain);
+                imageUpload.delete(alcohol.getImage(), DOMAIN);
             }
-            String url = imageUpload.uploadAndGetUrl("alcohol", imageFile);
+            String url = imageUpload.uploadAndGetUrl(DOMAIN, imageFile);
             alcohol.setImage(url);
         }
         alcoholService.updateAlcohol(alcohol);
         return "redirect:/admin/alcohols";
     }
 
-    @PostMapping("/delete/{id}")
+    @GetMapping("/delete/{id}")
     public String deleteAlcohol(@PathVariable Long id) {
+        AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailById(id);
+
+        imageUpload.delete(alcohol.getImage(), DOMAIN);
         alcoholService.deleteAlcoholById(id);
-        return "redirect:/admin/alcohol";
+
+        return "redirect:/admin/alcohols";
     }
 }
