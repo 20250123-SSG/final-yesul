@@ -17,7 +17,7 @@ import com.yesul.user.model.dto.request.UserRegisterRequestDto;
 import com.yesul.user.repository.UserRepository;
 import com.yesul.exception.handler.UserNotFoundException;
 import com.yesul.exception.handler.DuplicateException;
-import com.yesul.utill.ImageUpload;
+import com.yesul.util.ImageUpload;
 
 @Service
 @RequiredArgsConstructor
@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService {
         if (dto.getNickname() != null) user.updateNickname(dto.getNickname());
         if (dto.getBirthday() != null) user.updateBirthday(dto.getBirthday());
         if (dto.getAddress() != null)  user.updateAddress(dto.getAddress());
+        if (dto.getDescription() != null) user.updateDescription(dto.getDescription());
 
         if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
             String url = imageUpload.uploadAndGetUrl("profile", dto.getProfileImage());

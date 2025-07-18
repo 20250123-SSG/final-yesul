@@ -8,8 +8,8 @@ import jakarta.persistence.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.*;
 
+import com.yesul.like.model.entity.PostLike;
 import com.yesul.common.BaseTimeEntity;
-import com.yesul.community.model.entity.Like;
 
 @Entity
 @Table(name = "user")
@@ -64,7 +64,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "point")
+    @Column(name = "point", nullable = false)
     private Integer point;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -116,6 +116,10 @@ public class User extends BaseTimeEntity {
         this.password = encodedPassword;
     }
 
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
     public void clearEmailCheckToken() {
         this.emailCheckToken = null;
         this.emailCheckTokenGeneratedAt = null;
@@ -123,7 +127,7 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<Like> likes = new ArrayList<>();
+    private List<PostLike> likes = new ArrayList<>();
 
     // 포인트 적립
     public void earnPoint(Integer amount) {

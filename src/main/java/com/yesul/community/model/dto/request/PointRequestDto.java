@@ -1,4 +1,4 @@
-package com.yesul.community.model.dto;
+package com.yesul.community.model.dto.request;
 
 import com.yesul.community.model.entity.enums.PointType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PointRequest {
+public class PointRequestDto {
 
     @Schema(description = "유저 ID")
     private Long userId;

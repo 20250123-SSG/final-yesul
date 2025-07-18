@@ -16,6 +16,12 @@ public class GlobalExceptionAdvice {
         return "404.html";
     }
 
+    @ExceptionHandler(AlcoholNotFoundException.class)
+    public String handleAlcoholNotFound(AlcoholNotFoundException e, HttpServletRequest request) {
+        log.warn("[AlcoholNotFouneException] {} {} - {}", request.getMethod(), request.getRequestURI(), e.getMessage());
+        return "404.html";
+    }
+
     @ExceptionHandler(ChatRoomNotFoundException.class)
     public String handleChatRoomNotFound(ChatRoomNotFoundException e, HttpServletRequest request) {
         log.warn("[ChatRoomNotFoundException] {} {} - {}", request.getMethod(), request.getRequestURI(), e.getMessage());
@@ -49,5 +55,11 @@ public class GlobalExceptionAdvice {
     public String handleServerError(Exception e, HttpServletRequest req) {
         log.error("[500] {} {} - {}", req.getMethod(), req.getRequestURI(), e.getMessage(), e);
         return "500";
+    }
+
+    @ExceptionHandler(PointNotFoundException.class)
+    public String handlePointNotFound(PointNotFoundException e, HttpServletRequest req) {
+        log.error("[400] {} {} - {}", req.getMethod(), req.getRequestURI(), e.getMessage(), e);
+        return "400";
     }
 }
