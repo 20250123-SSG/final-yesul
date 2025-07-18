@@ -1,8 +1,8 @@
 package com.yesul.community.service;
 
-import com.yesul.community.model.dto.CommentResponseDto;
-import com.yesul.community.model.dto.PostRequestDto;
-import com.yesul.community.model.dto.PostResponseDto;
+import com.yesul.community.model.dto.response.CommentResponseDto;
+import com.yesul.community.model.dto.request.PostRequestDto;
+import com.yesul.community.model.dto.response.PostResponseDto;
 import com.yesul.community.model.entity.Post;
 import com.yesul.community.model.entity.PostImage;
 import com.yesul.like.repository.PostLikeRepository;
