@@ -38,10 +38,11 @@
               </tr>
               </thead>
               <tbody>
-              <tr th:each="dto : ${travelPlans}"
-                  th:onclick="|window.location.href='@{/travel-plans/{id}(id=${dto.id})}'|"
+              <tr th:each="dto, iterStat : ${travelPlans}"
+                  th:onclick="|window.location.href='@{/travel-plan/{id}(id=${dto.id})}'|"
                   style="cursor: pointer;">
-                <td th:text="${dto.id}">1</td>
+<!--                <td th:text="${dto.id}">1</td>-->
+                <td th:text="${iterStat.count}"></td>
                 <td th:text="${dto.travelPlan != null
                  ? (dto.travelPlan.length() > 30
                      ? dto.travelPlan.substring(0,30) + '…'

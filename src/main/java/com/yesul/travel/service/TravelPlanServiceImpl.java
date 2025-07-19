@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.yesul.exception.handler.TravelPlanNotFoundException;
+import com.yesul.travel.model.dto.TravelPlanRequestDto;
+import com.yesul.user.model.entity.User;
+import com.yesul.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,21 +18,21 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class TravelPlanServiceImpl implements TravelPlanService {
 
-    private final TravelPlanRepository repo;
+    private final TravelPlanRepository travelPlanRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<TravelPlanDto> listUserPlans(Long userId) {
-        return repo.findAllByUserId(userId).stream()
+        return travelPlanRepository.findAllByUserId(userId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public TravelPlanDto getUserPlan(Long userId, Long planId) {
-        TravelPlan plan = repo.findByIdAndUserId(planId, userId)
+        TravelPlan plan = travelPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> new TravelPlanNotFoundException(
                         "사용자 " + userId + "의 여행계획 ID=" + planId + "를 찾을 수 없습니다."));
         return toDto(plan);
@@ -38,10 +41,23 @@ public class TravelPlanServiceImpl implements TravelPlanService {
     @Override
     @Transactional
     public void deleteUserPlan(Long userId, Long planId) {
-        TravelPlan plan = repo.findByIdAndUserId(planId, userId)
+        TravelPlan plan = travelPlanRepository.findByIdAndUserId(planId, userId)
                 .orElseThrow(() -> new TravelPlanNotFoundException(
                         "사용자 " + userId + "의 여행계획 ID=" + planId + "를 찾을 수 없습니다."));
-        repo.delete(plan);
+        travelPlanRepository.delete(plan);
+    }
+
+    @Override
+    public void saveTravelPlan(TravelPlanRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        System.out.println(userId);
+        TravelPlan plan = TravelPlan.builder()
+                .travelPlan(dto.getTravelPlan())
+                .user(user)
+                .build();
+
+        travelPlanRepository.save(plan);
     }
 
     private TravelPlanDto toDto(TravelPlan tp) {

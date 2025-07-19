@@ -25,7 +25,7 @@
       <div class="col-lg-9 col-md-12 mb-24">
         <div class="gi-vendor-dashboard-card">
           <div class="gi-vendor-card-header">
-            <h5>여행계획 상세 (ID: <span th:text="${plan.id}"></span>)</h5>
+            <h5>상세 여행계획 </h5>
           </div>
           <div class="gi-vendor-card-body">
             <dl class="row">
@@ -39,8 +39,8 @@
             </dl>
 
             <div class="mt-4">
-              <a th:href="@{/travel-plans}" class="gi-btn-1">목록으로</a>
-              <form th:action="@{/travel-plans/{id}/delete(id=${plan.id})}"
+              <a th:href="@{/travel-plan}" class="gi-btn-1">목록으로</a>
+              <form th:action="@{/travel-plan/{id}/delete(id=${plan.id})}"
                     th:method="post"
                     class="d-inline"
                     onsubmit="return confirm('정말 삭제하시겠습니까?');">

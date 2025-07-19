@@ -255,4 +255,11 @@ public class PostServiceImpl implements PostService {
 
         return dto;
     }
+
+    @Override
+    public List<PostResponseDto> getRandomPopularPosts(int count) {
+        List<PostResponseDto> popular = postRepository.findPopularPostsByLikes();
+        java.util.Collections.shuffle(popular);
+        return popular.stream().limit(count).toList();
+    }
 }
