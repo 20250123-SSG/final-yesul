@@ -68,8 +68,4 @@ public class AlcoholService {
         alcoholRepository.deleteById(id);
     }
 
-    public Page<AlcoholDto> getAlcoholList(Pageable pageable) {
-        Page<AlcoholDto> alcoholListPageable = alcoholRepository.findAlcoholList(pageable);
-        return alcoholListPageable;
-    }
 }

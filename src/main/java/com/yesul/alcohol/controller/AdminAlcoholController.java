@@ -3,7 +3,7 @@ package com.yesul.alcohol.controller;
 import com.yesul.alcohol.model.dto.AlcoholDetailDto;
 import com.yesul.alcohol.model.dto.AlcoholDto;
 import com.yesul.alcohol.service.AlcoholService;
-import com.yesul.utill.ImageUpload;
+import com.yesul.util.ImageUpload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
