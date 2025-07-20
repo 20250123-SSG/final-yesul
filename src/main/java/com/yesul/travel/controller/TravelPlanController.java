@@ -78,6 +78,6 @@ public class TravelPlanController {
         Long userId = principal.getUser().getId();
         travelPlanService.deleteUserPlan(userId, planId);
         ra.addFlashAttribute("message", "여행계획이 삭제되었습니다.");
-        return "redirect:/travel-plans";
+        return "redirect:/travel-plan";
     }
 }
