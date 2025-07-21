@@ -3,17 +3,20 @@ package com.yesul.alcohol.model.entity;
 import com.yesul.common.BaseTimeEntity;
 import com.yesul.like.model.entity.AlcoholLike;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "alcohol")
 public class Alcohol extends BaseTimeEntity {
 
