@@ -1,7 +1,7 @@
 package com.yesul.community.controller;
 
-import com.yesul.community.model.dto.PostRequestDto;
-import com.yesul.community.model.dto.PostResponseDto;
+import com.yesul.community.model.dto.request.PostRequestDto;
+import com.yesul.community.model.dto.response.PostResponseDto;
 import com.yesul.community.model.entity.enums.PointType;
 import com.yesul.community.service.PointService;
 import com.yesul.community.service.PostImageService;
@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -85,16 +86,28 @@ public class PostController {
      * 게시글 작성 폼으로 이동
      */
     @GetMapping("/create")
-    public String createForm(Model model, @AuthenticationPrincipal PrincipalDetails principalDetails,
-                             @RequestParam(value = "boardName", required = false) String boardName) {
+    public String createForm(Model model,
+                             @AuthenticationPrincipal PrincipalDetails principalDetails,
+                             @RequestParam(value = "boardName", required = false) String boardName,
+                             @ModelAttribute("postRequestDto") PostRequestDto postRequestDto,
+                             @ModelAttribute("error") String error) {
         if (principalDetails == null) {
             return "redirect:/login";
         }
-        PostRequestDto dto = new PostRequestDto();
-        if (boardName != null) {
-            dto.setBoardName(boardName);
+        if (model.containsAttribute("postRequestDto")) {
+            model.addAttribute("postRequestDto", postRequestDto);
+        } else {
+            PostRequestDto dto = new PostRequestDto();
+            if (boardName != null) {
+                dto.setBoardName(boardName);
+            }
+            model.addAttribute("postRequestDto", dto);
         }
-        model.addAttribute("postRequestDto", dto);
+
+        if (error != null && !error.isBlank()) {
+            model.addAttribute("error", error);
+        }
+
         return "community/postCreate";
     }
 
@@ -103,26 +116,27 @@ public class PostController {
      */
     @PostMapping("/create")
     public String createPost(@ModelAttribute PostRequestDto postRequestDto,
-                             @AuthenticationPrincipal PrincipalDetails principalDetails) {
+                             @AuthenticationPrincipal PrincipalDetails principalDetails,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         if (principalDetails == null) {
-            System.out.println("❌ 중복 활동 감지됨!");
             return "redirect:/login";
         }
 
         Long userId = principalDetails.getUser().getId();
 
-        System.out.println("👉 createPost 들어옴 userId=" + userId);
+        // 중복 글쓰기 방지 로직 추가
+        if (pointService.isDuplicateActivity(userId, PointType.POST_CREATE)) {
+            redirectAttributes.addFlashAttribute("error", "20초 이내에는 중복 글쓰기가 불가합니다.");
+            redirectAttributes.addFlashAttribute("postRequestDto", postRequestDto);
+            return "redirect:/community/create";
+        }
 
         if (postRequestDto.getThumbnail() == null || postRequestDto.getThumbnail().isBlank()) {
             String extractedThumbnail = postImageService.extractFirstImageUrl(postRequestDto.getContent());
             if (extractedThumbnail != null && !extractedThumbnail.trim().isEmpty()) {
                 postRequestDto.setThumbnail(extractedThumbnail);
             }
-        }
-
-        // 중복 글쓰기 방지 로직 추가
-        if (pointService.isDuplicateActivity(userId, PointType.POST_CREATE)) {
-            return "redirect:/community/create?error=duplicate";
         }
 
         // 글 등록
