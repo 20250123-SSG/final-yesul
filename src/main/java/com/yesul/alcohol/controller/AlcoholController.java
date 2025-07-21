@@ -225,13 +225,19 @@ public class AlcoholController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/question")
+    @ResponseBody
+    public String question() {
+        return "관련질문이 아닙니다.";
+    }
+
     // 클로바(AI) 데이터 조회용
     @GetMapping("")
     @ResponseBody
     public Page<AlcoholDetailDto> getAlcohols(
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "50") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return alcoholService.searchAlcohols(condition, pageable);
