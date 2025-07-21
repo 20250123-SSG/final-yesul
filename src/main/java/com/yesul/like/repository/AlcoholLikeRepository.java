@@ -13,4 +13,6 @@ public interface AlcoholLikeRepository
 
     @Query("SELECT al.alcohol.id FROM AlcoholLike al WHERE al.user.id = :userId")
     Set<Long> findLikedAlcoholIdsByUserId(@Param("userId") Long userId);
+
+    boolean existsByUserIdAndAlcoholId(Long userId, Long alcoholId);
 }

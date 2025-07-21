@@ -159,8 +159,15 @@ public class AlcoholController {
     }
 
     @GetMapping("/detail/{id}")
-    public String getAlcoholDetail(@PathVariable Long id, Model model) {
-        AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailById(id);
+    public String getAlcoholDetail(@PathVariable Long id,             @AuthenticationPrincipal PrincipalDetails principal,
+                                   Model model
+    ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
+        AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailWithLikeById(id, userId);
 
         Map<String, Integer> tasteLevels = new LinkedHashMap<>();
         tasteLevels.put("단맛", alcohol.getSweetnessLevel());

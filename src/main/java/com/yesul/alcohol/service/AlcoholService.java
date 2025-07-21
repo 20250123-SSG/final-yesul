@@ -56,6 +56,23 @@ public class AlcoholService {
         return modelMapper.map(alcohol, AlcoholDetailDto.class);
     }
 
+    public AlcoholDetailDto getAlcoholDetailWithLikeById(Long id, Long userId) {
+        Alcohol alcohol = alcoholRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 술이 존재하지 않습니다."));
+
+        AlcoholDetailDto dto = modelMapper.map(alcohol, AlcoholDetailDto.class);
+
+        // userId가 null이 아닌 경우에만 좋아요 여부 확인
+        if (userId != null) {
+            boolean liked = alcoholLikeRepository.existsByUserIdAndAlcoholId(userId, id);
+            dto.setLiked(liked ? 1L : 0L);
+        } else {
+            dto.setLiked(0L); // 로그인 안 한 경우 기본값
+        }
+
+        return dto;
+    }
+
     public Map<String, Object> getAlcoholsAndPaging(int page) {
         Long number = 1L;
         alcoholRepository.findById(number);
