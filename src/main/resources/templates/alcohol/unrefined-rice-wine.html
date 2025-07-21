@@ -5,18 +5,26 @@
 <head th:replace="~{fragments/user/head :: head}"></head>
 <style>
   .badge {
+    display: inline-block; /* ✅ 이것이 빠지면 레이아웃 이상해질 수 있음 */
     font-size: 0.75rem;
-    background-color: #f5eee0;
-    color: #5a3a1b;
+    background-color: #7e2c00;
+    color: #4a2f13;
     margin-right: 4px;
     padding: 4px 6px;
     border-radius: 6px;
+    font-weight: bold;
   }
+
+  .badge:hover {
+    background-color: #fdd835;
+    cursor: default;
+  }
+
   .alcohol-card {
     background-color: #fffaf3;
     border: 1px solid #e6dcc4;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     transition: transform 0.2s ease-in-out;
     display: flex;
@@ -66,7 +74,7 @@
     position: relative;
     border-radius: 12px;
     padding: 10px;
-    background-color: #fff8e6; /* 배경은 고정 */
+    background-color: #fff8e6;
     z-index: 1;
   }
 
@@ -239,13 +247,13 @@
                   <strong>용량:</strong> <span th:text="${alcohol.volumeMl}">500</span>ml
                 </p>
                 <div>
-                  <span class="badge badge-light border" th:if="${alcohol.sweetnessLevel >= 3}">#달콤</span>
-                  <span class="badge badge-light border" th:if="${alcohol.acidityLevel >= 3}">#산미</span>
-                  <span class="badge badge-light border" th:if="${alcohol.sparklingLevel >= 2}">#탄산</span>
-                  <span class="badge badge-light border" th:if="${alcohol.bodyLevel >= 3}">#바디감</span>
-                  <span class="badge badge-light border" th:if="${alcohol.aromaLevel >= 3}">#향긋</span>
-                  <span class="badge badge-light border" th:if="${alcohol.tanninLevel >= 3}">#떫은맛</span>
-                  <span class="badge badge-light border" th:if="${alcohol.finishLevel >= 3}">#여운</span>
+                  <span class="badge" th:if="${alcohol.sweetnessLevel >= 3}">#달콤</span>
+                  <span class="badge" th:if="${alcohol.acidityLevel >= 3}">#산미</span>
+                  <span class="badge" th:if="${alcohol.sparklingLevel >= 2}">#탄산</span>
+                  <span class="badge" th:if="${alcohol.bodyLevel >= 3}">#바디감</span>
+                  <span class="badge" th:if="${alcohol.aromaLevel >= 3}">#향긋</span>
+                  <span class="badge" th:if="${alcohol.tanninLevel >= 3}">#떫은맛</span>
+                  <span class="badge" th:if="${alcohol.finishLevel >= 3}">#여운</span>
                 </div>
                 <p class="alcohol-price mt-2">
                   ₩ <span th:text="${#numbers.formatInteger(alcohol.price, 3, 'COMMA')}">15,000</span>
