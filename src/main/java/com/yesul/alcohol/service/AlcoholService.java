@@ -7,6 +7,7 @@ import com.yesul.alcohol.model.entity.Alcohol;
 import com.yesul.alcohol.repository.AlcoholRepository;
 import com.yesul.alcohol.repository.AlcoholSpecification;
 import com.yesul.exception.handler.RegistrationFailedException;
+import com.yesul.like.repository.AlcoholLikeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +27,26 @@ import java.util.Map;
 public class AlcoholService {
 
     private final AlcoholRepository alcoholRepository;
+    private final AlcoholLikeRepository alcoholLikeRepository;
     private final ModelMapper modelMapper;  // 생성자 주입
 
     public Page<AlcoholDetailDto> searchAlcohols(AlcoholSearchDto condition, Pageable pageable) {
         return alcoholRepository.findAll(AlcoholSpecification.searchWith(condition), pageable)
                 .map(alcohol -> modelMapper.map(alcohol, AlcoholDetailDto.class));
+    }
+
+    public Page<AlcoholDetailDto> searchAlcoholsByUserId(AlcoholSearchDto condition, Pageable pageable, Long userId) {
+        Page<Alcohol> alcohols = alcoholRepository.findAll(AlcoholSpecification.searchWith(condition), pageable);
+
+        Set<Long> likedAlcoholIds = (userId != null)
+                ? alcoholLikeRepository.findLikedAlcoholIdsByUserId(userId)
+                : Collections.emptySet();
+
+        return alcohols.map(alcohol -> {
+            AlcoholDetailDto dto = modelMapper.map(alcohol, AlcoholDetailDto.class);
+            dto.setLiked(likedAlcoholIds.contains(alcohol.getId()) ? 1L : 0L);
+            return dto;
+        });
     }
 
     public AlcoholDetailDto getAlcoholDetailById(Long id) {

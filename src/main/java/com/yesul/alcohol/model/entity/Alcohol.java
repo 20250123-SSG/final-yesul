@@ -1,12 +1,14 @@
 package com.yesul.alcohol.model.entity;
 
 import com.yesul.common.BaseTimeEntity;
+import com.yesul.like.model.entity.AlcoholLike;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -85,4 +87,7 @@ public class Alcohol extends BaseTimeEntity {
 
     @Column(length = 500)
     private String image;
+
+    @OneToMany(mappedBy = "alcohol", fetch = FetchType.LAZY)
+    private List<AlcoholLike> likes;
 }

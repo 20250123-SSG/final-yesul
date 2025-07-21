@@ -7,12 +7,14 @@ import com.yesul.alcohol.model.dto.AlcoholSearchDto;
 import com.yesul.alcohol.model.dto.ClovaAskRequestDto;
 import com.yesul.alcohol.service.AlcoholService;
 import com.yesul.alcohol.service.ClovaService;
+import com.yesul.user.service.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,11 +43,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("탁주");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/unrefined-rice-wine";
     }
@@ -55,11 +63,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("약주");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/herbal-rice-wine";
     }
@@ -69,11 +83,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("청주");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/clear-rice-wine";
     }
@@ -83,11 +103,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("과실주");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/fruit-wine";
     }
@@ -97,11 +123,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("증류주");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/distilled-liquor";
     }
@@ -111,11 +143,17 @@ public class AlcoholController {
             AlcoholSearchDto condition,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
+            @AuthenticationPrincipal PrincipalDetails principal,
             Model model
     ) {
+        Long userId = null;
+        if (principal != null && principal.getUser() != null) {
+            userId = principal.getUser().getId();
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         condition.setType("리큐르");
-        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcohols(condition, pageable);
+        Page<AlcoholDetailDto> alcohols = alcoholService.searchAlcoholsByUserId(condition, pageable, userId);
         model.addAttribute("alcohols", alcohols);
         return "alcohol/liqueur";
     }
@@ -161,7 +199,7 @@ public class AlcoholController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<AlcoholDto> detail(int no){
+    public ResponseEntity<AlcoholDto> detail(int no) {
         return null;
     }
 
