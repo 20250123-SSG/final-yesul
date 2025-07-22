@@ -3,6 +3,7 @@ package com.yesul.notice.service;
 import com.yesul.exception.handler.AdminNotFoundException;
 import com.yesul.notice.model.dto.NoticeDto;
 import com.yesul.notice.model.entity.Notice;
+import com.yesul.notice.model.enums.NoticeType;
 import com.yesul.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,16 @@ public class NoticeServiceImpl implements NoticeService {
                 });
     }
 
+    public Page<NoticeDto> findNoticeEventList(Pageable pageable) {
+        Page<Notice> noticeListPageable = noticeRepository.findByType(pageable, NoticeType.EVENT);
+        return noticeListPageable
+                .map(notice -> modelMapper.map(notice, NoticeDto.class))
+                .map(dto -> {
+                    dto.setContent(Jsoup.parse(dto.getContent()).text());
+                    return dto;
+                });
+    }
+
     public NoticeDto findById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(() -> new AdminNotFoundException("해당 공지사항이 존재하지 않습니다."));
@@ -47,6 +58,9 @@ public class NoticeServiceImpl implements NoticeService {
                 .formId(noticeDto.getFormId())
                 .type(noticeDto.getType())
                 .imageUrl(noticeDto.getImageUrl())
+                .formUrl(noticeDto.getFormUrl())
+                .formId(noticeDto.getFormId())
+                .point(noticeDto.getPoint())
                 .build();
         noticeRepository.save(notice);
     }

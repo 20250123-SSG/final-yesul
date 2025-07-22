@@ -16,6 +16,8 @@ public class NoticeDto {
     private String content;
     private String imageUrl;
     private NoticeType type;
+    private String formUrl;
     private String formId;
+    private Integer point;
     private LocalDateTime createdAt;
 }

@@ -34,7 +34,7 @@
                                    th:disabled="${noticeDto.type != null}" />
                             이벤트 공지사항입니다.
                         </label>
-                        <input type="hidden" id="type" name="type" th:value="${noticeDto.type}" />
+                        <input type="hidden" id="type" name="type" th:value="${noticeDto.type != null ? noticeDto.type : 'GENERAL'}" />
 
                         <div id="formButtonContainer" class="mb-3" style="display: none; text-align: right;">
                             <a id="goToFormButton"
@@ -43,6 +43,17 @@
                                 폼 등록하러 가기
                             </a>
                         </div>
+                        <div th:if="${noticeDto.formId != null}">
+                            <label for="point">이벤트 차감 포인트</label>
+                            <input type="number"
+                                   id="point"
+                                   name="point"
+                                   th:value="${noticeDto.point != null ? noticeDto.point : 0}"
+                                   min="0"
+                                   class="form-control"
+                                   placeholder="포인트를 입력하세요" />
+                        </div>
+
                         <div th:if="${noticeDto.formId != null}"
                              class="mb-3"
                              style="text-align: right;">

@@ -28,10 +28,15 @@ public class Notice extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 20)
-    private NoticeType type;
+    private NoticeType type; //GENERAL EVENT
+
+    @Column(name = "form_url", length = 300)
+    private String formUrl;
 
     @Column(name = "form_id", length = 300)
     private String formId;
 
+    @Column(name = "point", columnDefinition = "INT DEFAULT 0")
+    private Integer point;
 
 }
