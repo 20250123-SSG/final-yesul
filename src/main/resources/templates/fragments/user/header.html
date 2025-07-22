@@ -1,10 +1,13 @@
 <!-- Header start  -->
-<div th:fragment="header">
+<div th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <header class="gi-header">
     <!-- Loader -->
     <div id="gi-overlay">
       <div class="loader"></div>
     </div>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/css/header.css}">
+    <head th:replace="~{fragments/user/head :: head}"></head>
 
     <!-- Header Bottom  Start -->
     <div class="gi-header-bottom d-lg-block">
@@ -47,64 +50,64 @@
             <div class="gi-header-action align-self-center">
               <div class="gi-header-buttons">
                 <!-- Header User Start -->
-                <div class="gi-acc-drop">
-                  <a href="javascript:void(0)"
-                     class="gi-header-btn gi-header-user dropdown-toggle gi-user-toggle"
-                     title="Account">
+                <div sec:authorize="isAnonymous()" class="gi-acc-drop">
+                  <a th:href="@{/login}" class="gi-header-btn gi-header-user" title="Login">
                     <div class="header-icon">
                       <i class="fi-rr-user"></i>
                     </div>
                     <div class="gi-btn-desc">
-                      <span class="gi-btn-title">계정</span>
+                      <span class="gi-btn-title"></span>
                       <span class="gi-btn-stitle">Login</span>
                     </div>
                   </a>
-                  <ul class="gi-dropdown-menu">
-                    <li><a class="dropdown-item" th:href="@{/user/regist}">회원가입</a></li>
-                    <li><a class="dropdown-item" th:href="@{/checkout.html}">로그아웃</a></li>
-                    <li><a class="dropdown-item" th:href="@{/login}">로그인</a></li>
-                  </ul>
                 </div>
-                <!-- Header User End -->
-                <!-- Header wishlist Start -->
-                <a th:href="@{/wishlist.html}" class="gi-header-btn gi-wish-toggle" title="Wishlist">
-                  <div class="header-icon">
-                    <i class="fi-rr-heart"></i>
-                  </div>
-                  <div class="gi-btn-desc">
-                    <span class="gi-btn-title">관심목록</span>
-                    <span class="gi-btn-stitle"><b class="gi-wishlist-count">0</b>-items</span>
-                  </div>
-                </a>
-                <!-- Header wishlist End -->
-                <!-- Header Cart Start -->
-                <!-- 종 아이콘 -->
-                <a href="javascript:void(0)" class="gi-header-btn gi-cart-toggle" title="알림">
-                  <div class="header-icon" style="position: relative;">
-                    <i class="fi-rr-comments-question"></i>
-                    <span id="header-notify-badge"
-                          style="
-        position: absolute;
-        top: -4px;
-        right: -8px;
-        min-width: 16px;
-        height: 16px;
-        background: red;
-        color: #fff;
-        font-size: 12px;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 16px;
-      ">
 
-    </span>
-                  </div>
-                  <div class="gi-btn-desc">
-                    <span class="gi-btn-title">알림</span>
-                  </div>
-                </a>
+                <div sec:authorize="isAuthenticated()" class="gi-acc-drop">
+                  <!-- 2.2) 닉네임 + “님” / 로그아웃 -->
+                  <a th:href="@{/logout}" class="gi-header-btn gi-header-user" title="Logout">
+                    <div class="header-icon">
+                      <i class="fi-rr-user"></i>
+                    </div>
+                    <div class="gi-btn-desc">
+                      <!-- principal.user.nickname 에서 닉네임 가져오기 -->
+                      <span class="gi-btn-title" sec:authentication="principal.user.nickname"></span>
+                      <span class="gi-btn-stitle">Logout</span>
+                    </div>
+                  </a>
 
-                <!-- Header Cart End -->
+                  <!-- 2.3) 관심목록 → 마이페이지 -->
+                  <a th:href="@{/user/profile}" class="gi-header-btn gi-wish-toggle" title="My Page">
+                    <div class="header-icon">
+                      <i class="fi-rr-heart"></i>
+                    </div>
+                    <div class="gi-btn-desc">
+                      <span class="gi-btn-title">마이페이지</span>
+                    </div>
+                  </a>
+
+                  <!-- 2.4) 알림 (로그인 사용자만) -->
+                  <a href="javascript:void(0)" class="gi-header-btn gi-cart-toggle" title="알림" id="notificationTrigger">
+                    <div class="header-icon" style="position: relative;">
+                      <i class="ri-notification-3-line" style="font-size: 20px; color: #333;"></i>
+                      <span style="font-size: 12px; color: #555; margin-top: 4px;">알림</span>
+                      <span id="header-notify-badge"
+                            style="
+            position: absolute;
+            top: -4px;
+            right: -8px;
+            min-width: 16px;
+            height: 16px;
+            background: red;
+            color: #fff;
+            font-size: 12px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            display: none;
+          "></span>
+                    </div>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -138,7 +141,7 @@
                           </li>
                           <li><a th:href="@{/alcohols/fruit-wine}">과실주</a>
                           </li>
-                          <li><a th:href="@{/alchols/distilled-liquor}">증류주</a>
+                          <li><a th:href="@{/alcohols/distilled-liquor}">증류주</a>
                           </li>
                           <li><a th:href="@{/alcohols/liqueur}">리큐르</a>
                           </li>
@@ -152,19 +155,6 @@
                           <li><a th:href="@{/community/recipe}">레시피 게시판</a></li>
                           <li><a th:href="@{/community/info}">정보 게시판</a></li>
                           <li><a th:href="@{/community/free}">자유 게시판</a></li>
-                        </ul>
-                      </li>
-                      <li class="dropdown drop-list">
-                        <a href="javascript:void(0)" class="dropdown-arrow">Pages<i
-                          class="fi-rr-angle-small-right"></i></a>
-                        <ul class="sub-menu">
-                          <li><a th:href="@{/about-us.html}">About Us</a></li>
-                          <li><a th:href="@{/contact-us.html}">Contact Us</a></li>
-                          <li><a th:href="@{/cart.html}">Cart</a></li>
-                          <li><a th:href="@{/checkout.html}">Checkout</a></li>
-                          <li><a th:href="@{/compare.html}">Compare</a></li>
-                          <li><a th:href="@{/faq.html}">FAQ</a></li>
-                          <li><a th:href="@{/login.html}">Login</a></li>
                         </ul>
                       </li>
                     </ul>
@@ -324,8 +314,10 @@
         <!-- 상단 타이틀 -->
         <div class="gi-cart-top">
           <div class="gi-cart-title">
-            <span class="cart_title">알림센터</span>
-            <span id="notify-count" class="main-label-note-new">0</span>
+            <a href="/users/chatroom?adminId=2" class="cart_title" style="text-decoration: none; color: inherit;">
+              문의하기
+            </a>
+            <span id="notify-count" class="main-label-note-new"></span>
             <a href="javascript:void(0)" class="gi-cart-close">
               <i class="fi-rr-cross-small"></i>
             </a>
@@ -374,7 +366,7 @@
       .gi-message-list,
       #message-list {
         display: flex;
-        flex-direction: column !important;
+        flex-direction: column-reverse
       }
 
       .close-alert-btn {
@@ -398,21 +390,33 @@
       }
     </style>
 
-
-
-
     <!-- Cart sidebar End -->
     <script th:inline="javascript">
       const receiverId = [[${receiverId}]];
       const receiverType = 'USER';
       if (receiverId != null && receiverId !== 0) {
 
+        const badge = document.getElementById('header-notify-badge');
+        if (receiverId == null || receiverId === 0) {
+          badge.style.display = 'none'; // 로그인 안 되어 있으면 숨김
+        } else {
+          badge.style.display = 'inline-block'; // 로그인 되어 있으면 표시
+          // 이후 fetch 및 WebSocket 로직 수행
+        }
+
         // [1:1 문의] 초기 안 읽은 알림 가져오기
         fetch(`/notifications/${receiverType}/${receiverId}`)
           .then(res => res.json())
           .then(data => {
             const count = data.length;
-            document.getElementById('notify-count').textContent = count;
+            badge.textContent = count;
+
+            if (count > 0) {
+              badge.style.display = 'inline-block';  // 보여주기
+              badge.style.background = 'red';
+            } else {
+              badge.style.display = 'none';
+            }
 
             const messageList = document.getElementById('message-list'); // 1:1 문의
             const alertList = document.getElementById('alert-list');     // 댓글 알림
@@ -428,14 +432,15 @@
           </div>
           <div class="detail">
             <div>
-              <a href="/users/chatroom?adminId=${msg.senderId}" class="name">${msg.senderId}</a>
+              <a href="/users/chatroom?adminId=${msg.senderId}" class="name" data-id="${msg.id}">관리자</a>
               <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
               <p class="message">${msg.content}</p>
             </div>
-            <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+            <span class="close-alert-btn">&times;</span>
           </div>
         `;
-                messageList.insertBefore(li, messageList.firstChild);
+                // messageList.insertBefore(li, messageList.firstChild);
+                messageList.appendChild(li, messageList.firstChild);
 
               } else if (msg.type === 'COMMENT') {
                 //  댓글 알림
@@ -445,15 +450,16 @@
           </div>
           <div class="detail">
             <div>
-              <a href="community/recipe/${msg.targetId}" class="name">USER${msg.senderId}님이 댓글을 남겼습니다.</a>
+              <a href="community/recipe/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderName}님이 댓글을 남겼습니다.</a>
               <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
               <p class="message">${msg.content}</p>
             </div>
-            <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+            <span class="close-alert-btn">&times;</span>
           </div>
         `;
-                alertList.insertBefore(li, alertList.firstChild);
-              }else if (msg.type === 'LIKE') {
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
+              } else if (msg.type === 'LIKE') {
                 //  좋아요 알림
                 li.innerHTML = `
       <div class="icon gi-heart">
@@ -461,97 +467,158 @@
       </div>
       <div class="detail">
         <div>
-          <a href="/community/recipe/${msg.targetId}" class="name">USER${msg.senderId}님이 좋아요를 눌렀습니다.</a>
+          <a href="/community/recipe/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderName}님이 좋아요를 눌렀습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
         </div>
-        <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+        <span class="close-alert-btn"></span>
       </div>
     `;
-                alertList.insertBefore(li, alertList.firstChild);
+
+                if (count > 0) {
+                  badge.textContent = count;
+                  badge.style.background = 'red';
+                  badge.style.display = 'inline-block';
+                } else {
+                  badge.textContent = '';
+                  badge.style.background = 'transparent';
+                  badge.style.display = 'none';  // 안 보이게
+                }
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
               }
             });
 
 
-
-        //  실시간 알림 Push
-        const socket = new WebSocket(`ws://${location.host}/ws/notification`);
-        socket.onopen = () => console.log(" 알림 WebSocket 연결됨");
-        socket.onmessage = (event) => {
-          const msg = JSON.parse(event.data);
-          if (msg.type === 'CHAT') {
-            // 기존 채팅 알림
-            const list = document.getElementById('message-list');
-            const li = document.createElement('li');
-            li.innerHTML = `
+            //  실시간 알림 Push
+            const socket = new WebSocket(`ws://${location.host}/ws/notification`);
+            socket.onopen = () => console.log(" 알림 WebSocket 연결됨");
+            socket.onmessage = (event) => {
+              const msg = JSON.parse(event.data);
+              const prevCount = parseInt(badge.textContent) || 0;
+              const newCount = prevCount + 1;
+              badge.textContent = newCount;
+              if (msg.type === 'CHAT') {
+                // 기존 채팅 알림
+                const list = document.getElementById('message-list');
+                const li = document.createElement('li');
+                li.innerHTML = `
       <div class="icon gi-success">
         <i class="ri-check-double-line"></i>
       </div>
       <div class="detail">
         <div>
-          <a href="/admin/chatroom/${msg.targetId}" class="name">${msg.senderId}</a>
+          <a href="/admin/chatroom/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderId}</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
           <p class="message">${msg.content}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-            list.insertBefore(li, list.firstChild);
+                // list.insertBefore(li, list.firstChild);
+                list.appendChild(li, list.firstChild);
 
-          } else if (msg.type === 'COMMENT') {
-            //  댓글 알림 처리
-            const list = document.getElementById('alert-list');
-            const li = document.createElement('li');
-            li.innerHTML = `
+              } else if (msg.type === 'COMMENT') {
+                //  댓글 알림 처리
+                const list = document.getElementById('alert-list');
+                const li = document.createElement('li');
+                li.innerHTML = `
       <div class="icon gi-info">
         <i class="ri-chat-3-line"></i>
       </div>
       <div class="detail">
         <div>
-          <a href="/posts/${msg.targetId}" class="name">${msg.senderId}님이 댓글을 남겼습니다.</a>
+          <a href="/posts/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderId}님이 댓글을 남겼습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
           <p class="message">${msg.content}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-            list.insertBefore(li, list.firstChild);
-          } else if (msg.type === 'LIKE') {
-            li.innerHTML = `
+                // list.insertBefore(li, list.firstChild);
+                list.appendChild(li, list.firstChild);
+              } else if (msg.type === 'LIKE') {
+                li.innerHTML = `
       <div class="icon gi-heart">
         <i class="ri-heart-line"></i>
       </div>
       <div class="detail">
         <div>
-          <a href="/posts/${msg.targetId}" class="name">USER${msg.senderId}님이 좋아요를 눌렀습니다.</a>
+          <a href="/posts/${msg.targetId}" class="name" data-id="${msg.id}">USER${msg.senderId}님이 좋아요를 눌렀습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-            alertList.insertBefore(li, alertList.firstChild);
-          }
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
+              }
 
-          const badge = document.getElementById('notify-count');
-          badge.textContent = parseInt(badge.textContent) + 1;
+              badge.style.background = newCount > 0 ? 'red' : 'transparent';
 
-          attachCloseEvent();
-        };
-      });
-      // X 버튼 클릭 이벤트
-      function attachCloseEvent() {
-        document.querySelectorAll('.close-alert-btn').forEach(btn => {
-          btn.onclick = () => {
-            const li = btn.closest('li');
+
+              attachCloseEvent();
+            };
+          });
+        // X 버튼 클릭 이벤트
+        // 닫기 버튼 이벤트 위임
+        document.addEventListener('click', function (e) {
+          // 1. 닫기 버튼 클릭 시
+          if (e.target.classList.contains('close-alert-btn')) {
+            const li = e.target.closest('li');
             li.remove();
 
-            const badge = document.getElementById('notify-count');
-            badge.textContent = Math.max(parseInt(badge.textContent) - 1, 0);
+            const badge = document.getElementById('header-notify-badge');
+            if (badge) {
+              const prevCount = parseInt(badge.textContent) || 0;
+              const newCount = Math.max(prevCount - 1, 0);
+              badge.textContent = newCount;
+              badge.style.background = newCount > 0 ? 'red' : 'transparent';
+              badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+            }
 
-            const id = btn.dataset.id;
-            fetch(`/notifications/${id}/read`, {method: 'PATCH'});
-          };
+            const id = e.target.dataset.id;
+            if (id) {
+              fetch(`/notifications/${id}/read`, { method: 'PATCH' })
+                .catch(err => console.error('알림 읽음 처리 실패:', err));
+            }
+
+            return; // 닫기 버튼 눌렀으면 밑의 링크 처리는 스킵
+          }
+
+          // 2. 링크 클릭 시
+          const link = e.target.closest('a[data-id]');
+          if (link) {
+            const alertId = link.dataset.id;
+            const targetUrl = link.getAttribute('href');
+
+            e.preventDefault();
+
+            fetch(`/notifications/${alertId}/read`, {
+              method: 'PATCH'
+            }).then(response => {
+              if (response.ok) {
+                const badge = document.getElementById('header-notify-badge');
+                if (response.ok && badge ) {
+                  const count = parseInt(badge.textContent) || 0;
+                  const newCount = Math.max(count - 1, 0);
+                  badge.textContent = newCount;
+                  badge.style.background = newCount > 0 ? 'red' : 'transparent';
+                  badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+                }
+              }
+              window.location.href = targetUrl;
+            }).catch(err => {
+              console.error('알림 읽음 처리 실패:', err);
+              window.location.href = targetUrl;
+            });
+          }
         });
-      }}
+
+
+      }
+
+
+
     </script>
   </div>
 </div>

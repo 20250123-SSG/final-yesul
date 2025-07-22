@@ -1,27 +1,25 @@
 package com.yesul.travel.service;
 
+import com.yesul.travel.model.dto.TravelPlanRequestDto;
+import java.util.List;
 import com.yesul.travel.model.dto.TravelPlanDto;
-import com.yesul.travel.repository.TravelPlanRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-
-import org.springframework.stereotype.Service;
 
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
-@Transactional
-public class TravelPlanService {
+public interface TravelPlanService {
+    /**
+     * 로그인한 사용자가 생성한 모든 여행계획 조회
+     */
+    List<TravelPlanDto> listUserPlans(Long userId);
 
-    private final TravelPlanRepository travelPlanRepository;
-    private final ModelMapper modelMapper;
+    /**
+     * 로그인한 사용자의 특정 여행계획 상세 조회
+     */
+    TravelPlanDto getUserPlan(Long userId, Long planId);
 
-    public TravelPlanDto getTravelPlan(int TravelPlanId) {
-        return null;
-    }
+    /**
+     * 로그인한 사용자의 특정 여행계획 삭제
+     */
+    void deleteUserPlan(Long userId, Long planId);
 
-
+    void saveTravelPlan(TravelPlanRequestDto dto, Long userId);
 }

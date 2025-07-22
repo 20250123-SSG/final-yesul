@@ -14,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -27,6 +29,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Async("asyncExecutor")// 공통 로직
     public void sendNotification(CreateNotificationRequestDto dto) {
+
+        // 0. 자기 자신에게 보내는 알림은 생성하지 않음
+        if (dto.getSenderId().equals(dto.getReceiverId())) {
+            return;
+        }
+
         // 1. 같은 조건의 안 읽은 알림이 이미 있으면 새로 만들지 않는다.
         boolean exists = notificationRepository.existsBySenderIdAndReceiverIdAndTargetIdAndIsReadFalse(
                 dto.getSenderId(),
@@ -56,6 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .id(saved.getId())
                 .senderId(saved.getSenderId())
                 .senderType(saved.getSenderType())
+                .senderName(dto.getSenderName())
                 .receiverId(saved.getReceiverId())
                 .receiverType(saved.getReceiverType())
                 .targetId(saved.getTargetId())
@@ -64,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .isRead(saved.isRead())
                 .build();
 
-        notificationHandler.sendNotification(saved.getReceiverId(), responseDto);
+        notificationHandler.sendNotification(saved.getReceiverId(),saved.getReceiverType(), responseDto);
     }
 
     public void sendPostOwnerCommentNotification(Long postId, Long commenterId, Long postOwnerId) {
@@ -75,6 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
         CreateNotificationRequestDto dto = CreateNotificationRequestDto.builder()
                 .senderId(commenterId)
                 .senderType(Type.USER)
+                .senderName(user.getName())
                 .receiverId(postOwnerId)
                 .receiverType(Type.USER)
                 .targetId(postId)
@@ -93,6 +103,7 @@ public class NotificationServiceImpl implements NotificationService {
         CreateNotificationRequestDto dto = CreateNotificationRequestDto.builder()
                 .senderId(likeOwnerId)
                 .senderType(Type.USER)
+                .senderName(user.getName())
                 .receiverId(postOwnerId)
                 .receiverType(Type.USER)
                 .targetId(postId)

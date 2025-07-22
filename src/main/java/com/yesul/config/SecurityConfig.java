@@ -106,6 +106,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/swaager-ui/**",
                                 // 로그인 이후 구글 devtool
                                 "/.well-known/appspecific/**",
                                 // Login
@@ -127,7 +128,9 @@ public class SecurityConfig {
                                 "/oauth2/**",
                                 "/post-images/upload",
                                 "/alcohols/**",
-                                "/notices/**"
+                                "/notices/**",
+                                "/travel-plan/save",
+                                "/alcohol-likes/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -176,7 +179,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://223.130.132.13:8080", "http://localhost:8080"));
+        config.setAllowedOrigins(List.of("https://yesul.shop",
+                "https://www.yesul.shop", "http://223.130.132.13:8080", "http://localhost:8080"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true); // 쿠키 허용
