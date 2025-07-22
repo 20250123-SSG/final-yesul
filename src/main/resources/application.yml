@@ -65,7 +65,6 @@ spring:
             scope:
               - https://www.googleapis.com/auth/forms.body
               - https://www.googleapis.com/auth/drive.file
-            redirect-uri: http://localhost:8080/admin/event/oauth2/callback
 
         provider:
           kakao:
