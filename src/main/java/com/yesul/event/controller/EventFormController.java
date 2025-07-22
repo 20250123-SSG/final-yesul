@@ -126,16 +126,16 @@ public class EventFormController {
 
     @PostMapping("/list")
     public ResponseEntity<String> receiveFormResponses(@RequestBody EventFormRequestDto request) {
-        System.out.println("📨 폼 ID: " + request.getForm_id());
-        System.out.println("📨 폼 제목: " + request.getForm_title());
+        System.out.println("폼 ID: " + request.getForm_id());
+        System.out.println("폼 제목: " + request.getForm_title());
 
         for (QuestionRequestDto question : request.getResults()) {
             System.out.println(question.getType());
-            System.out.println("📝 질문: " + question.getTitle());
-            System.out.println("➡️ 응답: " + question.getResponse());
+            System.out.println("질문: " + question.getTitle());
+            System.out.println("응답: " + question.getResponse());
         }
 
-        return ResponseEntity.ok("✅ 데이터 수신 성공");
+        return ResponseEntity.ok("데이터 수신 성공");
     }
 
 }
