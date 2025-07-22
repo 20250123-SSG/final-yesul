@@ -6,17 +6,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yesul.event.model.dto.EventFormRequestDto;
 import com.yesul.event.model.dto.FormRequestDto;
 import com.yesul.event.model.dto.QuestionRequestDto;
+import com.yesul.event.service.EventService;
 import com.yesul.notice.model.dto.NoticeDto;
 import com.yesul.notice.model.enums.NoticeType;
+import com.yesul.notice.service.NoticeService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +39,8 @@ import java.util.Map;
 @RequestMapping("/admin/event")
 public class EventFormController {
 
+    private final EventService eventService;
+    private final NoticeService noticeService;
     private final RestTemplate restTemplate;
 
     @Value("${google.client-id}")
@@ -104,52 +111,17 @@ public class EventFormController {
             return "redirect:/admin/event/oauth2/authorize";
         }
 
-        String apiUrl = "https://forms.googleapis.com/v1/forms";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> infoMap = new HashMap<>();
-        infoMap.put("title", request.getTitle());
-
-        Map<String, Object> createFormBody = new HashMap<>();
-        createFormBody.put("info", infoMap);
-
-        HttpEntity<Map<String, Object>> createRequest = new HttpEntity<>(createFormBody, headers);
-        ResponseEntity<String> createResponse = restTemplate.postForEntity(apiUrl, createRequest, String.class);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode formJson = objectMapper.readTree(createResponse.getBody());
-        String formId = formJson.get("formId").asText();
-
-        String batchUpdateUrl = "https://forms.googleapis.com/v1/forms/" + formId + ":batchUpdate";
-
-        Map<String, Object> updateInfo = Map.of(
-                "info", Map.of("description", request.getDescription()),
-                "updateMask", "description"
-        );
-
-        Map<String, Object> batchUpdateBody = Map.of(
-                "requests", List.of(Map.of("updateFormInfo", updateInfo))
-        );
-
-        HttpEntity<Map<String, Object>> updateRequest = new HttpEntity<>(batchUpdateBody, headers);
-        restTemplate.postForEntity(batchUpdateUrl, updateRequest, String.class);
-
-        NoticeDto noticeDto = NoticeDto.builder()
-                .formId(formId)
-                .type(NoticeType.EVENT)
-                .build();
-
-        redirectAttributes.addFlashAttribute("noticeDto", noticeDto);
+        NoticeDto notice = eventService.createAndUpdateForm(request, accessToken);
+        redirectAttributes.addFlashAttribute("noticeDto", notice);
 
         return "redirect:/admin/notice/regist";
     }
 
-    @GetMapping("/list")
-    public String list() {
-        return "/admin/notice/list";
+    @GetMapping
+    public String eventPage(Pageable pageable, Model model) {
+        Page<NoticeDto> noticeEventListPageable = noticeService.findNoticeEventList(pageable);
+        model.addAttribute("noticeListPageable", noticeEventListPageable);
+        return "/admin/event/list";
     }
 
     @PostMapping("/list")
