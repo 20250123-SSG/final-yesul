@@ -10,7 +10,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Getter
 @ToString
@@ -78,5 +78,9 @@ public class Post extends BaseTimeEntity {
         }
         images.add(image);
         image.setPost(this);
+    }
+
+    public void incrementViewCount() {
+        this.viewCount = this.viewCount + 1;
     }
 }
