@@ -6,6 +6,7 @@ import com.yesul.notice.model.entity.Notice;
 import com.yesul.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,12 @@ public class NoticeServiceImpl implements NoticeService {
 
     public Page<NoticeDto> findNoticeList(Pageable pageable) {
         Page<Notice> noticeListPageable = noticeRepository.findAll(pageable);
-        return noticeListPageable.map(notice -> modelMapper.map(notice, NoticeDto.class));
+        return noticeListPageable
+                .map(notice -> modelMapper.map(notice, NoticeDto.class))
+                .map(dto -> {
+                    dto.setContent(Jsoup.parse(dto.getContent()).text());
+                    return dto;
+                });
     }
 
     public NoticeDto findById(Long id) {
@@ -38,6 +44,8 @@ public class NoticeServiceImpl implements NoticeService {
         Notice notice = Notice.builder()
                 .title(noticeDto.getTitle())
                 .content(noticeDto.getContent())
+                .formId(noticeDto.getFormId())
+                .type(noticeDto.getType())
                 .imageUrl(noticeDto.getImageUrl())
                 .build();
         noticeRepository.save(notice);

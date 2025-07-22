@@ -41,9 +41,10 @@
                         style="cursor: pointer;">
 
                         <td th:text="${iterStat.count + 10 * (noticeListPageable.number)}"></td>
-                        <td class="text-start text-dark text-decoration-none" th:text="${notice.title}"></td>
+                        <td class="text-center text-dark text-decoration-none" th:text="${notice.title}"></td>
                         <td style="max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                            th:utext="${notice.content}"></td>
+                            th:utext="${#strings.abbreviate(notice.content, 100)}"></td>
+
                         <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></td>
                         <td>
                             <a th:if="${notice.imageUrl != null && !notice.imageUrl.isEmpty()}"

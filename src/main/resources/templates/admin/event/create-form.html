@@ -6,11 +6,11 @@
 </head>
 <body>
   <h3>구글 폼 등록하는 페이지</h3>
-<!-- form/create.html -->
-  <form th:action="@{/form/create}" method="post">
+<!-- form/create-form.html -->
+  <form th:action="@{/admin/event/create/form}" method="post">
   <label>폼 제목: <input type="text" name="title" /></label><br />
   <label>문서 제목: <input type="text" name="documentTitle" /></label><br />
-  <label>설명: <textarea name="description"></textarea></label><br />
+  <label>설명: <textarea name="description"></textarea></label><br/>
   <button type="submit">폼 생성하기</button>
 </form>
 </body>
