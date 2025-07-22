@@ -390,9 +390,6 @@
       }
     </style>
 
-
-
-
     <!-- Cart sidebar End -->
     <script th:inline="javascript">
       const receiverId = [[${receiverId}]];
@@ -435,14 +432,15 @@
           </div>
           <div class="detail">
             <div>
-              <a href="/users/chatroom?adminId=${msg.senderId}" class="name">관리자</a>
+              <a href="/users/chatroom?adminId=${msg.senderId}" class="name" data-id="${msg.id}">관리자</a>
               <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
               <p class="message">${msg.content}</p>
             </div>
-            <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+            <span class="close-alert-btn">&times;</span>
           </div>
         `;
-                messageList.insertBefore(li, messageList.firstChild);
+                // messageList.insertBefore(li, messageList.firstChild);
+                messageList.appendChild(li, messageList.firstChild);
 
               } else if (msg.type === 'COMMENT') {
                 //  댓글 알림
@@ -452,14 +450,15 @@
           </div>
           <div class="detail">
             <div>
-              <a href="community/recipe/${msg.targetId}" class="name">${msg.senderName}님이 댓글을 남겼습니다.</a>
+              <a href="community/recipe/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderName}님이 댓글을 남겼습니다.</a>
               <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
               <p class="message">${msg.content}</p>
             </div>
-            <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+            <span class="close-alert-btn">&times;</span>
           </div>
         `;
-                alertList.insertBefore(li, alertList.firstChild);
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
               } else if (msg.type === 'LIKE') {
                 //  좋아요 알림
                 li.innerHTML = `
@@ -468,10 +467,10 @@
       </div>
       <div class="detail">
         <div>
-          <a href="/community/recipe/${msg.targetId}" class="name">${msg.senderName}님이 좋아요를 눌렀습니다.</a>
+          <a href="/community/recipe/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderName}님이 좋아요를 눌렀습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
         </div>
-        <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
+        <span class="close-alert-btn">&times;</span>
       </div>
     `;
 
@@ -484,7 +483,8 @@
                   badge.style.background = 'transparent';
                   badge.style.display = 'none';  // 안 보이게
                 }
-                alertList.insertBefore(li, alertList.firstChild);
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
               }
             });
 
@@ -507,14 +507,15 @@
       </div>
       <div class="detail">
         <div>
-          <a href="/admin/chatroom/${msg.targetId}" class="name">${msg.senderId}</a>
+          <a href="/admin/chatroom/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderId}</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
           <p class="message">${msg.content}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-                list.insertBefore(li, list.firstChild);
+                // list.insertBefore(li, list.firstChild);
+                list.appendChild(li, list.firstChild);
 
               } else if (msg.type === 'COMMENT') {
                 //  댓글 알림 처리
@@ -526,14 +527,15 @@
       </div>
       <div class="detail">
         <div>
-          <a href="/posts/${msg.targetId}" class="name">${msg.senderId}님이 댓글을 남겼습니다.</a>
+          <a href="/posts/${msg.targetId}" class="name" data-id="${msg.id}">${msg.senderId}님이 댓글을 남겼습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
           <p class="message">${msg.content}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-                list.insertBefore(li, list.firstChild);
+                // list.insertBefore(li, list.firstChild);
+                list.appendChild(li, list.firstChild);
               } else if (msg.type === 'LIKE') {
                 li.innerHTML = `
       <div class="icon gi-heart">
@@ -541,13 +543,14 @@
       </div>
       <div class="detail">
         <div>
-          <a href="/posts/${msg.targetId}" class="name">USER${msg.senderId}님이 좋아요를 눌렀습니다.</a>
+          <a href="/posts/${msg.targetId}" class="name" data-id="${msg.id}">USER${msg.senderId}님이 좋아요를 눌렀습니다.</a>
           <p class="time">${new Date(msg.createdAt).toLocaleString()}</p>
         </div>
         <span class="close-alert-btn" data-id="${msg.id}">&times;</span>
       </div>
     `;
-                alertList.insertBefore(li, alertList.firstChild);
+                // alertList.insertBefore(li, alertList.firstChild);
+                alertList.appendChild(li, alertList.firstChild);
               }
 
               badge.style.background = newCount > 0 ? 'red' : 'transparent';
@@ -559,24 +562,60 @@
         // X 버튼 클릭 이벤트
         // 닫기 버튼 이벤트 위임
         document.addEventListener('click', function (e) {
+          // 1. 닫기 버튼 클릭 시
           if (e.target.classList.contains('close-alert-btn')) {
             const li = e.target.closest('li');
             li.remove();
 
-            const prevCount = parseInt(badge.textContent) || 0;
-            const newCount = Math.max(prevCount - 1, 0);
-            badge.textContent = newCount;
-
-            badge.style.background = newCount > 0 ? 'red' : 'transparent';
+            const badge = document.getElementById('header-notify-badge');
+            if (badge) {
+              const prevCount = parseInt(badge.textContent) || 0;
+              const newCount = Math.max(prevCount - 1, 0);
+              badge.textContent = newCount;
+              badge.style.background = newCount > 0 ? 'red' : 'transparent';
+              badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+            }
 
             const id = e.target.dataset.id;
-            fetch(`/notifications/${id}/read`, {method: 'PATCH'});
+            if (id) {
+              fetch(`/notifications/${id}/read`, { method: 'PATCH' })
+                .catch(err => console.error('알림 읽음 처리 실패:', err));
+            }
+
+            return; // 닫기 버튼 눌렀으면 밑의 링크 처리는 스킵
+          }
+
+          // 2. 링크 클릭 시
+          const link = e.target.closest('a[data-id]');
+          if (link) {
+            const alertId = link.dataset.id;
+            const targetUrl = link.getAttribute('href');
+
+            e.preventDefault();
+
+            fetch(`/notifications/${alertId}/read`, {
+              method: 'PATCH'
+            }).then(response => {
+              if (response.ok) {
+                const badge = document.getElementById('header-notify-badge');
+                if (response.ok && badge ) {
+                  const count = parseInt(badge.textContent) || 0;
+                  const newCount = Math.max(count - 1, 0);
+                  badge.textContent = newCount;
+                  badge.style.background = newCount > 0 ? 'red' : 'transparent';
+                  badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+                }
+              }
+              window.location.href = targetUrl;
+            }).catch(err => {
+              console.error('알림 읽음 처리 실패:', err);
+              window.location.href = targetUrl;
+            });
           }
         });
 
 
       }
-
 
 
 
