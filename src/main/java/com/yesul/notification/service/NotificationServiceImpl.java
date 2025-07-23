@@ -35,14 +35,14 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        // 1. 같은 조건의 안 읽은 알림이 이미 있으면 새로 만들지 않는다.
-        boolean exists = notificationRepository.existsBySenderIdAndReceiverIdAndTargetIdAndIsReadFalse(
+        boolean exists = notificationRepository.existsBySenderIdAndReceiverIdAndTargetIdAndTypeAndIsReadFalse(
                 dto.getSenderId(),
                 dto.getReceiverId(),
-                dto.getTargetId()  // ex) chatRoomId
+                dto.getTargetId(),
+                dto.getType()
         );
 
-        if (exists) {
+        if(exists){
             return;
         }
 
@@ -69,6 +69,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .receiverType(saved.getReceiverType())
                 .targetId(saved.getTargetId())
                 .type(saved.getType())
+                .boardName(dto.getBoardName())
                 .content(dto.getContent())
                 .isRead(saved.isRead())
                 .build();
@@ -76,7 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationHandler.sendNotification(saved.getReceiverId(),saved.getReceiverType(), responseDto);
     }
 
-    public void sendPostOwnerCommentNotification(Long postId, Long commenterId, Long postOwnerId) {
+    public void sendPostOwnerCommentNotification(Long postId, Long commenterId, Long postOwnerId, String boardName) {
 
         User user = userRepository.findById(commenterId)
                 .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다."));
@@ -89,13 +90,14 @@ public class NotificationServiceImpl implements NotificationService {
                 .receiverType(Type.USER)
                 .targetId(postId)
                 .type(NotificationType.COMMENT)
+                .boardName(boardName)
                 .content(user.getName() + "님이 댓글을 달았습니다.")
                 .build();
 
         sendNotification(dto);
     }
 
-    public void sendPostOwnerLikeNotification(Long postId, Long likeOwnerId, Long postOwnerId) {
+    public void sendPostOwnerLikeNotification(Long postId, Long likeOwnerId, Long postOwnerId,String boardName) {
 
         User user = userRepository.findById(likeOwnerId)
                 .orElseThrow(() -> new UserNotFoundException("해당 사용자를 찾을 수 없습니다."));
@@ -108,6 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .receiverType(Type.USER)
                 .targetId(postId)
                 .type(NotificationType.LIKE)
+                .boardName(boardName)
                 .content(user.getName() + "님이 좋아요를 눌렀습니다.")
                 .build();
 
