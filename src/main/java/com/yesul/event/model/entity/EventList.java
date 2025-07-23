@@ -5,10 +5,6 @@ import com.yesul.event.model.enums.EventStatus;
 import com.yesul.notice.model.entity.Notice;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_list")
@@ -19,8 +15,8 @@ import java.time.LocalDateTime;
 public class EventList extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "form_id", length = 150)
+    private String formId;
 
     @Column(name = "user_name", length = 100, nullable = false)
     private String userName;
@@ -28,8 +24,8 @@ public class EventList extends BaseTimeEntity {
     @Column(name = "user_email", length = 255, nullable = false)
     private String userEmail;
 
-    @Column(name = "form_url", length = 255, nullable = false)
-    private String formUrl;
+    @Column(name = "phone", length = 255, nullable = false)
+    private String phone;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
