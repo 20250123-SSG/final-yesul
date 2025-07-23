@@ -25,5 +25,6 @@ public class MessageResponseDto {
     private String messageContext;
     private MessageType messageType;
     private Long chatRoomId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 }
