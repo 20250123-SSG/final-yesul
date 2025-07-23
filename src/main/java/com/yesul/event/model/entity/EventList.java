@@ -15,14 +15,17 @@ import lombok.*;
 public class EventList extends BaseTimeEntity {
 
     @Id
-    @Column(name = "form_id", length = 150)
-    private String formId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "user_name", length = 100, nullable = false)
     private String userName;
 
     @Column(name = "user_email", length = 255, nullable = false)
     private String userEmail;
+
+    @Column(name = "form_id", length = 150)
+    private String formId;
 
     @Column(name = "phone", length = 255, nullable = false)
     private String phone;

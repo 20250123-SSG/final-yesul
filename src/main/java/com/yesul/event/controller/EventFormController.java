@@ -136,7 +136,6 @@ public class EventFormController {
         String phone = null;
 
         for (QuestionRequestDto question : request.getResults()) {
-            System.out.println(question.getType());
             String title = question.getTitle();
             String response = question.getResponse().toString();
             if (title.contains("성함")) {
