@@ -331,7 +331,8 @@
   }
 
   function connectWebSocket(roomId) {
-    chatWebSocket = new WebSocket("ws://" + window.location.host + "/ws/chat");
+    const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    chatWebSocket = new WebSocket(`${wsProtocol}//${window.location.host}/wss/chat`);
     chatWebSocket.onopen = () => console.log(" WebSocket 연결됨");
     chatWebSocket.onmessage = (event) => {
       const msg = JSON.parse(event.data);
@@ -397,9 +398,9 @@
 
   function formatTime(isoString) {
     const date = new Date(isoString);
-    const hh = String(date.getHours()).padStart(2,'0');
-    const mm = String(date.getMinutes()).padStart(2,'0');
-    return `${hh}:${mm}`;
+    date.setHours(date.getHours() + 9);
+    const options = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Seoul' };
+    return date.toLocaleTimeString('ko-KR', options);
   }
 
   window.addEventListener("DOMContentLoaded", () => {
