@@ -42,7 +42,11 @@
               </thead>
               <tbody>
               <tr th:each="h : ${pointHistories}">
-                <td th:text="${h.type}"></td>
+                <td th:switch="${h.type.name()}">
+                  <span th:case="'POST_CREATE'">글작성</span>
+                  <span th:case="'COMMENT_CREATE'">댓글작성</span>
+                  <span th:case="*">기타</span>
+                </td>
                 <td th:text="${h.point}"></td>
                 <td th:text="${h.isEarned} ? '적립' : '차감'"></td>
                 <td th:text="${#temporals.format(h.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
