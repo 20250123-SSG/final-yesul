@@ -70,7 +70,15 @@
                     </div>
                     <div class="gi-btn-desc">
                       <!-- principal.user.nickname 에서 닉네임 가져오기 -->
-                      <span class="gi-btn-title" sec:authentication="principal.user.nickname"></span>
+                      <span th:if="${#authorization.expression('hasAuthority(''ADMIN'')')}"
+                            class="gi-btn-title">ADMIN</span>
+
+                      <!-- USER 권한일 때만 principal.user.nickname 을 읽어옵니다 -->
+                      <span th:if="${#authorization.expression('hasAuthority(''USER'')')}"
+                            class="gi-btn-title"
+                            th:text="${#authentication.principal.user.nickname}">닉네임</span>
+
+                      <span class="gi-btn-stitle">님</span>
                       <span class="gi-btn-stitle">Logout</span>
                     </div>
                   </a>
