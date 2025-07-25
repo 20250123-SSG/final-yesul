@@ -89,8 +89,30 @@ public class AlcoholService {
     }
 
     public void registAlcohol(AlcoholDetailDto dto) {
-        try{
-            Alcohol alcohol = modelMapper.map(dto, Alcohol.class);
+        try {
+            Alcohol alcohol = Alcohol.builder()
+                    .name(dto.getName())
+                    .brand(dto.getBrand())
+                    .abv(dto.getAbv())
+                    .volumeMl(dto.getVolumeMl())
+                    .province(dto.getProvince())
+                    .city(dto.getCity())
+                    .type(dto.getType())
+                    .ingredients(dto.getIngredients())
+                    .price(dto.getPrice())
+                    .image(dto.getImage())
+                    .description(dto.getDescription())
+                    .tasteDescription(dto.getTasteDescription())
+                    .pairingFoods(dto.getPairingFoods())
+                    .sweetnessLevel(dto.getSweetnessLevel())
+                    .acidityLevel(dto.getAcidityLevel())
+                    .bodyLevel(dto.getBodyLevel())
+                    .aromaLevel(dto.getAromaLevel())
+                    .tanninLevel(dto.getTanninLevel())
+                    .finishLevel(dto.getFinishLevel())
+                    .sparklingLevel(dto.getSparklingLevel())
+                    .build();
+
             alcoholRepository.save(alcohol);
         } catch (Exception e) {
             throw new RegistrationFailedException("주류 등록에 실패했습니다.", e);
