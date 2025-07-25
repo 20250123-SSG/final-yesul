@@ -63,7 +63,6 @@
                 </div>
 
                 <div sec:authorize="isAuthenticated()" class="gi-acc-drop">
-                  <!-- 2.2) 닉네임 + “님” / 로그아웃 -->
                   <a th:href="@{/logout}" class="gi-header-btn gi-header-user" title="Logout">
                     <div class="header-icon">
                       <i class="fi-rr-user"></i>
@@ -78,7 +77,6 @@
                             class="gi-btn-title"
                             th:text="${#authentication.principal.user.nickname}">닉네임</span>
 
-                      <span class="gi-btn-stitle">님</span>
                       <span class="gi-btn-stitle">Logout</span>
                     </div>
                   </a>
