@@ -80,7 +80,7 @@ public class AdminAlcoholController {
     public String updateAlcohol(@ModelAttribute AlcoholDetailDto alcohol, MultipartFile imageFile) {
         if (!imageFile.isEmpty()) {
             if (alcohol.getImage() != null) {
-                imageUpload.delete(alcohol.getImage());
+                imageUpload.delete(alcohol.getImage(), DOMAIN);
             }
             String url = imageUpload.uploadAndGetUrl(DOMAIN, imageFile);
             alcohol.setImage(url);
@@ -93,7 +93,7 @@ public class AdminAlcoholController {
     public String deleteAlcohol(@PathVariable Long id) {
         AlcoholDetailDto alcohol = alcoholService.getAlcoholDetailById(id);
 
-        imageUpload.delete(alcohol.getImage());
+        imageUpload.delete(alcohol.getImage(), DOMAIN);
         alcoholService.deleteAlcoholById(id);
 
         return "redirect:/admin/alcohols";
